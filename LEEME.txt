@@ -1,0 +1,67 @@
+BBH HAMBURGUESERÍA — SITIO WEB
+==============================
+
+CÓMO SUBIRLO
+------------
+Sube TODA esta carpeta a tu hosting (Vercel, Netlify, Hostinger, etc.).
+El archivo principal es index.html. No cambies los nombres de los archivos:
+el HTML los referencia por nombre.
+
+
+UN CAMBIO PENDIENTE (importante para WhatsApp)
+----------------------------------------------
+Cuando ya tengas tu dominio definitivo (ejemplo: https://bbhburgers.com),
+abre index.html y busca estas dos líneas:
+
+    <meta property="og:image" content="og-image.jpg">
+    <meta name="twitter:image" content="og-image.jpg">
+
+Cámbialas por la dirección completa:
+
+    <meta property="og:image" content="https://TU-DOMINIO.com/og-image.jpg">
+    <meta name="twitter:image" content="https://TU-DOMINIO.com/og-image.jpg">
+
+POR QUÉ: es la imagen que aparece cuando compartes el link por WhatsApp o
+Instagram. Facebook resuelve la ruta corta, pero WhatsApp a veces necesita
+la dirección completa. Con este cambio funciona en todos.
+
+Después de subirlo, puedes probar cómo se ve el link aquí:
+    https://developers.facebook.com/tools/debug/
+(pega tu dirección y dale "Scrape Again" si no aparece la imagen)
+
+
+QUÉ HACE CADA ARCHIVO
+---------------------
+index.html               El sitio completo
+og-image.jpg             Vista previa al compartir el link (1200x630)
+favicon.ico / *.png      Iconos de pestaña y de app
+manifest.webmanifest     Permite "Agregar a pantalla de inicio" en el celular
+hero_720/540/360.mp4     Video del hero en 3 calidades (elige sola la mejor
+                         según el dispositivo y la conexión)
+hero_*.webm              Respaldo para navegadores sin H.264
+poster.webp              Imagen que se muestra mientras carga el video
+smash/tailandesa/...     Fotos de las hamburguesas
+mascot.webp              Beto
+herobg.webp, food.webp   Otras imágenes del sitio
+
+
+LA CARTA SE ACTUALIZA SOLA
+--------------------------
+El menú y los niveles del Club se leen de Supabase.
+Si cambias un precio, una descripción o un nivel en la base de datos,
+la web se actualiza sin tocar código.
+
+Mientras carga (o si no hay internet) muestra una copia guardada, así
+la carta nunca aparece vacía. El indicador junto al título dice:
+  "catálogo"  = mostrando la copia guardada
+  "en vivo"   = leyendo de la base en este momento
+
+
+CÓMO SE COMPORTA EL VIDEO
+-------------------------
+En computador:  avanza cuadro a cuadro según bajas con el scroll
+En celular:     se reproduce solo en bucle
+                (los navegadores móviles bloquean el control por scroll;
+                 no es un error, es una limitación del navegador)
+
+Nunca tiene sonido: el archivo no incluye pista de audio.
