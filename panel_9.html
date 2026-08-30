@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Club BBH — BBH Hamburguesería</title>
+<meta name="description" content="Panel operativo del equipo BBH: busca clientes, registra ventas y consulta el progreso del Club.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="./panel.html">
+<link rel="preconnect" href="https://alpazaxehcwjinldcadh.supabase.co">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0b0b0b;--ink:#131313;--card:#171717;--card2:#1d1d1d;--line:rgba(255,255,255,.09);--yellow:#FDF100;--yellow2:#FFF35C;--red:#FF1802;--cream:#FFF4D6;--white:#FAFAF7;--muted:#9c9c94;--green:#78dc8c;--r:22px;--fd:'Bebas Neue',Impact,sans-serif;--fb:'Inter',sans-serif;--fs:'Yellowtail',cursive}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--white);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+::selection{background:var(--yellow);color:var(--black)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;border-radius:6px}
+.container{width:min(560px,92%);margin:0 auto}
+.display{font-family:var(--fd);font-weight:400;letter-spacing:.02em;line-height:.95;text-transform:uppercase}
+nav.topnav{position:sticky;top:0;z-index:1100;background:rgba(11,11,11,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:20px;width:min(560px,92%);margin:0 auto}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo .lg{display:flex;flex-direction:column;line-height:.85}
+.nav-logo .lg b{font-family:var(--fd);font-size:1.2rem;letter-spacing:.06em;color:var(--yellow)}
+.nav-logo .lg span{font-family:var(--fd);font-size:.5rem;letter-spacing:.22em;color:var(--white)}
+.nav-back{font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1.5px solid rgba(255,255,255,.2);padding:8px 15px;border-radius:999px;transition:color .2s,border-color .2s;cursor:pointer;background:none}
+.nav-back:hover{color:var(--yellow);border-color:var(--yellow)}
+main{padding-bottom:96px}
+.authwrap{padding:40px 0 60px}
+.kicker{font-size:.75rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.kicker::before{content:"";width:30px;height:2px;background:var(--yellow)}
+h1.pageh{font-size:clamp(2rem,7vw,2.8rem);margin-bottom:10px}
+p.lead{color:var(--muted);margin-bottom:28px;max-width:52ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px 22px}
+.card+.card{margin-top:16px}
+.msg{border-radius:14px;padding:14px 16px;font-size:.9rem;margin-bottom:18px;display:none}
+.msg.err{background:rgba(255,24,2,.12);border:1px solid rgba(255,24,2,.4);color:#ffb3a8}
+.msg.ok{background:rgba(120,220,140,.1);border:1px solid rgba(120,220,140,.4);color:#b6f0c2}
+.msg.show{display:block}
+label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.field{margin-bottom:16px}
+input[type=email],input[type=password],input[type=text],input[type=number],select{width:100%;background:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--white);font-family:var(--fb);font-size:1rem;appearance:none}
+input:focus,select:focus{border-color:var(--yellow)}
+input::placeholder{color:#5c5c56}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--yellow);color:var(--black);font-weight:700;font-size:.92rem;padding:15px 26px;border-radius:999px;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;width:100%}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(253,241,0,.3)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.sec{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.25)}
+.btn.sec:hover{border-color:var(--yellow);color:var(--yellow);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--muted);border:none;width:auto;padding:10px 0;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.btn.ghost:hover{color:var(--yellow);transform:none;box-shadow:none}
+.hidden{display:none!important}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+
+/* results list */
+.reslist{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.rescard{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:border-color .15s}
+.rescard:hover{border-color:var(--yellow)}
+.rescard .nm{font-weight:700;font-size:.98rem}
+.rescard .sub{color:var(--muted);font-size:.78rem;margin-top:2px}
+.rescard .tag{font-family:var(--fd);font-size:1.3rem;color:var(--yellow)}
+
+/* selected client card */
+.clientcard{background:linear-gradient(155deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.clientcard .name{font-family:var(--fd);font-size:1.8rem;letter-spacing:.02em}
+.clientcard .meta{color:var(--muted);font-size:.85rem;margin-top:2px}
+.tier-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(253,241,0,.1);color:var(--yellow);border:1px solid rgba(253,241,0,.3);border-radius:999px;padding:4px 12px;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:10px}
+.hburgs{font-family:var(--fd);font-size:3rem;color:var(--white);margin-top:14px;line-height:1}
+.hburgs small{font-family:var(--fb);font-size:.9rem;color:var(--muted);font-weight:600;text-transform:none;letter-spacing:0}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow),var(--yellow2));border-radius:99px;transition:width .4s}
+.progtxt{color:var(--muted);font-size:.78rem;margin-top:8px}
+.debt{margin-top:14px;background:rgba(255,24,2,.1);border:1px solid rgba(255,24,2,.3);border-radius:12px;padding:10px 14px;font-size:.85rem;color:#ffb3a8;display:none}
+.debt.show{display:block}
+
+/* sale form */
+.qtyrow{display:flex;align-items:center;justify-content:space-between;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:8px}
+.qtyrow .pn{font-weight:600;font-size:.9rem}
+.qtyrow .pp{color:var(--muted);font-size:.78rem}
+.qctl{display:flex;align-items:center;gap:10px}
+.qctl button{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:var(--white);font-size:1.1rem;cursor:pointer;line-height:1}
+.qctl button:hover{border-color:var(--yellow);color:var(--yellow)}
+.qctl .qn{min-width:22px;text-align:center;font-weight:700}
+.totalbar{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.totalbar .lb{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
+.totalbar .val{font-family:var(--fd);font-size:1.6rem;color:var(--yellow)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#0b3d16;font-weight:700;padding:14px 22px;border-radius:14px;opacity:0;transition:opacity .25s,transform .25s;z-index:2000;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.scanwrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:14px;border:1px solid var(--line)}
+.scanwrap video{width:100%;height:100%;object-fit:cover}
+.scanhint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;text-align:center;padding:20px}
+
+/* tabs */
+.tabbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:22px;-ms-overflow-style:none;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbtn{flex:0 0 auto;background:transparent;border:1.5px solid rgba(255,255,255,.14);color:var(--muted);font-family:var(--fb);font-weight:700;font-size:.8rem;letter-spacing:.03em;padding:10px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tabbtn.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.tabbtn:not(.active):hover{border-color:var(--yellow);color:var(--yellow)}
+.tabpanel{display:none}
+.tabpanel.active{display:block}
+
+/* client list */
+.listtoolbar{display:flex;gap:10px;margin-bottom:14px}
+.listtoolbar input{flex:1}
+.clist{display:flex;flex-direction:column;gap:8px}
+.clirow{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.clirow:hover{border-color:var(--yellow)}
+.clirow .nm{font-weight:700;font-size:.95rem}
+.clirow .sub{color:var(--muted);font-size:.76rem;margin-top:2px}
+.clirow .stat{text-align:right;flex-shrink:0}
+.clirow .stat .hb{font-family:var(--fd);font-size:1.4rem;color:var(--yellow);line-height:1}
+.clirow .stat .lv{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}
+.clirow .stat .dbt{color:#ff8a7a;font-size:.7rem;font-weight:700;margin-top:2px}
+.emptylist{color:var(--muted);font-size:.88rem;padding:20px 4px;text-align:center}
+
+/* edit form */
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.formgrid .field.full{grid-column:1/-1}
+.codechip{display:inline-flex;align-items:center;gap:8px;background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-family:var(--fb);font-weight:700;letter-spacing:.04em;color:var(--yellow);font-size:.92rem;margin-bottom:16px}
+
+/* fiados */
+.fiadosresumen{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.fiadosresumen .rescard{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.fiadosresumen .rescard .n{font-family:var(--fd);font-size:1.6rem;color:var(--yellow);line-height:1}
+.fiadosresumen .rescard .n.warn{color:#ff8a7a}
+.fiadosresumen .rescard .l{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.fiadosfiltros{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
+.chipf{flex:0 0 auto;background:transparent;border:1.5px solid rgba(255,255,255,.14);color:var(--muted);font-family:var(--fb);font-weight:700;font-size:.76rem;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.chipf.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.clirow .stat .venc{color:#ff8a7a;font-size:.68rem;font-weight:700;margin-top:2px}
+.fiadohead{margin-bottom:16px}
+.fiadohead .nm{font-weight:700;font-size:1.15rem}
+.fiadohead .sub{color:var(--muted);font-size:.82rem;margin-top:2px}
+.fiadonums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.fiadonums>div{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:center}
+.fiadonums .lbl{display:block;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.05em}
+.fiadonums .val{display:block;font-family:var(--fd);font-size:1.3rem;margin-top:2px}
+.fiadonums .val.saldo{color:var(--yellow)}
+.abonorow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.abonorow:last-child{border-bottom:none}
+.abonorow .am{font-weight:700}
+.abonorow .dt{color:var(--muted);font-size:.76rem}
+
+/* venta simplificada */
+.contadordia{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.contadordia .ico{font-size:1.6rem}
+.contadordia .num{font-family:var(--fd);font-size:2.2rem;color:var(--yellow);line-height:1}
+.contadordia .lbl{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.cardventa{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.gridprod{display:grid;gap:10px;margin-bottom:10px}
+.gridprod.principales{grid-template-columns:1fr 1fr}
+.gridprod.secundarios{grid-template-columns:repeat(3,1fr)}
+.prodbtn{position:relative;background:var(--ink);border:2px solid var(--line);border-radius:16px;padding:16px 10px;text-align:center;cursor:pointer;transition:border-color .12s,transform .08s;-webkit-tap-highlight-color:transparent;user-select:none}
+.prodbtn:active{transform:scale(.96)}
+.prodbtn.hasqty{border-color:var(--yellow);background:rgba(253,241,0,.08)}
+.principales .prodbtn{padding:22px 10px}
+.principales .prodbtn .pn{font-family:var(--fd);font-size:1.3rem;letter-spacing:.02em}
+.principales .prodbtn .pp{color:var(--muted);font-size:.8rem;margin-top:2px}
+.secundarios .prodbtn .pn{font-weight:700;font-size:.78rem;line-height:1.15}
+.secundarios .prodbtn .pp{color:var(--muted);font-size:.7rem;margin-top:3px}
+.prodbtn .qtybadge{position:absolute;top:-8px;right:-8px;background:var(--yellow);color:var(--black);font-family:var(--fd);font-size:1rem;min-width:26px;height:26px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.carritobar{display:flex;justify-content:space-between;align-items:center;background:var(--ink);border-radius:14px;padding:12px 16px;margin:14px 0}
+.cbresumen{color:var(--muted);font-size:.78rem;flex:1;margin-right:10px}
+.cbtotal{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0}
+.cbtotal span:first-child{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}
+.cbtotal span:last-child{font-family:var(--fd);font-size:1.5rem;color:var(--yellow)}
+.btnclub{width:100%;background:transparent;border:1.5px dashed rgba(255,255,255,.2);color:var(--muted);font-family:var(--fb);font-weight:600;font-size:.82rem;padding:12px;border-radius:12px;cursor:pointer;margin-top:6px}
+.btnclub:hover{border-color:var(--yellow);color:var(--yellow)}
+.btnclub.active{border-style:solid;border-color:var(--yellow);color:var(--yellow)}
+.clubchip{display:flex;align-items:center;gap:10px;background:rgba(253,241,0,.1);border:1px solid rgba(253,241,0,.3);border-radius:12px;padding:10px 14px;margin-top:10px}
+.clubchip span:first-child{font-weight:700;font-size:.88rem;flex:1}
+.clubchip .hb{color:var(--yellow);font-size:.82rem;flex-shrink:0}
+.clubchip .quitar{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:2px 6px}
+
+/* modal de cobro */
+#modalCobro{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end}
+.modalbg{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.modalcard{position:relative;z-index:1;width:100%;background:var(--card);border-radius:24px 24px 0 0;padding:24px;border:1px solid var(--line);border-bottom:none;max-height:88vh;overflow-y:auto}
+.cobrototal{font-family:var(--fd);font-size:2.6rem;color:var(--yellow);text-align:center;margin-bottom:16px}
+.metodos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.metbtn{background:var(--ink);border:1.5px solid var(--line);color:var(--muted);font-family:var(--fb);font-weight:700;font-size:.85rem;padding:14px;border-radius:12px;cursor:pointer}
+.metbtn.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.cambiorow{display:flex;justify-content:space-between;align-items:center;background:var(--ink);border-radius:12px;padding:12px 16px;margin-top:8px}
+.cambiorow span:last-child{font-family:var(--fd);font-size:1.4rem;color:var(--yellow)}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-inner">
+    <div class="nav-logo"><div class="lg"><b>BBH</b><span>PANEL EQUIPO</span></div></div>
+    <button class="nav-back" id="btnLogout">Salir</button>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- LOGIN -->
+  <section class="authwrap" id="boxAuth">
+    <div class="kicker">Acceso restringido</div>
+    <h1 class="pageh">Panel del equipo</h1>
+    <p class="lead">Solo cuentas con rol de equipo pueden entrar. Usa el mismo correo y contraseña de tu cuenta BBH.</p>
+    <div class="card">
+      <div class="msg" id="msgAuth"></div>
+      <form id="formAuth">
+        <div class="field"><label>Correo</label><input type="email" id="email" required placeholder="tucorreo@ejemplo.com" autocomplete="username"></div>
+        <div class="field"><label>Contraseña</label><input type="password" id="pass" required placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="btn" type="submit" id="btnAuth">Entrar</button>
+      </form>
+      <button class="btn ghost" type="button" id="btnOlvide" style="margin-top:6px">¿Olvidaste tu contraseña?</button>
+    </div>
+
+    <!-- RECUPERAR CONTRASEÑA -->
+    <div class="card hidden" id="boxRecover" style="margin-top:16px">
+      <div class="kicker" style="margin-bottom:10px">Recuperar acceso</div>
+      <div class="msg" id="msgRecover"></div>
+      <form id="formRecover">
+        <div class="field"><label>Correo de tu cuenta</label><input type="email" id="recoverEmail" required placeholder="tucorreo@ejemplo.com"></div>
+        <button class="btn sec" type="submit" id="btnRecover">Enviar correo de recuperación</button>
+      </form>
+      <button class="btn ghost" type="button" id="btnCerrarRecover" style="margin-top:6px">← Volver a entrar</button>
+    </div>
+  </section>
+
+  <!-- PANEL -->
+  <section class="hidden" id="boxPanel">
+
+    <div class="kicker">Club BBH</div>
+    <h1 class="pageh" id="tituloPanel">Vender</h1>
+
+    <div class="tabbar">
+      <button class="tabbtn active" data-tab="vender">Vender</button>
+      <button class="tabbtn" data-tab="clientes">Clientes</button>
+      <button class="tabbtn" data-tab="fiados">Fiados</button>
+    </div>
+
+    <!-- ===== TAB: VENDER ===== -->
+    <div class="tabpanel active" id="tabVender">
+
+    <div class="contadordia" id="contadorDia">
+      <span class="ico">🍔</span>
+      <span class="num" id="contadorNum">0</span>
+      <span class="lbl">hamburguesas hoy</span>
+    </div>
+
+    <!-- PRODUCTOS PRINCIPALES (toca = agrega, toca otra vez = +1) -->
+    <div class="cardventa">
+      <div id="gridPrincipales" class="gridprod principales"></div>
+      <div id="gridSecundarios" class="gridprod secundarios"></div>
+
+      <div class="carritobar hidden" id="carritoBar">
+        <div class="cbresumen" id="cbResumen"></div>
+        <div class="cbtotal"><span>Total</span><span id="totalVenta">$0</span></div>
+      </div>
+
+      <!-- cliente del Club: opcional, colapsado por defecto -->
+      <button type="button" class="btnclub" id="btnAbrirClub">🎟️ Sumar a Club BBH (opcional)</button>
+      <div class="hidden" id="boxClubVenta">
+        <div class="field">
+          <input type="text" id="buscarInput" placeholder="Buscar cliente por nombre o código BBH-XXXX">
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn sec" id="btnScan" type="button">📷 Escanear código</button>
+        </div>
+        <div class="scanwrap hidden" id="scanwrap">
+          <video id="video" playsinline muted></video>
+        </div>
+        <div class="msg" id="msgScan"></div>
+        <div class="reslist" id="resultados"></div>
+        <div class="hidden" id="clubSeleccionado">
+          <div class="clubchip">
+            <span id="ccNombre">—</span>
+            <span class="hb" id="ccHamb">0 🍔</span>
+            <button type="button" class="quitar" id="btnCambiarCliente">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:14px">
+        <label>Canal</label>
+        <select id="canalVenta">
+          <option value="PUNTO">Punto de venta</option>
+          <option value="UNIVERSIDAD">Universidad (domicilio interno)</option>
+          <option value="DOMICILIO">Domicilio</option>
+          <option value="EVENTO">Evento</option>
+        </select>
+      </div>
+
+      <div class="msg" id="msgVenta"></div>
+      <button class="btn" id="btnCobrar" type="button" style="margin-top:6px" disabled>Cobrar</button>
+    </div>
+
+    <!-- ===== MODAL DE COBRO ===== -->
+    <div class="hidden" id="modalCobro">
+      <div class="modalbg" id="modalCobroBg"></div>
+      <div class="modalcard">
+        <div class="kicker" style="margin-bottom:6px">Cobrar</div>
+        <div class="cobrototal" id="cobroTotal">$0</div>
+        <div class="metodos">
+          <button type="button" class="metbtn active" data-met="EFECTIVO">💵 Efectivo</button>
+          <button type="button" class="metbtn" data-met="TRANSFERENCIA">📲 Transferencia</button>
+        </div>
+        <div id="boxEfectivo">
+          <div class="field">
+            <label>Recibido</label>
+            <input type="number" id="recibidoInput" min="0" step="1000" placeholder="Ej: 50000">
+          </div>
+          <div class="cambiorow"><span>Cambio</span><span id="cambioVal">$0</span></div>
+        </div>
+        <div class="hidden" id="boxTransferencia">
+          <p class="lead" style="margin-bottom:0">El cliente afirma haber transferido. Queda marcada como pendiente de verificar hasta que confirmes.</p>
+        </div>
+        <div class="msg" id="msgCobro"></div>
+        <div class="row" style="margin-top:14px;gap:10px">
+          <button class="btn ghost" type="button" id="btnCancelarCobro">Cancelar</button>
+          <button class="btn" type="button" id="btnConfirmarCobro">Confirmar venta</button>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <!-- ===== FIN TAB VENDER ===== -->
+
+    <!-- ===== TAB: CLIENTES ===== -->
+    <div class="tabpanel" id="tabClientes">
+
+      <!-- vista lista -->
+      <div id="vistaLista">
+        <p class="lead">Todos los clientes del Club, con su nivel y progreso actual.</p>
+        <div class="listtoolbar">
+          <input type="text" id="listaBuscarInput" placeholder="Buscar por nombre, facultad o código">
+        </div>
+        <button class="btn sec" id="btnNuevoCliente" type="button" style="margin-bottom:16px">+ Nuevo cliente</button>
+        <div class="msg" id="msgLista"></div>
+        <div class="clist" id="listaClientes"><div class="emptylist">Cargando clientes…</div></div>
+      </div>
+
+      <!-- vista editar/crear -->
+      <div class="hidden" id="vistaEditar">
+        <button class="btn ghost" id="btnVolverLista">← Volver a la lista</button>
+        <div class="card">
+          <div class="kicker" id="editKicker" style="margin-bottom:10px">Editar cliente</div>
+          <div class="codechip hidden" id="editCodigoChip">—</div>
+          <div class="msg" id="msgEditar"></div>
+          <form id="formEditar">
+            <input type="hidden" id="editId">
+            <div class="formgrid">
+              <div class="field full"><label>Nombre *</label><input type="text" id="editNombre" required placeholder="Nombre completo"></div>
+              <div class="field"><label>Facultad</label><input type="text" id="editFacultad" placeholder="Ej: Derecho"></div>
+              <div class="field"><label>Teléfono *</label><input type="tel" id="editTelefono" required inputmode="numeric" placeholder="Ej: 3001234567"></div>
+              <div class="field full"><label>Alias / apodo</label><input type="text" id="editAlias" placeholder="Opcional"></div>
+              <div class="field full"><label>Notas</label><input type="text" id="editNotas" placeholder="Opcional"></div>
+            </div>
+            <button class="btn" type="submit" id="btnGuardarCliente">Guardar</button>
+          </form>
+        </div>
+
+        <!-- resumen de progreso, solo visible al editar (no al crear) -->
+        <div class="card hidden" id="editResumen" style="margin-top:16px">
+          <div class="kicker" style="margin-bottom:10px">Progreso en el Club</div>
+          <div class="hburgs" style="margin-top:0"><span id="editHamb">0</span> <small>hamburguesas · <span id="editNivel">—</span></small></div>
+          <div class="debt" id="editDeuda">—</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB CLIENTES ===== -->
+
+    <!-- ===== TAB FIADOS ===== -->
+    <div class="tabpanel" id="tabFiados">
+
+      <!-- vista lista de fiados -->
+      <div id="vistaFiadosLista">
+        <p class="lead">Cartera de fiados: quién debe, cuánto y desde cuándo.</p>
+        <div class="fiadosresumen" id="fiadosResumen"></div>
+        <div class="listtoolbar">
+          <input type="text" id="fiadosBuscarInput" placeholder="Buscar por nombre o facultad">
+        </div>
+        <div class="fiadosfiltros" id="fiadosFiltros">
+          <button type="button" class="chipf active" data-f="pendiente">Pendientes</button>
+          <button type="button" class="chipf" data-f="vencido">Vencidos</button>
+          <button type="button" class="chipf" data-f="todos">Todos</button>
+        </div>
+        <div class="msg" id="msgFiadosLista"></div>
+        <div class="clist" id="listaFiados"><div class="emptylist">Cargando fiados…</div></div>
+      </div>
+
+      <!-- vista detalle de un fiado + cobrar abono -->
+      <div class="hidden" id="vistaFiadoDetalle">
+        <button class="btn ghost" id="btnVolverFiados">← Volver a la cartera</button>
+        <div class="card" id="cardFiadoDetalle">
+          <div class="kicker" style="margin-bottom:10px">Detalle del fiado</div>
+          <div class="fiadohead">
+            <div class="nm" id="fdNombre">—</div>
+            <div class="sub" id="fdSub">—</div>
+          </div>
+          <div class="fiadonums">
+            <div><span class="lbl">Total</span><span class="val" id="fdTotal">—</span></div>
+            <div><span class="lbl">Abonado</span><span class="val" id="fdAbonado">—</span></div>
+            <div><span class="lbl">Saldo</span><span class="val saldo" id="fdSaldo">—</span></div>
+          </div>
+          <div class="debt" id="fdVencido">—</div>
+          <div class="msg" id="msgFiadoDetalle"></div>
+          <form id="formAbono">
+            <div class="field">
+              <label>Valor del abono</label>
+              <input type="number" id="abonoValor" min="1" step="1" placeholder="Ej: 20000" required>
+            </div>
+            <div class="field">
+              <label>Método de pago</label>
+              <select id="abonoMetodo">
+                <option value="EFECTIVO">Efectivo</option>
+                <option value="TRANSFERENCIA">Transferencia</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Nota (opcional)</label>
+              <input type="text" id="abonoNota" placeholder="Opcional">
+            </div>
+            <button class="btn" type="submit" id="btnRegistrarAbono">Registrar abono</button>
+          </form>
+        </div>
+
+        <div class="card" id="cardHistAbonos" style="margin-top:16px">
+          <div class="kicker" style="margin-bottom:10px">Abonos registrados</div>
+          <div id="listaAbonos"><div class="emptylist">Sin abonos aún.</div></div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB FIADOS ===== -->
+
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var U='https://alpazaxehcwjinldcadh.supabase.co', K='sb_publishable_UuG4mqkqShEUK9lqDsZAqw_O3OuoEnd';
+var SESSION_KEY='bbh_panel_session';
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(n){return '$'+Math.round(n).toLocaleString('es-CO')}
+function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}
+
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch(e){return null}}
+function setSession(s){localStorage.setItem(SESSION_KEY, JSON.stringify(s))}
+function clearSession(){localStorage.removeItem(SESSION_KEY)}
+
+async function authFetch(path, opts){
+  opts = opts || {};
+  var s = getSession();
+  var headers = Object.assign({'apikey':K,'Content-Type':'application/json'}, opts.headers||{});
+  if (s && s.access_token) headers['Authorization'] = 'Bearer '+s.access_token;
+  var res = await fetch(U+path, Object.assign({}, opts, {headers:headers}));
+  return res;
+}
+
+// ---------- AUTH ----------
+$('formAuth').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgAuth'); msg.className='msg'; msg.textContent='';
+  var btn = $('btnAuth'); btn.disabled = true; btn.textContent = 'Entrando...';
+  try{
+    var res = await fetch(U+'/auth/v1/token?grant_type=password', {
+      method:'POST',
+      headers:{'apikey':K,'Content-Type':'application/json'},
+      body: JSON.stringify({email: $('email').value.trim(), password: $('pass').value})
+    });
+    var data = await res.json();
+    if (!res.ok){
+      msg.textContent = data.error_description || data.msg || 'No se pudo iniciar sesión.';
+      msg.className = 'msg err show';
+      return;
+    }
+    // Verificar rol de equipo antes de dejar entrar
+    var perfilRes = await fetch(U+'/rest/v1/perfiles?select=rol&user_id=eq.'+data.user.id, {
+      headers:{'apikey':K,'Authorization':'Bearer '+data.access_token}
+    });
+    var perfil = await perfilRes.json();
+    var rol = perfil && perfil[0] ? perfil[0].rol : null;
+    if (rol !== 'DUENO' && rol !== 'EQUIPO'){
+      msg.textContent = 'Esta cuenta no tiene permiso de equipo. Este panel es solo para BBH.';
+      msg.className = 'msg err show';
+      return;
+    }
+    setSession({access_token:data.access_token, refresh_token:data.refresh_token, expires_at:Date.now()+ (data.expires_in*1000), email:data.user.email, user_id:data.user.id, rol:rol});
+    mostrarPanel();
+  }catch(err){
+    msg.textContent = 'Error de conexión. Intenta de nuevo.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+
+$('btnLogout').addEventListener('click', function(){
+  clearSession();
+  location.reload();
+});
+
+// ---------- RECUPERAR CONTRASEÑA ----------
+$('btnOlvide').addEventListener('click', function(){
+  $('recoverEmail').value = $('email').value || '';
+  $('boxAuth').querySelector('.card').classList.add('hidden');
+  $('btnOlvide').classList.add('hidden');
+  $('boxRecover').classList.remove('hidden');
+});
+
+$('btnCerrarRecover').addEventListener('click', function(){
+  $('boxRecover').classList.add('hidden');
+  $('boxAuth').querySelector('.card').classList.remove('hidden');
+  $('btnOlvide').classList.remove('hidden');
+});
+
+$('formRecover').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgRecover'); msg.className = 'msg';
+  var btn = $('btnRecover'); btn.disabled = true; btn.textContent = 'Enviando...';
+  try{
+    var redirectTo = window.location.origin + '/reset.html';
+    var res = await fetch(U+'/auth/v1/recover', {
+      method: 'POST',
+      headers: {'apikey':K,'Content-Type':'application/json'},
+      body: JSON.stringify({email: $('recoverEmail').value.trim(), redirect_to: redirectTo})
+    });
+    if (res.ok){
+      msg.textContent = 'Si ese correo tiene cuenta, te llegará un enlace para definir una nueva contraseña. Revisa también spam.';
+      msg.className = 'msg ok show';
+    } else {
+      var data = await res.json().catch(function(){ return {} });
+      msg.textContent = data.error_description || data.msg || 'No se pudo enviar el correo. Intenta de nuevo en unos minutos.';
+      msg.className = 'msg err show';
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión. Intenta de nuevo.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Enviar correo de recuperación';
+  }
+});
+
+function mostrarPanel(){
+  $('boxAuth').classList.add('hidden');
+  $('boxPanel').classList.remove('hidden');
+}
+
+// ---------- CLIENTE DEL CLUB (opcional, para sumar puntos) ----------
+var buscarTimer = null;
+$('buscarInput').addEventListener('input', function(){
+  clearTimeout(buscarTimer);
+  var q = this.value.trim();
+  if (q.length < 2){ $('resultados').innerHTML=''; return; }
+  buscarTimer = setTimeout(function(){ buscarClientes(q) }, 300);
+});
+
+async function buscarClientes(q){
+  var filtro;
+  if (/^BBH-/i.test(q)) {
+    filtro = 'codigo=eq.'+encodeURIComponent(q.toUpperCase());
+  } else {
+    filtro = 'nombre=ilike.*'+encodeURIComponent(q)+'*';
+  }
+  var res = await authFetch('/rest/v1/clientes?select=id,nombre,facultad,codigo&'+filtro+'&limit=8');
+  if (!res.ok){ $('resultados').innerHTML=''; return; }
+  var rows = await res.json();
+  pintarResultados(rows);
+}
+
+function pintarResultados(rows){
+  var el = $('resultados');
+  if (!rows.length){ el.innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:8px 2px">Sin resultados.</div>'; return; }
+  el.innerHTML = rows.map(function(c){
+    return '<div class="rescard" data-id="'+c.id+'"><div><div class="nm">'+esc(c.nombre)+'</div><div class="sub">'+esc(c.facultad||'Sin facultad')+' · '+esc(c.codigo)+'</div></div><div class="tag">→</div></div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.rescard'), function(card){
+    card.addEventListener('click', function(){ seleccionarCliente(card.getAttribute('data-id')) });
+  });
+}
+
+var clienteActual = null;
+
+async function seleccionarCliente(id){
+  var res = await authFetch('/rest/v1/v_mi_club?select=*&cliente_id=eq.'+id);
+  if (!res.ok){ toast('No se pudo cargar el cliente.'); return; }
+  var rows = await res.json();
+  if (!rows.length){ toast('Cliente no encontrado.'); return; }
+  clienteActual = rows[0];
+  $('ccNombre').textContent = clienteActual.nombre;
+  $('ccHamb').textContent = clienteActual.hamburguesas+' 🍔';
+  $('resultados').innerHTML = '';
+  $('buscarInput').value = '';
+  $('clubSeleccionado').classList.remove('hidden');
+  $('btnAbrirClub').classList.add('active');
+  $('btnAbrirClub').textContent = '🎟️ '+clienteActual.nombre+' — sumando al Club';
+}
+
+$('btnCambiarCliente').addEventListener('click', function(e){
+  e.stopPropagation();
+  clienteActual = null;
+  $('clubSeleccionado').classList.add('hidden');
+  $('btnAbrirClub').classList.remove('active');
+  $('btnAbrirClub').textContent = '🎟️ Sumar a Club BBH (opcional)';
+});
+
+$('btnAbrirClub').addEventListener('click', function(){
+  $('boxClubVenta').classList.toggle('hidden');
+});
+
+// ---------- PRODUCTOS / VENTA SIMPLIFICADA ----------
+var PRODUCTOS = [];
+var carrito = {}; // producto_id -> {producto, cantidad}
+var PRINCIPALES = ['Smash','Tailandesa'];
+
+async function cargarProductos(){
+  var res = await authFetch('/rest/v1/productos?select=id,nombre,precio_lista,categoria&activo=eq.true&categoria=neq.SALSA&categoria=neq.SERVICIO&order=orden');
+  if (!res.ok) return;
+  PRODUCTOS = await res.json();
+  renderGridsProductos();
+  cargarContadorDia();
+}
+
+function renderGridsProductos(){
+  var principales = PRODUCTOS.filter(function(p){ return PRINCIPALES.indexOf(p.nombre) > -1 });
+  var secundarios = PRODUCTOS.filter(function(p){ return PRINCIPALES.indexOf(p.nombre) === -1 });
+  $('gridPrincipales').innerHTML = principales.map(botonProducto).join('');
+  $('gridSecundarios').innerHTML = secundarios.map(botonProducto).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#gridPrincipales .prodbtn, #gridSecundarios .prodbtn'), function(btn){
+    btn.addEventListener('click', function(){ cambiarCantidad(btn.getAttribute('data-pid'), 1) });
+  });
+  renderCarritoBar();
+}
+
+function botonProducto(p){
+  var qty = (carrito[p.id] && carrito[p.id].cantidad) || 0;
+  return '<div class="prodbtn'+(qty>0?' hasqty':'')+'" data-pid="'+p.id+'">'+
+    (qty>0 ? '<span class="qtybadge">'+qty+'</span>' : '')+
+    '<div class="pn">'+esc(p.nombre)+'</div><div class="pp">'+fmt(p.precio_lista)+'</div>'+
+  '</div>';
+}
+
+function cambiarCantidad(pid, delta){
+  var prod = PRODUCTOS.find(function(p){ return String(p.id) === String(pid) });
+  if (!prod) return;
+  var actual = (carrito[pid] && carrito[pid].cantidad) || 0;
+  var nueva = Math.max(0, actual + delta);
+  if (nueva === 0){ delete carrito[pid]; }
+  else { carrito[pid] = {producto: prod, cantidad: nueva}; }
+  renderGridsProductos();
+}
+
+function renderCarritoBar(){
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  var total = 0, unidades = 0;
+  items.forEach(function(it){ total += it.producto.precio_lista * it.cantidad; unidades += it.cantidad; });
+  $('totalVenta').textContent = fmt(total);
+  $('btnCobrar').disabled = (unidades === 0);
+  if (!items.length){
+    $('carritoBar').classList.add('hidden');
+    return;
+  }
+  $('carritoBar').classList.remove('hidden');
+  $('cbResumen').textContent = items.map(function(it){ return it.cantidad+'× '+it.producto.nombre }).join(', ');
+}
+
+// ---------- CONTADOR DE HAMBURGUESAS DEL DÍA ----------
+async function cargarContadorDia(){
+  var hoy = new Date().toISOString().slice(0,10);
+  var res = await authFetch('/rest/v1/movimientos?select=unidades,productos(categoria)&tipo=eq.VENTA&fecha=eq.'+hoy);
+  if (!res.ok) return;
+  var rows = await res.json();
+  var total = rows.reduce(function(sum, r){
+    var cat = r.productos && r.productos.categoria;
+    if (cat === 'HAMBURGUESA' || cat === 'PERRO_CALIENTE' || cat === 'COMBO') sum += r.unidades;
+    return sum;
+  }, 0);
+  $('contadorNum').textContent = total;
+}
+
+// ---------- MODAL DE COBRO ----------
+var metodoCobro = 'EFECTIVO';
+
+$('btnCobrar').addEventListener('click', function(){
+  if ($('btnCobrar').disabled) return;
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  if (!items.length) return;
+  var total = items.reduce(function(s,it){ return s + it.producto.precio_lista*it.cantidad }, 0);
+  $('cobroTotal').textContent = fmt(total);
+  $('recibidoInput').value = '';
+  $('cambioVal').textContent = fmt(0);
+  metodoCobro = 'EFECTIVO';
+  Array.prototype.forEach.call(document.querySelectorAll('.metbtn'), function(b){ b.classList.toggle('active', b.getAttribute('data-met')==='EFECTIVO') });
+  $('boxEfectivo').classList.remove('hidden');
+  $('boxTransferencia').classList.add('hidden');
+  $('msgCobro').className = 'msg';
+  $('modalCobro').classList.remove('hidden');
+});
+
+$('btnCancelarCobro').addEventListener('click', function(){ $('modalCobro').classList.add('hidden') });
+$('modalCobroBg').addEventListener('click', function(){ $('modalCobro').classList.add('hidden') });
+
+Array.prototype.forEach.call(document.querySelectorAll('.metbtn'), function(btn){
+  btn.addEventListener('click', function(){
+    metodoCobro = btn.getAttribute('data-met');
+    Array.prototype.forEach.call(document.querySelectorAll('.metbtn'), function(b){ b.classList.toggle('active', b===btn) });
+    $('boxEfectivo').classList.toggle('hidden', metodoCobro!=='EFECTIVO');
+    $('boxTransferencia').classList.toggle('hidden', metodoCobro!=='TRANSFERENCIA');
+  });
+});
+
+$('recibidoInput').addEventListener('input', function(){
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  var total = items.reduce(function(s,it){ return s + it.producto.precio_lista*it.cantidad }, 0);
+  var recibido = parseFloat(this.value) || 0;
+  $('cambioVal').textContent = fmt(Math.max(0, recibido - total));
+});
+
+$('btnConfirmarCobro').addEventListener('click', async function(){
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  if (!items.length) return;
+  var msg = $('msgCobro'); msg.className = 'msg';
+  var btn = $('btnConfirmarCobro'); btn.disabled = true; btn.textContent = 'Registrando...';
+  try{
+    var hoy = new Date();
+    var fecha = hoy.toISOString().slice(0,10);
+    var hora = hoy.toTimeString().slice(0,8);
+    var canal = $('canalVenta').value;
+    var pedidoId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2));
+    var notaPago = metodoCobro === 'EFECTIVO' ? 'Pago efectivo' : 'Pago transferencia (pendiente de verificar)';
+    var rows = items.map(function(it){
+      return {
+        fecha: fecha, hora: hora, tipo: 'VENTA',
+        producto_id: it.producto.id, unidades: it.cantidad,
+        precio_unitario: it.producto.precio_lista,
+        valor_total: it.producto.precio_lista * it.cantidad,
+        canal: canal, cliente_id: clienteActual ? clienteActual.cliente_id : null,
+        origen: 'panel_equipo', pedido_id: pedidoId,
+        nota: notaPago
+      };
+    });
+    var res = await authFetch('/rest/v1/movimientos', {
+      method: 'POST',
+      headers: {'Prefer':'return=minimal'},
+      body: JSON.stringify(rows)
+    });
+    if (!res.ok){
+      var errBody = await res.text();
+      msg.textContent = 'No se pudo registrar la venta. Verifica tu conexión.';
+      msg.className = 'msg err show';
+      console.error(errBody);
+      return;
+    }
+    toast(clienteActual ? 'Venta registrada — Club BBH actualizado' : 'Venta registrada');
+    carrito = {};
+    renderGridsProductos();
+    cargarContadorDia();
+    $('modalCobro').classList.add('hidden');
+    if (clienteActual){
+      $('btnCambiarCliente').click();
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión al registrar la venta.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Confirmar venta';
+  }
+});
+
+// ---------- ESCÁNER ----------
+var scanStream = null;
+var scanActive = false;
+
+$('btnScan').addEventListener('click', function(){
+  if (scanActive){ pararScan(); return; }
+  iniciarScan();
+});
+
+async function iniciarScan(){
+  var msg = $('msgScan'); msg.className = 'msg';
+  if (!('BarcodeDetector' in window)){
+    msg.textContent = 'Tu navegador no soporta escaneo de cámara. Escribe el código manualmente arriba.';
+    msg.className = 'msg err show';
+    return;
+  }
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    var video = $('video');
+    video.srcObject = scanStream;
+    await video.play();
+    $('scanwrap').classList.remove('hidden');
+    $('btnScan').textContent = '✕ Detener cámara';
+    scanActive = true;
+    var detector = new BarcodeDetector({formats:['qr_code']});
+    loopScan(detector, video);
+  }catch(err){
+    msg.textContent = 'No se pudo acceder a la cámara. Revisa los permisos del navegador.';
+    msg.className = 'msg err show';
+  }
+}
+
+async function loopScan(detector, video){
+  if (!scanActive) return;
+  try{
+    var codes = await detector.detect(video);
+    if (codes.length){
+      var valor = codes[0].rawValue;
+      pararScan();
+      $('buscarInput').value = valor;
+      buscarClientes(valor);
+      return;
+    }
+  }catch(e){}
+  requestAnimationFrame(function(){ loopScan(detector, video) });
+}
+
+function pararScan(){
+  scanActive = false;
+  if (scanStream){ scanStream.getTracks().forEach(function(t){ t.stop() }); scanStream = null; }
+  $('scanwrap').classList.add('hidden');
+  $('btnScan').textContent = '📷 Escanear código';
+}
+
+// ---------- TABS ----------
+Array.prototype.forEach.call(document.querySelectorAll('.tabbtn'), function(btn){
+  btn.addEventListener('click', function(){
+    var tab = btn.getAttribute('data-tab');
+    Array.prototype.forEach.call(document.querySelectorAll('.tabbtn'), function(b){ b.classList.toggle('active', b===btn) });
+    document.getElementById('tabVender').classList.toggle('active', tab==='vender');
+    document.getElementById('tabClientes').classList.toggle('active', tab==='clientes');
+    document.getElementById('tabFiados').classList.toggle('active', tab==='fiados');
+    $('tituloPanel').textContent = tab==='vender' ? 'Vender' : (tab==='clientes' ? 'Clientes del Club' : 'Cartera de fiados');
+    if (tab === 'clientes' && !listaClientesCargada){
+      cargarListaClientes();
+    }
+    if (tab === 'fiados'){
+      cargarFiados();
+    }
+  });
+});
+
+// ---------- CLIENTES: LISTA ----------
+var TODOS_CLIENTES = [];
+var listaClientesCargada = false;
+
+async function cargarListaClientes(){
+  var msg = $('msgLista'); msg.className = 'msg';
+  $('listaClientes').innerHTML = '<div class="emptylist">Cargando clientes…</div>';
+  var res = await authFetch('/rest/v1/v_mi_club?select=cliente_id,nombre,facultad,codigo,hamburguesas,nivel_actual,saldo_fiado&order=nombre.asc');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la lista de clientes.';
+    msg.className = 'msg err show';
+    $('listaClientes').innerHTML = '';
+    return;
+  }
+  TODOS_CLIENTES = await res.json();
+  listaClientesCargada = true;
+  renderListaClientes(TODOS_CLIENTES);
+}
+
+function renderListaClientes(rows){
+  var el = $('listaClientes');
+  if (!rows.length){ el.innerHTML = '<div class="emptylist">Sin clientes todavía.</div>'; return; }
+  el.innerHTML = rows.map(function(c){
+    var deuda = (c.saldo_fiado && Number(c.saldo_fiado) > 0) ? ('<div class="dbt">Debe '+fmt(c.saldo_fiado)+'</div>') : '';
+    return '<div class="clirow" data-id="'+c.cliente_id+'">'+
+      '<div><div class="nm">'+esc(c.nombre)+'</div><div class="sub">'+esc(c.facultad||'Sin facultad')+' · '+esc(c.codigo)+'</div></div>'+
+      '<div class="stat"><div class="hb">'+c.hamburguesas+'</div><div class="lv">'+esc(c.nivel_actual||'—')+'</div>'+deuda+'</div>'+
+    '</div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
+    row.addEventListener('click', function(){ abrirEditar(row.getAttribute('data-id')) });
+  });
+}
+
+$('listaBuscarInput').addEventListener('input', function(){
+  var q = this.value.trim().toLowerCase();
+  if (!q){ renderListaClientes(TODOS_CLIENTES); return; }
+  var filtrados = TODOS_CLIENTES.filter(function(c){
+    return (c.nombre||'').toLowerCase().indexOf(q) > -1 ||
+           (c.facultad||'').toLowerCase().indexOf(q) > -1 ||
+           (c.codigo||'').toLowerCase().indexOf(q) > -1;
+  });
+  renderListaClientes(filtrados);
+});
+
+// ---------- CLIENTES: CREAR / EDITAR ----------
+var editandoId = null;
+
+$('btnNuevoCliente').addEventListener('click', function(){ abrirCrear() });
+$('btnVolverLista').addEventListener('click', function(){ volverALista() });
+
+function volverALista(){
+  $('vistaEditar').classList.add('hidden');
+  $('vistaLista').classList.remove('hidden');
+  editandoId = null;
+}
+
+function limpiarFormEditar(){
+  $('formEditar').reset();
+  $('editId').value = '';
+  $('msgEditar').className = 'msg';
+  $('msgEditar').textContent = '';
+}
+
+function abrirCrear(){
+  limpiarFormEditar();
+  editandoId = null;
+  $('editKicker').textContent = 'Nuevo cliente';
+  $('editCodigoChip').classList.add('hidden');
+  $('editResumen').classList.add('hidden');
+  $('btnGuardarCliente').textContent = 'Crear cliente';
+  $('vistaLista').classList.add('hidden');
+  $('vistaEditar').classList.remove('hidden');
+  $('editNombre').focus();
+}
+
+function abrirEditar(id){
+  var c = TODOS_CLIENTES.find(function(x){ return String(x.cliente_id) === String(id) });
+  if (!c) return;
+  limpiarFormEditar();
+  editandoId = id;
+  $('editKicker').textContent = 'Editar cliente';
+  $('editId').value = id;
+  $('editNombre').value = c.nombre || '';
+  $('editFacultad').value = c.facultad || '';
+  $('editCodigoChip').textContent = c.codigo;
+  $('editCodigoChip').classList.remove('hidden');
+  $('btnGuardarCliente').textContent = 'Guardar cambios';
+
+  // datos extra (telefono, alias, notas) no vienen en v_mi_club: se piden aparte
+  authFetch('/rest/v1/clientes?select=telefono,alias,notas&id=eq.'+id).then(function(r){ return r.json() }).then(function(rows){
+    if (rows && rows[0]){
+      $('editTelefono').value = rows[0].telefono || '';
+      $('editAlias').value = rows[0].alias || '';
+      $('editNotas').value = rows[0].notas || '';
+    }
+  });
+
+  $('editHamb').textContent = c.hamburguesas;
+  $('editNivel').textContent = c.nivel_actual || 'Sin nivel';
+  var deuda = $('editDeuda');
+  if (c.saldo_fiado && Number(c.saldo_fiado) > 0){
+    deuda.textContent = 'Fiado pendiente: '+fmt(c.saldo_fiado);
+    deuda.classList.add('show');
+  } else {
+    deuda.classList.remove('show');
+  }
+  $('editResumen').classList.remove('hidden');
+
+  $('vistaLista').classList.add('hidden');
+  $('vistaEditar').classList.remove('hidden');
+}
+
+$('formEditar').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgEditar'); msg.className = 'msg';
+  var telDigits = $('editTelefono').value.trim().replace(/\D/g,'');
+  if (telDigits.length < 7 || telDigits.length > 15){
+    msg.textContent = 'Escribe un número de teléfono válido (solo números, sin espacios).';
+    msg.className = 'msg err show';
+    return;
+  }
+  var btn = $('btnGuardarCliente'); btn.disabled = true;
+  var payload = {
+    nombre: $('editNombre').value.trim(),
+    facultad: $('editFacultad').value.trim() || null,
+    telefono: telDigits,
+    alias: $('editAlias').value.trim() || null,
+    notas: $('editNotas').value.trim() || null
+  };
+  try{
+    var res;
+    if (editandoId){
+      res = await authFetch('/rest/v1/clientes?id=eq.'+editandoId, {
+        method: 'PATCH',
+        headers: {'Prefer':'return=minimal'},
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await authFetch('/rest/v1/clientes', {
+        method: 'POST',
+        headers: {'Prefer':'return=minimal'},
+        body: JSON.stringify(payload)
+      });
+    }
+    if (!res.ok){
+      var errBody = await res.text();
+      msg.textContent = 'No se pudo guardar. Revisa los datos e intenta de nuevo.';
+      msg.className = 'msg err show';
+      console.error(errBody);
+      return;
+    }
+    toast(editandoId ? 'Cliente actualizado' : 'Cliente creado');
+    listaClientesCargada = false;
+    await cargarListaClientes();
+    volverALista();
+  }catch(err){
+    msg.textContent = 'Error de conexión al guardar.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ---------- FIADOS: LISTA ----------
+var TODOS_FIADOS = [];
+var filtroFiadosActual = 'pendiente';
+var fiadoActual = null;
+
+async function cargarFiados(){
+  var msg = $('msgFiadosLista'); msg.className = 'msg';
+  $('listaFiados').innerHTML = '<div class="emptylist">Cargando fiados…</div>';
+  var res = await authFetch('/rest/v1/v_fiados_saldo?select=*&order=dias_vencido.desc.nullslast');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la cartera de fiados.';
+    msg.className = 'msg err show';
+    $('listaFiados').innerHTML = '';
+    return;
+  }
+  TODOS_FIADOS = await res.json();
+  pintarResumenFiados();
+  renderListaFiados();
+}
+
+function pintarResumenFiados(){
+  var pendientes = TODOS_FIADOS.filter(function(f){ return f.saldo > 0 });
+  var totalSaldo = pendientes.reduce(function(s,f){ return s + parseFloat(f.saldo) }, 0);
+  var vencidos = pendientes.filter(function(f){ return f.dias_vencido != null && f.dias_vencido > 0 });
+  $('fiadosResumen').innerHTML =
+    '<div class="rescard"><div class="n">'+fmt(totalSaldo)+'</div><div class="l">Cartera pendiente</div></div>'+
+    '<div class="rescard"><div class="n'+(vencidos.length?' warn':'')+'">'+vencidos.length+'</div><div class="l">Fiados vencidos</div></div>';
+}
+
+function fiadosFiltrados(){
+  var q = ($('fiadosBuscarInput').value||'').trim().toLowerCase();
+  var lista = TODOS_FIADOS.slice();
+  if (filtroFiadosActual === 'pendiente') lista = lista.filter(function(f){ return f.saldo > 0 });
+  else if (filtroFiadosActual === 'vencido') lista = lista.filter(function(f){ return f.saldo > 0 && f.dias_vencido != null && f.dias_vencido > 0 });
+  if (q){
+    lista = lista.filter(function(f){
+      return (f.cliente||'').toLowerCase().indexOf(q) > -1 || (f.facultad||'').toLowerCase().indexOf(q) > -1;
+    });
+  }
+  return lista;
+}
+
+function renderListaFiados(){
+  var lista = fiadosFiltrados();
+  var el = $('listaFiados');
+  if (!lista.length){
+    el.innerHTML = '<div class="emptylist">No hay fiados en este filtro.</div>';
+    return;
+  }
+  el.innerHTML = lista.map(function(f){
+    var vencTxt = '';
+    if (f.saldo > 0 && f.dias_vencido != null){
+      vencTxt = f.dias_vencido > 0
+        ? '<div class="venc">Vencido hace '+f.dias_vencido+' día'+(f.dias_vencido===1?'':'s')+'</div>'
+        : '<div class="sub">Vence en '+Math.abs(f.dias_vencido)+' día'+(Math.abs(f.dias_vencido)===1?'':'s')+'</div>';
+    }
+    return '<div class="clirow" data-id="'+f.id+'">'+
+      '<div><div class="nm">'+esc(f.cliente)+'</div><div class="sub">'+esc(f.facultad||'Sin facultad')+'</div></div>'+
+      '<div class="stat"><div class="hb">'+fmt(f.saldo)+'</div><div class="lv">'+esc(f.estado)+'</div>'+vencTxt+'</div>'+
+    '</div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
+    row.addEventListener('click', function(){ abrirFiadoDetalle(row.getAttribute('data-id')) });
+  });
+}
+
+$('fiadosBuscarInput').addEventListener('input', renderListaFiados);
+
+Array.prototype.forEach.call(document.querySelectorAll('.chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    filtroFiadosActual = chip.getAttribute('data-f');
+    Array.prototype.forEach.call(document.querySelectorAll('.chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    renderListaFiados();
+  });
+});
+
+// ---------- FIADOS: DETALLE + ABONO ----------
+function abrirFiadoDetalle(id){
+  var f = TODOS_FIADOS.find(function(x){ return String(x.id) === String(id) });
+  if (!f) return;
+  fiadoActual = f;
+  pintarFiadoDetalle(f);
+  cargarAbonosDeFiado(f.id);
+  $('vistaFiadosLista').classList.add('hidden');
+  $('vistaFiadoDetalle').classList.remove('hidden');
+  $('formAbono').reset();
+  $('msgFiadoDetalle').className = 'msg';
+}
+
+function pintarFiadoDetalle(f){
+  $('fdNombre').textContent = f.cliente;
+  $('fdSub').textContent = (f.facultad||'Sin facultad')+' · '+(f.telefono||'Sin teléfono');
+  $('fdTotal').textContent = fmt(f.valor_total);
+  $('fdAbonado').textContent = fmt(f.abonado);
+  $('fdSaldo').textContent = fmt(f.saldo);
+  var venc = $('fdVencido');
+  if (f.saldo > 0 && f.dias_vencido != null && f.dias_vencido > 0){
+    venc.textContent = 'Vencido hace '+f.dias_vencido+' día'+(f.dias_vencido===1?'':'s')+' (prometió pagar el '+f.pago_prometido+').';
+    venc.classList.add('show');
+  } else {
+    venc.classList.remove('show');
+  }
+  var form = $('formAbono');
+  if (f.saldo <= 0){
+    form.classList.add('hidden');
+  } else {
+    form.classList.remove('hidden');
+    $('abonoValor').max = f.saldo;
+  }
+}
+
+async function cargarAbonosDeFiado(fiadoId){
+  var el = $('listaAbonos');
+  el.innerHTML = '<div class="emptylist">Cargando…</div>';
+  var res = await authFetch('/rest/v1/abonos?select=id,fecha,valor,metodo,nota&fiado_id=eq.'+fiadoId+'&order=fecha.desc,id.desc');
+  if (!res.ok){ el.innerHTML = '<div class="emptylist">No se pudo cargar el historial.</div>'; return; }
+  var abonos = await res.json();
+  if (!abonos.length){ el.innerHTML = '<div class="emptylist">Sin abonos aún.</div>'; return; }
+  el.innerHTML = abonos.map(function(a){
+    return '<div class="abonorow"><div><div class="am">'+fmt(a.valor)+'</div><div class="dt">'+esc(a.metodo||'')+(a.nota?' · '+esc(a.nota):'')+'</div></div><div class="dt">'+esc(a.fecha)+'</div></div>';
+  }).join('');
+}
+
+$('btnVolverFiados').addEventListener('click', function(){
+  $('vistaFiadoDetalle').classList.add('hidden');
+  $('vistaFiadosLista').classList.remove('hidden');
+  fiadoActual = null;
+});
+
+$('formAbono').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if (!fiadoActual) return;
+  var msg = $('msgFiadoDetalle'); msg.className = 'msg';
+  var valor = parseFloat($('abonoValor').value);
+  if (!valor || valor <= 0){
+    msg.textContent = 'Escribe un valor válido.';
+    msg.className = 'msg err show';
+    return;
+  }
+  var btn = $('btnRegistrarAbono'); btn.disabled = true;
+  try{
+    var res = await authFetch('/rest/v1/rpc/registrar_abono', {
+      method: 'POST',
+      body: JSON.stringify({
+        p_fiado_id: fiadoActual.id,
+        p_valor: valor,
+        p_metodo: $('abonoMetodo').value,
+        p_nota: $('abonoNota').value.trim() || null
+      })
+    });
+    var data = await res.json();
+    if (!res.ok){
+      var texto = (data && (data.message || data.msg)) || 'No se pudo registrar el abono.';
+      msg.textContent = texto;
+      msg.className = 'msg err show';
+      return;
+    }
+    if (data.ajustado){
+      toast('Abono ajustado a '+fmt(data.monto_registrado)+' (era el saldo restante)');
+    } else {
+      toast('Abono de '+fmt(data.monto_registrado)+' registrado');
+    }
+    await cargarFiados();
+    var actualizado = TODOS_FIADOS.find(function(x){ return String(x.id) === String(fiadoActual.id) });
+    if (actualizado){
+      fiadoActual = actualizado;
+      pintarFiadoDetalle(actualizado);
+      await cargarAbonosDeFiado(actualizado.id);
+      $('formAbono').reset();
+    } else {
+      $('vistaFiadoDetalle').classList.add('hidden');
+      $('vistaFiadosLista').classList.remove('hidden');
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión al registrar el abono.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ---------- INIT ----------
+(function init(){
+  var s = getSession();
+  if (s && s.access_token && s.expires_at > Date.now()){
+    mostrarPanel();
+    cargarProductos();
+  }
+})();
+</script>
+</body>
+</html>
