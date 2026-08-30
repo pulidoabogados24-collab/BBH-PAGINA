@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Club BBH — BBH Hamburguesería</title>
+<meta name="description" content="Entra a tu cuenta del Club BBH: revisa tu nivel, tus hamburguesas acumuladas y tus premios.">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="canonical" href="./carta.html">
+<link rel="preconnect" href="https://alpazaxehcwjinldcadh.supabase.co">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0b0b0b;--ink:#131313;--card:#171717;--card2:#1d1d1d;--line:rgba(255,255,255,.09);--yellow:#FDF100;--yellow2:#FFF35C;--red:#FF1802;--cream:#FFF4D6;--white:#FAFAF7;--muted:#9c9c94;--r:22px;--fd:'Bebas Neue',Impact,sans-serif;--fb:'Inter',sans-serif;--fs:'Yellowtail',cursive}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--white);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+::selection{background:var(--yellow);color:var(--black)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;border-radius:6px}
+.container{width:min(520px,92%);margin:0 auto}
+.display{font-family:var(--fd);font-weight:400;letter-spacing:.02em;line-height:.95;text-transform:uppercase}
+nav.topnav{position:sticky;top:0;z-index:1100;background:rgba(11,11,11,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:20px;width:min(520px,92%);margin:0 auto}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo img{width:34px;height:auto}
+.nav-logo .lg{display:flex;flex-direction:column;line-height:.85}
+.nav-logo .lg b{font-family:var(--fd);font-size:1.2rem;letter-spacing:.06em;color:var(--yellow)}
+.nav-logo .lg span{font-family:var(--fd);font-size:.5rem;letter-spacing:.22em;color:var(--white)}
+.nav-back{font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1.5px solid rgba(255,255,255,.2);padding:8px 15px;border-radius:999px;transition:color .2s,border-color .2s}
+.nav-back:hover{color:var(--yellow);border-color:var(--yellow)}
+
+main{padding-bottom:96px}
+
+/* ===== auth / vincular screens (unchanged logic, refreshed shell) ===== */
+.authwrap{padding:40px 0 60px}
+.kicker{font-size:.75rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.kicker::before{content:"";width:30px;height:2px;background:var(--yellow)}
+h1.pageh{font-size:clamp(2.2rem,7vw,3.2rem);margin-bottom:10px}
+p.lead{color:var(--muted);margin-bottom:34px;max-width:52ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px}
+.card+.card{margin-top:16px}
+.msg{border-radius:14px;padding:14px 16px;font-size:.9rem;margin-bottom:18px;display:none}
+.msg.err{background:rgba(255,24,2,.12);border:1px solid rgba(255,24,2,.4);color:#ffb3a8}
+.msg.ok{background:rgba(120,220,140,.1);border:1px solid rgba(120,220,140,.4);color:#b6f0c2}
+.msg.show{display:block}
+label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.field{margin-bottom:16px}
+input[type=email],input[type=password],input[type=text]{width:100%;background:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--white);font-family:var(--fb);font-size:1rem}
+input:focus{border-color:var(--yellow)}
+input::placeholder{color:#5c5c56}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--yellow);color:var(--black);font-weight:700;font-size:.92rem;padding:15px 26px;border-radius:999px;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;width:100%}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(253,241,0,.3)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.28)}
+.btn.ghost:hover{border-color:var(--yellow);color:var(--yellow);box-shadow:none}
+.switchrow{display:flex;gap:10px;margin-bottom:22px;background:var(--ink);border-radius:999px;padding:5px;border:1px solid var(--line)}
+.switchrow button{flex:1;background:none;border:none;color:var(--muted);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:11px 0;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.switchrow button.on{background:var(--yellow);color:var(--black)}
+.linkbtn{background:none;border:none;color:var(--muted);font-size:.82rem;text-decoration:underline;cursor:pointer;padding:0}
+.linkbtn:hover{color:var(--yellow)}
+.center{text-align:center}
+.hide{display:none!important}
+.spin{width:26px;height:26px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--yellow);border-radius:50%;animation:sp .8s linear infinite;margin:60px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none;border-top-color:rgba(255,255,255,.15)}}
+
+/* ===== app shell: hero + points card + tabs ===== */
+.apphero{height:150px;position:relative;background:linear-gradient(160deg,#241d00,var(--black) 70%);overflow:hidden}
+.apphero::after{content:"";position:absolute;inset:0;background:radial-gradient(240px 150px at 78% 0%,rgba(253,241,0,.16),transparent 65%)}
+.apphero-content{position:absolute;bottom:18px;left:0;right:0;z-index:1;width:min(520px,92%);margin:0 auto}
+.apphero-content .hi{color:var(--muted);font-size:.75rem;letter-spacing:.05em;margin-bottom:2px}
+.apphero-content h2{font-family:var(--fd);font-size:2.4rem;line-height:.9}
+
+.appbody{width:min(520px,92%);margin:0 auto;padding:20px 0 0}
+
+.points-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;text-align:center;position:relative;overflow:hidden;margin-bottom:16px}
+.points-card::after{content:"";position:absolute;inset:0;background:radial-gradient(260px 140px at 60% -10%,rgba(253,241,0,.07),transparent 60%)}
+.points-card>*{position:relative}
+.hburgs{font-family:var(--fd);font-size:4rem;color:var(--yellow);line-height:.85}
+.hburgs-lbl{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.tier-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px}
+.tier-badge{--metal:#cd8f4e;display:inline-flex;align-items:center;gap:8px;background:var(--ink);border:1.5px solid var(--metal);border-radius:999px;padding:8px 16px 8px 12px}
+.tier-badge.plata{--metal:#c9ced6}.tier-badge.oro{--metal:#ffd34d}.tier-badge.black{--metal:var(--yellow)}
+.tier-badge .med{font-size:1.3rem}
+.tier-badge b{font-family:var(--fd);font-size:1.05rem;letter-spacing:.04em;color:var(--metal)}
+.progress-row{display:flex;justify-content:space-between;font-size:.76rem;color:var(--muted);margin:18px 0 8px}
+.bar{height:9px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow2),var(--yellow));border-radius:5px;transition:width .6s ease;width:0%}
+
+.debt-note{background:rgba(255,24,2,.1);border:1px solid rgba(255,24,2,.35);color:#ffb3a8;border-radius:16px;padding:14px 16px;font-size:.85rem;margin-bottom:16px}
+
+.section-title{font-family:var(--fd);font-size:1.5rem;letter-spacing:.03em;margin:24px 0 14px}
+
+.codecard{background:linear-gradient(160deg,#1c1c1c,#000);border:1.5px dashed rgba(253,241,0,.5);border-radius:18px;padding:22px;text-align:center;margin-bottom:16px}
+.codecard .code{font-family:var(--fd);font-size:clamp(1.4rem,7vw,2rem);letter-spacing:.06em;color:var(--yellow);white-space:nowrap;margin:8px 0 14px}
+.codecard p{color:var(--muted);font-size:.8rem}
+
+.prizes{display:grid;gap:10px;margin-bottom:20px}
+.prize-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.prize-row b{display:block;font-family:var(--fd);font-size:1.05rem;color:var(--yellow);letter-spacing:.03em}
+.prize-row small{color:var(--muted);font-size:.74rem}
+.tag{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.tag.pend{background:rgba(253,241,0,.15);color:var(--yellow)}
+.tag.done{background:rgba(255,255,255,.08);color:var(--muted)}
+.empty{color:var(--muted);font-size:.86rem;text-align:center;padding:22px 0}
+
+.acct-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:70px}
+.acct-row .email{color:var(--muted);font-size:.88rem}
+
+/* bottom tab bar */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--card);border-top:1px solid var(--line);display:flex;padding:9px 0 max(9px,env(safe-area-inset-bottom));z-index:1100}
+.tabbar button{flex:1;background:none;border:none;color:var(--muted);cursor:pointer;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--fb);font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;transition:color .15s}
+.tabbar button.on{color:var(--yellow)}
+.tabbar .ic{font-size:1.25rem;line-height:1}
+
+footer{padding:32px 0 24px;text-align:center;color:var(--muted);font-size:.78rem}
+@media(max-width:480px){.card{padding:22px 18px}}
+</style>
+</head>
+<body>
+<nav class="topnav" aria-label="Navegación">
+<div class="nav-inner">
+<a class="nav-logo" href="index.html" aria-label="BBH Hamburguesería">
+<div class="lg"><b>BBH</b><span>Club</span></div>
+</a>
+<a class="nav-back" href="index.html">← Volver al sitio</a>
+</div>
+</nav>
+<main>
+
+<div id="cargando" class="spin" role="status" aria-label="Cargando"></div>
+
+<!-- ===== NO HAY SESIÓN: login / registro ===== -->
+<section id="boxAuth" class="card hide" style="width:min(520px,92%);margin:40px auto">
+  <div class="kicker">Club BBH</div>
+  <h1 class="pageh display" style="margin-bottom:10px">Tu cuenta</h1>
+  <p class="lead" style="margin-bottom:26px">Entra con tu correo para ver tu nivel, tus hamburguesas acumuladas y tus premios. Si es tu primera vez, crea tu cuenta y enlázala con el código que te dio Josep en el punto.</p>
+  <div class="switchrow">
+    <button type="button" id="tabLogin" class="on">Entrar</button>
+    <button type="button" id="tabSignup">Crear cuenta</button>
+  </div>
+  <div id="msgAuth" class="msg"></div>
+  <form id="formAuth" autocomplete="on">
+    <div class="field">
+      <label for="email">Correo</label>
+      <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" required>
+    </div>
+    <div class="field">
+      <label for="pass">Contraseña</label>
+      <input type="password" id="pass" name="password" placeholder="Mínimo 6 caracteres" autocomplete="current-password" minlength="6" required>
+    </div>
+    <button type="submit" class="btn" id="btnAuth">Entrar</button>
+  </form>
+  <div class="center" style="margin-top:16px">
+    <button type="button" class="linkbtn" id="btnRecover">¿Olvidaste tu contraseña?</button>
+  </div>
+</section>
+
+<!-- ===== SESIÓN SIN CLIENTE ENLAZADO: pedir codigo ===== -->
+<section id="boxVincular" class="card hide" style="width:min(520px,92%);margin:40px auto">
+  <div id="msgVinc" class="msg"></div>
+  <div class="kicker">Un paso más</div>
+  <h2 class="section-title" style="margin-top:0">Enlaza tu código</h2>
+  <p class="lead" style="margin-bottom:20px">Josep te dio un código en el punto con formato <b style="color:var(--yellow)">BBH-XXXXXXXX</b>. Escríbelo aquí una sola vez para activar tu Club.</p>
+  <form id="formVincular">
+    <div class="field">
+      <label for="codigo">Tu código</label>
+      <input type="text" id="codigo" placeholder="BBH-XXXXXXXX" maxlength="12" style="text-transform:uppercase;letter-spacing:.08em" required>
+    </div>
+    <div class="field">
+      <label for="telefonoVinc">Tu número de celular</label>
+      <input type="tel" id="telefonoVinc" placeholder="Ej: 3001234567" autocomplete="tel" inputmode="numeric" required>
+    </div>
+    <button type="submit" class="btn" id="btnVincular">Enlazar código</button>
+  </form>
+  <div class="center" style="margin-top:16px">
+    <button type="button" class="linkbtn" id="btnCerrar1">Cerrar sesión</button>
+  </div>
+</section>
+
+<!-- ===== SESIÓN CON CLIENTE: app con hero + tabs ===== -->
+<div id="appShell" class="hide">
+
+  <div class="apphero">
+    <div class="apphero-content">
+      <div class="hi">HOLA,</div>
+      <h2 class="display" id="ccNombre">—</h2>
+    </div>
+  </div>
+
+  <div class="appbody">
+
+    <!-- TAB: INICIO -->
+    <div id="tabpanelInicio">
+      <section id="boxClub" class="hide">
+        <div class="points-card">
+          <div class="hburgs"><span id="ccHamb">0</span></div>
+          <div class="hburgs-lbl">hamburguesas acumuladas</div>
+          <div class="tier-row">
+            <div id="ccBadge" class="tier-badge"><span class="med">🥉</span><b id="ccNivel">—</b></div>
+          </div>
+          <div class="progress-row"><span>Progreso</span><span id="ccProgPct"></span></div>
+          <div class="bar"><i id="ccBarFill" style="width:0%"></i></div>
+          <p class="progtxt" id="ccProg" style="margin-top:10px;font-size:.82rem;color:var(--muted)">—</p>
+        </div>
+
+        <div id="ccDeuda" class="debt-note hide"></div>
+      </section>
+
+      <section id="boxCodigo" class="hide">
+        <h2 class="section-title">Tu código de socio</h2>
+        <div class="codecard">
+          <div class="code" id="ccCodigo">BBH-XXXXXXXX</div>
+          <button type="button" class="btn ghost" id="btnCopiar" style="width:auto;padding:10px 22px">Copiar código</button>
+          <p style="margin-top:14px">Muéstrale este código a Josep en el punto para que te sume las hamburguesas.</p>
+        </div>
+      </section>
+
+      <section id="boxPremios" class="hide">
+        <h2 class="section-title">Tus premios</h2>
+        <div id="premiosList" class="prizes"><div class="empty">Aún no tienes premios ganados.</div></div>
+      </section>
+    </div>
+
+    <!-- TAB: HISTORIAL -->
+    <div id="tabpanelHistorial" class="hide">
+      <h2 class="section-title" style="margin-top:8px">Actividad</h2>
+      <div id="historialList" class="prizes"><div class="empty">Cargando actividad…</div></div>
+    </div>
+
+    <!-- TAB: PERFIL -->
+    <div id="tabpanelPerfil" class="hide">
+      <h2 class="section-title" style="margin-top:8px">Cuenta</h2>
+      <section id="boxCuenta" class="acct-row">
+        <div class="email" id="ccEmail">—</div>
+        <button type="button" class="btn ghost" id="btnCerrar2" style="width:auto;padding:11px 22px">Cerrar sesión</button>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<nav class="tabbar hide" id="tabbar" aria-label="Navegación de la app">
+  <button type="button" id="navInicio" class="on"><span class="ic">🍔</span>Inicio</button>
+  <button type="button" id="navHistorial"><span class="ic">📋</span>Historial</button>
+  <button type="button" id="navPerfil"><span class="ic">👤</span>Perfil</button>
+</nav>
+
+<footer id="pieFooter" class="hide">BBH Hamburguesería — Villavicencio · Frente a la Universidad Santo Tomás</footer>
+
+<script>
+(function(){
+'use strict';
+var U='https://alpazaxehcwjinldcadh.supabase.co', K='sb_publishable_UuG4mqkqShEUK9lqDsZAqw_O3OuoEnd';
+var LSKEY='bbh_club_session';
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function $(id){return document.getElementById(id);}
+function show(id){$(id).classList.remove('hide');}
+function hide(id){$(id).classList.add('hide');}
+function msg(box,text,ok){var m=$(box);m.textContent=text;m.className='msg show '+(ok?'ok':'err');}
+function msgClear(box){$(box).className='msg';}
+
+function loadSession(){
+  try{ var raw=localStorage.getItem(LSKEY); return raw?JSON.parse(raw):null; }catch(e){ return null; }
+}
+function saveSession(s){
+  try{ localStorage.setItem(LSKEY, JSON.stringify(s)); }catch(e){}
+}
+function clearSession(){
+  try{ localStorage.removeItem(LSKEY); }catch(e){}
+}
+
+function authFetch(path,opts){
+  opts=opts||{};
+  var headers=Object.assign({apikey:K,'Content-Type':'application/json'},opts.headers||{});
+  var s=loadSession();
+  if(s&&s.access_token) headers.Authorization='Bearer '+s.access_token;
+  else headers.Authorization='Bearer '+K;
+  return fetch(U+path,Object.assign({},opts,{headers:headers}));
+}
+
+function traduceError(txt){
+  txt=(txt||'').toLowerCase();
+  if(txt.indexOf('invalid login')>-1||txt.indexOf('invalid_grant')>-1) return 'Correo o contraseña incorrectos.';
+  if(txt.indexOf('already registered')>-1||txt.indexOf('user already')>-1) return 'Ese correo ya tiene una cuenta. Prueba "Entrar".';
+  if(txt.indexOf('password')>-1&&txt.indexOf('6')>-1) return 'La contraseña debe tener al menos 6 caracteres.';
+  if(txt.indexOf('rate limit')>-1) return 'Demasiados intentos. Espera un momento e inténtalo de nuevo.';
+  if(txt.indexOf('email')>-1&&txt.indexOf('invalid')>-1) return 'Ese correo no es válido.';
+  return 'Algo falló. Inténtalo de nuevo.';
+}
+
+async function refreshIfNeeded(){
+  var s=loadSession();
+  if(!s) return null;
+  if(s.expires_at && Date.now() < s.expires_at - 30000) return s;
+  if(!s.refresh_token){ clearSession(); return null; }
+  try{
+    var r=await fetch(U+'/auth/v1/token?grant_type=refresh_token',{
+      method:'POST',headers:{apikey:K,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:s.refresh_token})
+    });
+    var d=await r.json();
+    if(!r.ok||!d.access_token){ clearSession(); return null; }
+    var ns={access_token:d.access_token,refresh_token:d.refresh_token,expires_at:Date.now()+(d.expires_in||3600)*1000,email:s.email};
+    saveSession(ns);
+    return ns;
+  }catch(e){ clearSession(); return null; }
+}
+
+function pintaClub(row){
+  var meds=['🥉','🥈','🥇','💎'], cls={'Bronce':'', 'Plata':'plata','Oro':'oro','Black':'black'};
+  var idx={'Bronce':0,'Plata':1,'Oro':2,'Black':3}[row.nivel_actual];
+  $('ccNombre').textContent=(row.nombre?row.nombre.split(' ')[0]:'—')+' 👋';
+  $('ccNivel').textContent=row.nivel_actual?esc(row.nivel_actual):'Sin nivel aún';
+  $('ccBadge').className='tier-badge '+(cls[row.nivel_actual]||'');
+  $('ccBadge').querySelector('.med').textContent=(idx!=null&&meds[idx])?meds[idx]:'🍔';
+  $('ccHamb').textContent=row.hamburguesas||0;
+
+  if(row.siguiente_nivel && row.umbral_siguiente){
+    var pct=Math.min(100, Math.round((row.hamburguesas/row.umbral_siguiente)*100));
+    $('ccBarFill').style.width=pct+'%';
+    $('ccProgPct').textContent=row.hamburguesas+' / '+row.umbral_siguiente;
+    var faltan=Math.max(0,row.umbral_siguiente-row.hamburguesas);
+    $('ccProg').textContent='Te faltan '+faltan+' hamburguesas para '+row.siguiente_nivel+'.';
+  } else {
+    $('ccBarFill').style.width='100%';
+    $('ccProgPct').textContent=row.nivel_actual?'¡Máximo!':'';
+    $('ccProg').textContent=row.nivel_actual?('¡Ya alcanzaste el nivel máximo, '+row.nivel_actual+'!'):'Empieza a comprar para entrar al Club.';
+  }
+
+  var deuda=$('ccDeuda');
+  if(row.saldo_fiado && parseFloat(row.saldo_fiado)>0){
+    deuda.textContent='Tienes un saldo pendiente de $'+Math.round(row.saldo_fiado).toLocaleString('es-CO')+'. Esto es aparte de tu progreso del Club.';
+    deuda.classList.remove('hide');
+  } else deuda.classList.add('hide');
+
+  $('ccCodigo').textContent=row.codigo||'—';
+  show('boxClub'); show('boxCodigo'); show('boxPremios');
+}
+
+async function cargaPremios(clienteId){
+  try{
+    var r=await authFetch('/rest/v1/club_premios?select=id,fecha_ganado,canjeado,fecha_canje,club_niveles(nombre,beneficio)&cliente_id=eq.'+clienteId+'&order=fecha_ganado.desc');
+    if(!r.ok) return;
+    var rows=await r.json();
+    var wrap=$('premiosList');
+    if(!rows||!rows.length){ wrap.innerHTML='<div class="empty">Aún no tienes premios ganados.</div>'; return; }
+    wrap.innerHTML=rows.map(function(p){
+      var niv=p.club_niveles||{};
+      return '<div class="prize-row"><div><b>'+esc(niv.nombre||'Premio')+'</b><small>'+esc(niv.beneficio||'')+' · ganado '+esc(p.fecha_ganado||'')+(p.canjeado?(' · canjeado '+esc(p.fecha_canje||'')):'')+'</small></div><span class="tag '+(p.canjeado?'done':'pend')+'">'+(p.canjeado?'Canjeado':'Pendiente')+'</span></div>';
+    }).join('');
+  }catch(e){}
+}
+
+function iconoMov(tipo){
+  return tipo==='VENTA'?'🍔':tipo==='FIADO'?'📝':tipo==='PREMIO_FIDELIDAD'?'🏆':tipo==='REGALO'?'🎁':'•';
+}
+function tituloMov(tipo){
+  return tipo==='VENTA'?'Compra registrada':tipo==='FIADO'?'Fiado registrado':tipo==='PREMIO_FIDELIDAD'?'Premio otorgado':tipo==='REGALO'?'Regalo':tipo;
+}
+
+async function cargaHistorial(clienteId){
+  var wrap=$('historialList');
+  try{
+    var r=await authFetch('/rest/v1/movimientos?select=id,fecha,tipo,unidades,valor_total&cliente_id=eq.'+clienteId+'&order=fecha.desc&limit=30');
+    if(!r.ok){ wrap.innerHTML='<div class="empty">No se pudo cargar tu actividad.</div>'; return; }
+    var rows=await r.json();
+    if(!rows||!rows.length){ wrap.innerHTML='<div class="empty">Aún no tienes actividad registrada.</div>'; return; }
+    wrap.innerHTML=rows.map(function(m){
+      return '<div class="prize-row"><div><b>'+iconoMov(m.tipo)+' '+esc(tituloMov(m.tipo))+'</b><small>'+esc(m.fecha||'')+' · '+(m.unidades||0)+' und.</small></div><span class="tag done">$'+Math.round(m.valor_total||0).toLocaleString('es-CO')+'</span></div>';
+    }).join('');
+  }catch(e){
+    wrap.innerHTML='<div class="empty">No hay conexión.</div>';
+  }
+}
+
+var historialCargado=false;
+function irTab(nombre){
+  ['Inicio','Historial','Perfil'].forEach(function(t){
+    hide('tabpanel'+t);
+    $('nav'+t).classList.remove('on');
+  });
+  show('tabpanel'+nombre);
+  $('nav'+nombre).classList.add('on');
+  if(nombre==='Historial' && !historialCargado && window._clienteIdActual){
+    historialCargado=true;
+    cargaHistorial(window._clienteIdActual);
+  }
+}
+$('navInicio').addEventListener('click',function(){irTab('Inicio');});
+$('navHistorial').addEventListener('click',function(){irTab('Historial');});
+$('navPerfil').addEventListener('click',function(){irTab('Perfil');});
+
+async function mostrarPanel(){
+  hide('cargando');
+  var r=await authFetch('/rest/v1/v_mi_club?select=*');
+  if(!r.ok){
+    clearSession();
+    mostrarLogin();
+    return;
+  }
+  var rows=await r.json();
+  if(rows && rows.length){
+    var row=rows[0];
+    $('ccEmail').textContent=loadSession().email||'';
+    window._clienteIdActual=row.cliente_id;
+    pintaClub(row);
+    cargaPremios(row.cliente_id);
+    show('appShell'); show('tabbar'); show('pieFooter');
+    irTab('Inicio');
+  } else {
+    show('boxVincular');
+  }
+}
+
+function mostrarLogin(){
+  hide('cargando');
+  show('boxAuth');
+}
+
+// ---- formularios ----
+var modo='login';
+$('tabLogin').addEventListener('click',function(){modo='login';$('tabLogin').classList.add('on');$('tabSignup').classList.remove('on');$('btnAuth').textContent='Entrar';$('pass').setAttribute('autocomplete','current-password');msgClear('msgAuth');});
+$('tabSignup').addEventListener('click',function(){modo='signup';$('tabSignup').classList.add('on');$('tabLogin').classList.remove('on');$('btnAuth').textContent='Crear cuenta';$('pass').setAttribute('autocomplete','new-password');msgClear('msgAuth');});
+
+$('formAuth').addEventListener('submit',async function(ev){
+  ev.preventDefault();
+  msgClear('msgAuth');
+  var email=$('email').value.trim(), pass=$('pass').value;
+  if(!email||pass.length<6){ msg('msgAuth','La contraseña debe tener al menos 6 caracteres.'); return; }
+  $('btnAuth').disabled=true;
+  try{
+    var path = modo==='signup' ? '/auth/v1/signup' : '/auth/v1/token?grant_type=password';
+    var r=await fetch(U+path,{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pass})});
+    var d=await r.json();
+    if(!r.ok){ msg('msgAuth', traduceError(d && (d.msg||d.error_description||d.error||''))); $('btnAuth').disabled=false; return; }
+    if(d.access_token){
+      saveSession({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:Date.now()+(d.expires_in||3600)*1000,email:email});
+      hide('boxAuth');
+      show('cargando');
+      await mostrarPanel();
+    } else {
+      msg('msgAuth','Cuenta creada. Revisa tu correo para confirmarla y luego entra.',true);
+    }
+  }catch(e){
+    msg('msgAuth','No hay conexión. Inténtalo de nuevo.');
+  }
+  $('btnAuth').disabled=false;
+});
+
+$('btnRecover').addEventListener('click',async function(){
+  var email=$('email').value.trim();
+  if(!email){ msg('msgAuth','Escribe tu correo arriba primero.'); return; }
+  try{
+    var redirectTo=window.location.origin+'/reset.html';
+    await fetch(U+'/auth/v1/recover',{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},body:JSON.stringify({email:email,redirect_to:redirectTo})});
+    msg('msgAuth','Si ese correo tiene cuenta, te enviamos un enlace para restablecer la contraseña.',true);
+  }catch(e){ msg('msgAuth','No hay conexión. Inténtalo de nuevo.'); }
+});
+
+$('formVincular').addEventListener('submit',async function(ev){
+  ev.preventDefault();
+  msgClear('msgVinc');
+  var codigo=$('codigo').value.trim().toUpperCase();
+  var telRaw=$('telefonoVinc').value.trim();
+  var telDigits=telRaw.replace(/\D/g,'');
+  if(telDigits.length<7||telDigits.length>15){
+    msg('msgVinc','Escribe un número de celular válido (solo números, sin espacios).');
+    return;
+  }
+  $('btnVincular').disabled=true;
+  try{
+    var r=await authFetch('/rest/v1/rpc/vincular_mi_cliente',{method:'POST',body:JSON.stringify({p_codigo:codigo,p_telefono:telDigits})});
+    var d=await r.json();
+    if(!r.ok){
+      msg('msgVinc', traduceError((d&&(d.message||d.msg))||''));
+      $('btnVincular').disabled=false; return;
+    }
+    if(d===null||d===undefined){
+      msg('msgVinc','Ese código o ese número de celular no son válidos, o el código ya fue usado. Revísalo con Josep.');
+      $('btnVincular').disabled=false; return;
+    }
+    hide('boxVincular');
+    show('cargando');
+    await mostrarPanel();
+  }catch(e){
+    msg('msgVinc','No hay conexión. Inténtalo de nuevo.');
+  }
+  $('btnVincular').disabled=false;
+});
+
+$('btnCopiar').addEventListener('click',function(){
+  var t=$('ccCodigo').textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){
+      var b=$('btnCopiar'); var orig=b.textContent; b.textContent='¡Copiado!'; setTimeout(function(){b.textContent=orig;},1600);
+    }).catch(function(){});
+  }
+});
+
+function cerrarSesion(){
+  var s=loadSession();
+  clearSession();
+  hide('appShell'); hide('tabbar'); hide('pieFooter');
+  ['boxClub','boxCodigo','boxPremios','boxVincular'].forEach(hide);
+  historialCargado=false;
+  window._clienteIdActual=null;
+  if(s&&s.access_token){
+    fetch(U+'/auth/v1/logout',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+s.access_token}}).catch(function(){});
+  }
+  mostrarLogin();
+}
+$('btnCerrar1').addEventListener('click',cerrarSesion);
+$('btnCerrar2').addEventListener('click',cerrarSesion);
+
+// ---- arranque ----
+(async function init(){
+  var s=await refreshIfNeeded();
+  if(s && s.access_token) await mostrarPanel();
+  else mostrarLogin();
+})();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva contraseña — BBH Hamburguesería</title>
+<meta name="description" content="Define una nueva contraseña para tu cuenta BBH.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="./reset.html">
+<link rel="preconnect" href="https://alpazaxehcwjinldcadh.supabase.co">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0b0b0b;--ink:#131313;--card:#171717;--line:rgba(255,255,255,.09);--yellow:#FDF100;--white:#FAFAF7;--muted:#9c9c94;--r:22px;--fd:'Bebas Neue',Impact,sans-serif;--fb:'Inter',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--white);font-family:var(--fb);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center}
+.container{width:min(440px,92%);margin:0 auto;padding:40px 0}
+.kicker{font-size:.75rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.kicker::before{content:"";width:30px;height:2px;background:var(--yellow)}
+h1{font-family:var(--fd);font-weight:400;text-transform:uppercase;font-size:clamp(2rem,7vw,2.6rem);margin-bottom:10px;line-height:.95}
+p.lead{color:var(--muted);margin-bottom:28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px 22px}
+.msg{border-radius:14px;padding:14px 16px;font-size:.9rem;margin-bottom:18px;display:none}
+.msg.err{background:rgba(255,24,2,.12);border:1px solid rgba(255,24,2,.4);color:#ffb3a8}
+.msg.ok{background:rgba(120,220,140,.1);border:1px solid rgba(120,220,140,.4);color:#b6f0c2}
+.msg.show{display:block}
+label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.field{margin-bottom:16px}
+input[type=password]{width:100%;background:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--white);font-family:var(--fb);font-size:1rem}
+input:focus{outline:3px solid var(--yellow);outline-offset:2px;border-color:var(--yellow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--yellow);color:var(--black);font-weight:700;font-size:.92rem;padding:15px 26px;border-radius:999px;border:none;cursor:pointer;width:100%}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.25);margin-top:10px}
+.hidden{display:none!important}
+a.link{color:var(--yellow);font-size:.85rem;display:block;text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<main class="container">
+  <div class="kicker">BBH Hamburguesería</div>
+  <h1>Nueva contraseña</h1>
+  <p class="lead" id="leadTxt">Escribe tu nueva contraseña para tu cuenta.</p>
+
+  <div class="card" id="boxForm">
+    <div class="msg" id="msg"></div>
+    <form id="formReset">
+      <div class="field"><label>Nueva contraseña</label><input type="password" id="pass1" required minlength="6" placeholder="Mínimo 6 caracteres"></div>
+      <div class="field"><label>Repite la contraseña</label><input type="password" id="pass2" required minlength="6" placeholder="Repite la contraseña"></div>
+      <button class="btn" type="submit" id="btnGuardar" disabled>Guardar nueva contraseña</button>
+    </form>
+  </div>
+
+  <div class="card hidden" id="boxError">
+    <div class="msg err show" id="msgError">Este enlace no es válido o ya expiró. Solicita uno nuevo desde el login.</div>
+  </div>
+
+  <div class="hidden" id="boxOk" style="text-align:center">
+    <div class="msg ok show">Contraseña actualizada. Ya puedes iniciar sesión con tu nueva contraseña.</div>
+    <a class="link" href="./carta.html">Ir a Mi Club BBH →</a>
+    <a class="link" href="./panel.html">Ir al Panel del equipo →</a>
+  </div>
+</main>
+
+<script>
+var U='https://alpazaxehcwjinldcadh.supabase.co', K='sb_publishable_UuG4mqkqShEUK9lqDsZAqw_O3OuoEnd';
+function $(id){return document.getElementById(id)}
+
+// Supabase entrega el token de recuperación como fragmento en la URL: #access_token=...&type=recovery
+function leerFragmento(){
+  var hash = window.location.hash.replace(/^#/, '');
+  var params = new URLSearchParams(hash);
+  return {
+    access_token: params.get('access_token'),
+    type: params.get('type'),
+    error: params.get('error'),
+    error_description: params.get('error_description')
+  };
+}
+
+var frag = leerFragmento();
+
+if (frag.error || !frag.access_token || frag.type !== 'recovery'){
+  $('boxForm').classList.add('hidden');
+  $('boxError').classList.remove('hidden');
+  if (frag.error_description){
+    $('msgError').textContent = decodeURIComponent(frag.error_description.replace(/\+/g,' '));
+  }
+} else {
+  $('btnGuardar').disabled = false;
+}
+
+$('formReset').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msg'); msg.className = 'msg';
+  var p1 = $('pass1').value, p2 = $('pass2').value;
+  if (p1 !== p2){
+    msg.textContent = 'Las contraseñas no coinciden.';
+    msg.className = 'msg err show';
+    return;
+  }
+  if (p1.length < 6){
+    msg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+    msg.className = 'msg err show';
+    return;
+  }
+  var btn = $('btnGuardar'); btn.disabled = true; btn.textContent = 'Guardando...';
+  try{
+    var res = await fetch(U+'/auth/v1/user', {
+      method: 'PUT',
+      headers: {
+        'apikey': K,
+        'Authorization': 'Bearer '+frag.access_token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({password: p1})
+    });
+    if (!res.ok){
+      var data = await res.json().catch(function(){ return {} });
+      msg.textContent = data.error_description || data.msg || 'No se pudo actualizar la contraseña. El enlace puede haber expirado.';
+      msg.className = 'msg err show';
+      btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
+      return;
+    }
+    $('boxForm').classList.add('hidden');
+    $('boxOk').classList.remove('hidden');
+    history.replaceState(null, '', window.location.pathname);
+  }catch(err){
+    msg.textContent = 'Error de conexión. Intenta de nuevo.';
+    msg.className = 'msg err show';
+    btn.disabled = false; btn.textContent = 'Guardar nueva contraseña';
+  }
+});
+</script>
+</body>
+</html>
