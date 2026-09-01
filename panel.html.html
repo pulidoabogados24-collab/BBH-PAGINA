@@ -1,0 +1,2982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Club BBH — BBH Hamburguesería</title>
+<meta name="description" content="Panel operativo del equipo BBH: busca clientes, registra ventas y consulta el progreso del Club.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="./panel.html">
+<!-- PWA: instalable en iPhone (Safari) y Android (Chrome) como app aparte, con ícono propio -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BBH Panel">
+<link rel="preconnect" href="https://alpazaxehcwjinldcadh.supabase.co">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0b0b0b;--ink:#131313;--card:#171717;--card2:#1d1d1d;--line:rgba(255,255,255,.09);--yellow:#FDF100;--yellow2:#FFF35C;--red:#FF1802;--cream:#FFF4D6;--white:#FAFAF7;--muted:#9c9c94;--green:#78dc8c;--r:22px;--fd:'Bebas Neue',Impact,sans-serif;--fb:'Inter',sans-serif;--fs:'Yellowtail',cursive}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--white);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+::selection{background:var(--yellow);color:var(--black)}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;border-radius:6px}
+.container{width:min(560px,92%);margin:0 auto}
+.display{font-family:var(--fd);font-weight:400;letter-spacing:.02em;line-height:.95;text-transform:uppercase}
+nav.topnav{position:sticky;top:0;z-index:1100;background:rgba(11,11,11,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:20px;width:min(560px,92%);margin:0 auto}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo .lg{display:flex;flex-direction:column;line-height:.85}
+.nav-logo .lg b{font-family:var(--fd);font-size:1.2rem;letter-spacing:.06em;color:var(--yellow)}
+.nav-logo .lg span{font-family:var(--fd);font-size:.5rem;letter-spacing:.22em;color:var(--white)}
+.nav-back{font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1.5px solid rgba(255,255,255,.2);padding:8px 15px;border-radius:999px;transition:color .2s,border-color .2s;cursor:pointer;background:none}
+.nav-back:hover{color:var(--yellow);border-color:var(--yellow)}
+main{padding-bottom:96px}
+.authwrap{padding:40px 0 60px}
+.kicker{font-size:.75rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.kicker::before{content:"";width:30px;height:2px;background:var(--yellow)}
+h1.pageh{font-size:clamp(2rem,7vw,2.8rem);margin-bottom:10px}
+p.lead{color:var(--muted);margin-bottom:28px;max-width:52ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px 22px}
+.card+.card{margin-top:16px}
+.msg{border-radius:14px;padding:14px 16px;font-size:.9rem;margin-bottom:18px;display:none}
+.msg.err{background:rgba(255,24,2,.12);border:1px solid rgba(255,24,2,.4);color:#ffb3a8}
+.msg.ok{background:rgba(120,220,140,.1);border:1px solid rgba(120,220,140,.4);color:#b6f0c2}
+.msg.show{display:block}
+label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.field{margin-bottom:16px}
+input[type=email],input[type=password],input[type=text],input[type=number],select{width:100%;background:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--white);font-family:var(--fb);font-size:1rem;appearance:none}
+input:focus,select:focus{border-color:var(--yellow)}
+input::placeholder{color:#5c5c56}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--yellow);color:var(--black);font-weight:700;font-size:.92rem;padding:15px 26px;border-radius:999px;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;width:100%}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(253,241,0,.3)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.sec{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.25)}
+.btn.sec:hover{border-color:var(--yellow);color:var(--yellow);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--muted);border:none;width:auto;padding:10px 0;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.btn.ghost:hover{color:var(--yellow);transform:none;box-shadow:none}
+.hidden{display:none!important}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+
+/* results list */
+.reslist{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.rescard{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:border-color .15s}
+.rescard:hover{border-color:var(--yellow)}
+.rescard .nm{font-weight:700;font-size:.98rem}
+.rescard .sub{color:var(--muted);font-size:.78rem;margin-top:2px}
+.rescard .tag{font-family:var(--fd);font-size:1.3rem;color:var(--yellow)}
+
+/* selected client card */
+.clientcard{background:linear-gradient(155deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.clientcard .name{font-family:var(--fd);font-size:1.8rem;letter-spacing:.02em}
+.clientcard .meta{color:var(--muted);font-size:.85rem;margin-top:2px}
+.tier-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(253,241,0,.1);color:var(--yellow);border:1px solid rgba(253,241,0,.3);border-radius:999px;padding:4px 12px;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:10px}
+.hburgs{font-family:var(--fd);font-size:3rem;color:var(--white);margin-top:14px;line-height:1}
+.hburgs small{font-family:var(--fb);font-size:.9rem;color:var(--muted);font-weight:600;text-transform:none;letter-spacing:0}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow),var(--yellow2));border-radius:99px;transition:width .4s}
+.progtxt{color:var(--muted);font-size:.78rem;margin-top:8px}
+.debt{margin-top:14px;background:rgba(255,24,2,.1);border:1px solid rgba(255,24,2,.3);border-radius:12px;padding:10px 14px;font-size:.85rem;color:#ffb3a8;display:none}
+.debt.show{display:block}
+
+/* sale form */
+.qtyrow{display:flex;align-items:center;justify-content:space-between;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:8px}
+.qtyrow .pn{font-weight:600;font-size:.9rem}
+.qtyrow .pp{color:var(--muted);font-size:.78rem}
+.qctl{display:flex;align-items:center;gap:10px}
+.qctl button{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:var(--white);font-size:1.1rem;cursor:pointer;line-height:1}
+.qctl button:hover{border-color:var(--yellow);color:var(--yellow)}
+.qctl .qn{min-width:22px;text-align:center;font-weight:700}
+.totalbar{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.totalbar .lb{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
+.totalbar .val{font-family:var(--fd);font-size:1.6rem;color:var(--yellow)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#0b3d16;font-weight:700;padding:14px 22px;border-radius:14px;opacity:0;transition:opacity .25s,transform .25s;z-index:2000;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.scanwrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:1/1;margin-bottom:14px;border:1px solid var(--line)}
+.scanwrap video{width:100%;height:100%;object-fit:cover}
+.scanhint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;text-align:center;padding:20px}
+
+/* tabs */
+.tabbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:22px;-ms-overflow-style:none;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbtn{flex:0 0 auto;background:transparent;border:1.5px solid rgba(255,255,255,.14);color:var(--muted);font-family:var(--fb);font-weight:700;font-size:.8rem;letter-spacing:.03em;padding:10px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tabbtn.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.tabbtn:not(.active):hover{border-color:var(--yellow);color:var(--yellow)}
+.tabpanel{display:none}
+.tabpanel.active{display:block}
+
+/* client list */
+.listtoolbar{display:flex;gap:10px;margin-bottom:14px}
+.listtoolbar input{flex:1}
+.clist{display:flex;flex-direction:column;gap:8px}
+.clirow{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.clirow:hover{border-color:var(--yellow)}
+.clirow .nm{font-weight:700;font-size:.95rem}
+.clirow .sub{color:var(--muted);font-size:.76rem;margin-top:2px}
+.clirow .stat{text-align:right;flex-shrink:0}
+.clirow .stat .hb{font-family:var(--fd);font-size:1.4rem;color:var(--yellow);line-height:1}
+.clirow .stat .lv{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}
+.clirow .stat .dbt{color:#ff8a7a;font-size:.7rem;font-weight:700;margin-top:2px}
+.emptylist{color:var(--muted);font-size:.88rem;padding:20px 4px;text-align:center}
+
+/* edit form */
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.formgrid .field.full{grid-column:1/-1}
+.codechip{display:inline-flex;align-items:center;gap:8px;background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-family:var(--fb);font-weight:700;letter-spacing:.04em;color:var(--yellow);font-size:.92rem;margin-bottom:16px}
+
+/* fiados */
+.fiadosresumen{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.fiadosresumen .rescard{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.fiadosresumen .rescard .n{font-family:var(--fd);font-size:1.6rem;color:var(--yellow);line-height:1}
+.fiadosresumen .rescard .n.warn{color:#ff8a7a}
+.fiadosresumen .rescard .l{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.fiadosfiltros{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
+.chipf{flex:0 0 auto;background:transparent;border:1.5px solid rgba(255,255,255,.14);color:var(--muted);font-family:var(--fb);font-weight:700;font-size:.76rem;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.chipf.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.clirow .stat .venc{color:#ff8a7a;font-size:.68rem;font-weight:700;margin-top:2px}
+.fiadohead{margin-bottom:16px}
+.fiadohead .nm{font-weight:700;font-size:1.15rem}
+.fiadohead .sub{color:var(--muted);font-size:.82rem;margin-top:2px}
+.fiadonums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.fiadonums>div{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:center}
+.fiadonums .lbl{display:block;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.05em}
+.fiadonums .val{display:block;font-family:var(--fd);font-size:1.3rem;margin-top:2px}
+.fiadonums .val.saldo{color:var(--yellow)}
+.abonorow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.abonorow:last-child{border-bottom:none}
+.abonorow .am{font-weight:700}
+.abonorow .dt{color:var(--muted);font-size:.76rem}
+
+/* venta simplificada */
+.contadordia{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.contadordia .ico{font-size:1.6rem}
+.contadordia .num{font-family:var(--fd);font-size:2.2rem;color:var(--yellow);line-height:1}
+.contadordia .lbl{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.cardventa{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.gridprod{display:grid;gap:10px;margin-bottom:10px}
+.gridprod.principales{grid-template-columns:1fr 1fr}
+.gridprod.secundarios{grid-template-columns:repeat(3,1fr)}
+.prodbtn{position:relative;background:var(--ink);border:2px solid var(--line);border-radius:16px;padding:16px 10px;text-align:center;cursor:pointer;transition:border-color .12s,transform .08s;-webkit-tap-highlight-color:transparent;user-select:none}
+.prodbtn:active{transform:scale(.96)}
+.prodbtn.hasqty{border-color:var(--yellow);background:rgba(253,241,0,.08)}
+.principales .prodbtn{padding:22px 10px}
+.principales .prodbtn .pn{font-family:var(--fd);font-size:1.3rem;letter-spacing:.02em}
+.principales .prodbtn .pp{color:var(--muted);font-size:.8rem;margin-top:2px}
+.secundarios .prodbtn .pn{font-weight:700;font-size:.78rem;line-height:1.15}
+.secundarios .prodbtn .pp{color:var(--muted);font-size:.7rem;margin-top:3px}
+.prodbtn .qtybadge{position:absolute;top:-8px;right:-8px;background:var(--yellow);color:var(--black);font-family:var(--fd);font-size:1rem;min-width:26px;height:26px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.carritobar{display:flex;justify-content:space-between;align-items:center;background:var(--ink);border-radius:14px;padding:12px 16px;margin:14px 0}
+.cbresumen{color:var(--muted);font-size:.78rem;flex:1;margin-right:10px}
+.cbtotal{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0}
+.cbtotal span:first-child{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}
+.cbtotal span:last-child{font-family:var(--fd);font-size:1.5rem;color:var(--yellow)}
+.btnclub{width:100%;background:transparent;border:1.5px dashed rgba(255,255,255,.2);color:var(--muted);font-family:var(--fb);font-weight:600;font-size:.82rem;padding:12px;border-radius:12px;cursor:pointer;margin-top:6px}
+.btnclub:hover{border-color:var(--yellow);color:var(--yellow)}
+.btnclub.active{border-style:solid;border-color:var(--yellow);color:var(--yellow)}
+.clubchip{display:flex;align-items:center;gap:10px;background:rgba(253,241,0,.1);border:1px solid rgba(253,241,0,.3);border-radius:12px;padding:10px 14px;margin-top:10px}
+.clubchip span:first-child{font-weight:700;font-size:.88rem;flex:1}
+.clubchip .hb{color:var(--yellow);font-size:.82rem;flex-shrink:0}
+.clubchip .quitar{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:2px 6px}
+
+/* modal de cobro */
+#modalCobro{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end}
+.modalbg{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.modalcard{position:relative;z-index:1;width:100%;background:var(--card);border-radius:24px 24px 0 0;padding:24px;border:1px solid var(--line);border-bottom:none;max-height:88vh;overflow-y:auto}
+.cobrototal{font-family:var(--fd);font-size:2.6rem;color:var(--yellow);text-align:center;margin-bottom:16px}
+.metodos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.metbtn{background:var(--ink);border:1.5px solid var(--line);color:var(--muted);font-family:var(--fb);font-weight:700;font-size:.85rem;padding:14px;border-radius:12px;cursor:pointer}
+.metbtn.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.cambiorow{display:flex;justify-content:space-between;align-items:center;background:var(--ink);border-radius:12px;padding:12px 16px;margin-top:8px}
+.cambiorow span:last-child{font-family:var(--fd);font-size:1.4rem;color:var(--yellow)}
+
+/* dashboard */
+.dashgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.dashcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.dashcard .n{font-family:var(--fd);font-size:1.7rem;color:var(--yellow);line-height:1}
+.dashcard .n.neg{color:#ff8a7a}
+.dashcard .n.pos{color:var(--green)}
+.dashcard .l{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+.dashcard.full{grid-column:1/-1}
+.dashutilidad{background:linear-gradient(155deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:16px}
+.dashutilidad .n{font-family:var(--fd);font-size:2.4rem;color:var(--yellow)}
+.dashutilidad .l{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.dashnota{color:var(--muted);font-size:.78rem;margin-top:6px;line-height:1.5}
+.btnexport{width:100%;background:transparent;border:1.5px solid rgba(255,255,255,.2);color:var(--white);font-family:var(--fb);font-weight:700;font-size:.85rem;padding:12px;border-radius:12px;cursor:pointer;margin-top:16px}
+.btnexport:hover{border-color:var(--yellow);color:var(--yellow)}
+.gastorow .cl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:99px;display:inline-block;margin-top:2px}
+.gastorow .cl.BBH{background:rgba(120,220,140,.12);color:var(--green)}
+.gastorow .cl.PERSONAL{background:rgba(255,138,122,.12);color:#ff8a7a}
+.gastorow .cl.REVISAR{background:rgba(253,241,0,.12);color:var(--yellow)}
+
+/* dashboard semanal */
+.semtabla{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:16px}
+.semtabla th{text-align:right;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;padding:6px 8px;border-bottom:1px solid var(--line)}
+.semtabla th:first-child{text-align:left}
+.semtabla td{text-align:right;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.semtabla td:first-child{text-align:left;font-weight:700}
+.semtabla tr.totalrow td{font-weight:700;color:var(--yellow);border-top:1.5px solid var(--line);border-bottom:none}
+.semtabla tr.filadia:hover td{background:rgba(253,241,0,.06);color:var(--yellow)}
+.semtabla .neg{color:#ff8a7a}
+.semtabla-wrap{overflow-x:auto;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-inner">
+    <div class="nav-logo"><div class="lg"><b>BBH</b><span>PANEL EQUIPO</span></div></div>
+    <button class="nav-back" id="btnLogout">Salir</button>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- LOGIN -->
+  <section class="authwrap" id="boxAuth">
+    <div class="kicker">Acceso restringido</div>
+    <h1 class="pageh">Panel del equipo</h1>
+    <p class="lead">Solo cuentas con rol de equipo pueden entrar. Usa el mismo correo y contraseña de tu cuenta BBH.</p>
+    <div class="card">
+      <div class="msg" id="msgAuth"></div>
+      <form id="formAuth">
+        <div class="field"><label>Correo</label><input type="email" id="email" required placeholder="tucorreo@ejemplo.com" autocomplete="username"></div>
+        <div class="field"><label>Contraseña</label><input type="password" id="pass" required placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="btn" type="submit" id="btnAuth">Entrar</button>
+      </form>
+      <button class="btn ghost" type="button" id="btnOlvide" style="margin-top:6px">¿Olvidaste tu contraseña?</button>
+    </div>
+
+    <!-- RECUPERAR CONTRASEÑA -->
+    <div class="card hidden" id="boxRecover" style="margin-top:16px">
+      <div class="kicker" style="margin-bottom:10px">Recuperar acceso</div>
+      <div class="msg" id="msgRecover"></div>
+      <form id="formRecover">
+        <div class="field"><label>Correo de tu cuenta</label><input type="email" id="recoverEmail" required placeholder="tucorreo@ejemplo.com"></div>
+        <button class="btn sec" type="submit" id="btnRecover">Enviar correo de recuperación</button>
+      </form>
+      <button class="btn ghost" type="button" id="btnCerrarRecover" style="margin-top:6px">← Volver a entrar</button>
+    </div>
+  </section>
+
+  <!-- PANEL -->
+  <section class="hidden" id="boxPanel">
+
+    <div class="kicker">Club BBH</div>
+    <h1 class="pageh" id="tituloPanel">Vender</h1>
+
+    <div class="tabbar">
+      <button class="tabbtn active" data-tab="cierre">Cierre del día</button>
+      <button class="tabbtn" data-tab="dashboard">Cómo va BBH</button>
+      <button class="tabbtn" data-tab="vender">Venta rápida</button>
+      <button class="tabbtn" data-tab="gastos">Gastos</button>
+      <button class="tabbtn" data-tab="fiados">Fiados</button>
+      <button class="tabbtn" data-tab="deudas">Deudas</button>
+      <button class="tabbtn" data-tab="ingresos">Ingresos</button>
+      <button class="tabbtn" data-tab="clientes">Clientes</button>
+    </div>
+
+    <!-- ===== TAB: CIERRE DEL DÍA ===== -->
+    <div class="tabpanel active" id="tabCierre">
+
+      <style>
+      /* --- Cierre simplificado --- */
+      .ci-rowc{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+      .ci-rowc:last-child{border-bottom:0}
+      .ci-rowc .ci-lbl{flex:1;min-width:0}
+      .ci-rowc .ci-lbl b{display:block;font-size:15px;font-weight:700}
+      .ci-rowc .ci-lbl i{display:block;font-size:11.5px;color:var(--dim2, #5c5c56);font-style:normal;margin-top:1px}
+      .ci-step{display:flex;align-items:center;flex-shrink:0}
+      .ci-step button{width:34px;height:34px;border:1px solid var(--line);background:var(--ink2, #1e1e1b);color:var(--text);font-size:19px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+      .ci-step button:first-child{border-radius:9px 0 0 9px}
+      .ci-step button:last-child{border-radius:0 9px 9px 0}
+      .ci-step input{width:58px;height:34px;text-align:center;border:1px solid var(--line);border-left:0;border-right:0;background:var(--black, #0b0b0b);color:var(--text);font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+      .ci-step input::-webkit-outer-spin-button,.ci-step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+      .ci-tag{font-size:10px;font-weight:800;letter-spacing:.6px;padding:2px 6px;border-radius:5px;background:var(--ink2, #1e1e1b);color:var(--dim, #9a9a90);margin-left:6px;vertical-align:middle}
+      .ci-tag.pay{background:rgba(67,209,124,.14);color:#43d17c}
+      .ci-tag.owe{background:rgba(255,176,32,.14);color:#ffb020}
+      .ci-tag.loss{background:rgba(255,95,86,.14);color:#ff5f56}
+      .ci-cuadre{margin-top:14px;border-radius:12px;padding:12px 14px;border:1px solid var(--line);display:flex;align-items:center;gap:12px}
+      .ci-cuadre .ci-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+      .ci-cuadre.ok{border-color:rgba(67,209,124,.4)}
+      .ci-cuadre.ok .ci-dot{background:#43d17c}
+      .ci-cuadre.ok .ci-num{color:#43d17c}
+      .ci-cuadre.bad{border-color:rgba(255,95,86,.45)}
+      .ci-cuadre.bad .ci-dot{background:#ff5f56}
+      .ci-cuadre.bad .ci-num{color:#ff5f56}
+      .ci-cuadre .ci-txt{flex:1;min-width:0}
+      .ci-cuadre .ci-txt b{display:block;font-size:14px}
+      .ci-cuadre .ci-txt i{display:block;font-style:normal;font-size:11.5px;color:var(--dim, #9a9a90);margin-top:2px}
+      .ci-cuadre .ci-num{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+      .ci-gform{display:grid;grid-template-columns:1fr 112px;gap:8px;margin-bottom:10px}
+      .ci-chips{display:flex;gap:8px;margin-bottom:10px}
+      .ci-chip{flex:1;border:1px solid var(--line);background:transparent;color:var(--dim, #9a9a90);border-radius:10px;padding:9px 8px;font-size:12.5px;font-weight:800;cursor:pointer;letter-spacing:.3px}
+      .ci-chip.on{border-color:var(--yellow);color:var(--yellow);background:rgba(253,241,0,.07)}
+      .ci-gitem{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+      .ci-gitem:last-child{border-bottom:0}
+      .ci-gitem .ci-gi{flex:1;min-width:0}
+      .ci-gitem .ci-gi b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .ci-gitem .ci-gv{font-weight:800;font-variant-numeric:tabular-nums;font-size:14px}
+      .ci-gitem .ci-gx{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--ink2, #1e1e1b);color:var(--dim, #9a9a90);cursor:pointer;font-size:15px;flex-shrink:0}
+      .ci-tline{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+      .ci-tline:last-child{border-bottom:0}
+      .ci-tline .ci-k{font-size:13.5px;color:var(--dim, #9a9a90)}
+      .ci-tline .ci-k small{display:block;font-size:11px;color:var(--dim2, #5c5c56)}
+      .ci-tline .ci-v{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+      .ci-tline.minus .ci-v{color:#ff5f56}
+      .ci-tline.big{padding:14px 0}
+      .ci-tline.big .ci-k{font-size:14px;color:var(--text);font-weight:700}
+      .ci-tline.big .ci-v{font-size:26px;font-weight:900}
+      .ci-tline.final{margin-top:8px;border-top:2px solid var(--yellow);border-bottom:0;padding-top:16px}
+      .ci-tline.final .ci-k{color:var(--yellow);font-size:14px;font-weight:800;letter-spacing:.5px}
+      .ci-tline.final .ci-v{font-size:32px;font-weight:900;color:var(--yellow)}
+      .ci-aviso{margin-top:12px;border-radius:10px;padding:10px 12px;font-size:12.5px;background:rgba(255,176,32,.09);border:1px solid rgba(255,176,32,.3);color:#ffb020}
+      .ci-empty{color:var(--dim2, #5c5c56);font-size:13px;text-align:center;padding:16px 0}
+      .ci-fechabar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+      .ci-fechabar input{flex:1;font-weight:700;font-variant-numeric:tabular-nums}
+      .ci-navbtn{width:38px;height:38px;flex-shrink:0;border:1px solid var(--line);background:var(--ink2, #1e1e1b);color:var(--text);border-radius:10px;font-size:17px;cursor:pointer}
+      </style>
+
+      <p class="lead">Cuenta los panes físicos al final del día. Todo pan que salió tiene que quedar en alguna fila.</p>
+
+      <div class="msg" id="msgCierre"></div>
+
+      <div class="ci-fechabar">
+        <button class="ci-navbtn" type="button" id="ciDiaAnt" title="Día anterior">&lsaquo;</button>
+        <input type="date" id="cierreFecha">
+        <button class="ci-navbtn" type="button" id="ciDiaSig" title="Día siguiente">&rsaquo;</button>
+      </div>
+
+      <!-- ===== 1. PANES ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">1 · Panes del día</div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Entraron</b><i>Panes que recibiste hoy</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciEntraron">&minus;</button>
+            <input type="number" id="ciEntraron" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciEntraron">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Vendidas a $14.000 <span class="ci-tag pay">paga</span></b><i>Precio normal</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciV14">&minus;</button>
+            <input type="number" id="ciV14" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciV14">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Vendidas a $13.000 <span class="ci-tag pay">paga</span></b><i>Con descuento</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciV13">&minus;</button>
+            <input type="number" id="ciV13" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciV13">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Vendidas a $12.000 <span class="ci-tag pay">paga</span></b><i>Con descuento</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciV12">&minus;</button>
+            <input type="number" id="ciV12" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciV12">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Fiadas <span class="ci-tag owe">por cobrar</span></b><i id="ciFiadasHint">Entregadas sin pagar hoy</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciFiadas">&minus;</button>
+            <input type="number" id="ciFiadas" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciFiadas">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Merma / perdido <span class="ci-tag loss">pérdida</span></b><i>Dañado, quemado, botado</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciMerma">&minus;</button>
+            <input type="number" id="ciMerma" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciMerma">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Quedaron</b><i>Panes buenos que sobraron</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciQuedaron">&minus;</button>
+            <input type="number" id="ciQuedaron" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciQuedaron">+</button>
+          </div>
+        </div>
+
+        <div class="ci-cuadre ok" id="ciCuadreBox">
+          <div class="ci-dot"></div>
+          <div class="ci-txt">
+            <b id="ciCuadreTitulo">Cuadra</b>
+            <i id="ciCuadreDetalle">Entraron 0 · repartidos 0</i>
+          </div>
+          <div class="ci-num" id="ciCuadreNum">0</div>
+        </div>
+      </div>
+
+      <!-- ===== 2. GASTOS ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">2 · Gastos del día</div>
+        <p class="lead" style="margin:6px 0 12px">Marca si cada gasto es del negocio o personal tuyo. No se mezclan en el total.</p>
+
+        <div class="ci-gform">
+          <input type="text" id="ciGConcepto" placeholder="Ej: Carne, gas, transporte">
+          <input type="number" id="ciGValor" min="1" step="500" placeholder="Valor" inputmode="numeric">
+        </div>
+        <div class="ci-chips">
+          <button type="button" class="ci-chip on" data-ciclas="BBH">FUNCIONAMIENTO</button>
+          <button type="button" class="ci-chip" data-ciclas="PERSONAL">PERSONAL</button>
+        </div>
+        <button class="btn ghost" type="button" id="ciAddGasto">Agregar gasto</button>
+        <div class="msg" id="ciMsgGasto"></div>
+
+        <div style="margin-top:14px" id="ciListaGastos"></div>
+      </div>
+
+      <!-- ===== 3. CUENTAS ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">3 · Cuentas del día</div>
+        <p class="lead" style="margin:6px 0 12px">Lo fiado no entra: todavía no es plata en la mano.</p>
+
+        <div class="ci-tline big">
+          <div class="ci-k">Total vendido<small id="ciDetVendido">0 hamburguesas pagadas</small></div>
+          <div class="ci-v" id="ciTotalBruto">$0</div>
+        </div>
+        <div class="ci-tline minus">
+          <div class="ci-k">Gastos de funcionamiento<small id="ciDetGastoBBH">0 gastos</small></div>
+          <div class="ci-v" id="ciTotalGastoBBH">&minus;$0</div>
+        </div>
+        <div class="ci-tline big">
+          <div class="ci-k">Neto del negocio<small>Vendido menos gastos de funcionamiento</small></div>
+          <div class="ci-v" id="ciNetoNegocio">$0</div>
+        </div>
+        <div class="ci-tline minus">
+          <div class="ci-k">Gastos personales<small id="ciDetGastoPersonal">0 gastos</small></div>
+          <div class="ci-v" id="ciTotalGastoPersonal">&minus;$0</div>
+        </div>
+        <div class="ci-tline final">
+          <div class="ci-k">NETO FINAL</div>
+          <div class="ci-v" id="ciNetoFinal">$0</div>
+        </div>
+        <div class="ci-tline">
+          <div class="ci-k">Queda por cobrar (fiado)<small id="ciDetFiado">0 fiadas</small></div>
+          <div class="ci-v" id="ciTotalFiado">$0</div>
+        </div>
+
+        <div class="ci-aviso hidden" id="ciAvisoRevisar"></div>
+        <div class="ci-aviso hidden" id="ciAvisoCruce"></div>
+      </div>
+
+      <!-- ===== 4. CAJA (opcional) ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">4 · Caja contada <span style="color:var(--dim2,#5c5c56);font-weight:600;letter-spacing:0;text-transform:none">— opcional</span></div>
+        <p class="lead" style="margin:6px 0 12px">Si cuentas el efectivo + transferencias recibidas, aquí se compara contra lo que debería haber. Déjalo vacío si no lo cuentas.</p>
+        <div class="field">
+          <label>Valor recibido en caja</label>
+          <input type="number" id="ciValorRecibido" min="0" step="1000" placeholder="Efectivo + transferencia" inputmode="numeric">
+        </div>
+        <div class="ci-tline" id="ciFilaDifCaja" style="display:none">
+          <div class="ci-k">Diferencia de caja<small id="ciDetDifCaja"></small></div>
+          <div class="ci-v" id="ciDifCaja">$0</div>
+        </div>
+      </div>
+
+      <button class="btn" type="button" id="btnGuardarCierre" style="margin-top:6px">Guardar cierre</button>
+
+    </div>
+
+    <!-- ===== TAB: VENDER ===== -->
+    <div class="tabpanel" id="tabVender">
+
+    <div class="contadordia" id="contadorDia">
+      <span class="ico">🍔</span>
+      <span class="num" id="contadorNum">0</span>
+      <span class="lbl">hamburguesas hoy</span>
+    </div>
+
+    <!-- PRODUCTOS PRINCIPALES (toca = agrega, toca otra vez = +1) -->
+    <div class="cardventa">
+      <div id="gridPrincipales" class="gridprod principales"></div>
+      <div id="gridSecundarios" class="gridprod secundarios"></div>
+
+      <div class="carritobar hidden" id="carritoBar">
+        <div class="cbresumen" id="cbResumen"></div>
+        <div class="cbtotal"><span>Total</span><span id="totalVenta">$0</span></div>
+      </div>
+
+      <!-- cliente del Club: opcional, colapsado por defecto -->
+      <button type="button" class="btnclub" id="btnAbrirClub">🎟️ Sumar a Club BBH (opcional)</button>
+      <div class="hidden" id="boxClubVenta">
+        <div class="field">
+          <input type="text" id="buscarInput" placeholder="Buscar cliente por nombre o código BBH-XXXX">
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn sec" id="btnScan" type="button">📷 Escanear código</button>
+        </div>
+        <div class="scanwrap hidden" id="scanwrap">
+          <video id="video" playsinline muted></video>
+        </div>
+        <div class="msg" id="msgScan"></div>
+        <div class="reslist" id="resultados"></div>
+        <div class="hidden" id="clubSeleccionado">
+          <div class="clubchip">
+            <span id="ccNombre">—</span>
+            <span class="hb" id="ccHamb">0 🍔</span>
+            <button type="button" class="quitar" id="btnCambiarCliente">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:14px">
+        <label>Precio hamburguesa (Smash / Tailandesa)</label>
+        <div class="fiadosfiltros" id="descuentoChips">
+          <button type="button" class="chipf active" data-precio="0">Precio normal</button>
+          <button type="button" class="chipf" data-precio="12000">$12.000 (descuento)</button>
+          <button type="button" class="chipf" data-precio="13000">$13.000 (descuento)</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:14px">
+        <label>Canal</label>
+        <select id="canalVenta">
+          <option value="PUNTO">Punto de venta</option>
+          <option value="UNIVERSIDAD">Universidad (domicilio interno)</option>
+          <option value="DOMICILIO">Domicilio</option>
+          <option value="EVENTO">Evento</option>
+        </select>
+      </div>
+
+      <div class="msg" id="msgVenta"></div>
+      <button class="btn" id="btnCobrar" type="button" style="margin-top:6px" disabled>Cobrar</button>
+    </div>
+
+    <!-- ===== MODAL DE COBRO ===== -->
+    <div class="hidden" id="modalCobro">
+      <div class="modalbg" id="modalCobroBg"></div>
+      <div class="modalcard">
+        <div class="kicker" style="margin-bottom:6px">Cobrar</div>
+        <div class="cobrototal" id="cobroTotal">$0</div>
+        <div class="metodos">
+          <button type="button" class="metbtn active" data-met="EFECTIVO">💵 Efectivo</button>
+          <button type="button" class="metbtn" data-met="TRANSFERENCIA">📲 Transferencia</button>
+        </div>
+        <div id="boxEfectivo">
+          <div class="field">
+            <label>Recibido</label>
+            <input type="number" id="recibidoInput" min="0" step="1000" placeholder="Ej: 50000">
+          </div>
+          <div class="cambiorow"><span>Cambio</span><span id="cambioVal">$0</span></div>
+        </div>
+        <div class="hidden" id="boxTransferencia">
+          <p class="lead" style="margin-bottom:0">El cliente afirma haber transferido. Queda marcada como pendiente de verificar hasta que confirmes.</p>
+        </div>
+        <div class="msg" id="msgCobro"></div>
+        <div class="row" style="margin-top:14px;gap:10px">
+          <button class="btn ghost" type="button" id="btnCancelarCobro">Cancelar</button>
+          <button class="btn" type="button" id="btnConfirmarCobro">Confirmar venta</button>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <!-- ===== FIN TAB VENDER ===== -->
+
+    <!-- ===== TAB: DASHBOARD ===== -->
+    <div class="tabpanel" id="tabDashboard">
+      <p class="lead">Cómo va BBH: ventas, gastos, fiados y caja. Cambia el periodo para comparar. Toca cualquier día de la tabla para abrir el dashboard completo de ese día — interactivo, y con opción de corregirlo.</p>
+      <div class="fiadosfiltros" id="dashPeriodos">
+        <button type="button" class="chipf active" data-p="dia">Hoy</button>
+        <button type="button" class="chipf" data-p="semana">Esta semana</button>
+        <button type="button" class="chipf" data-p="mes">Este mes</button>
+      </div>
+      <div class="msg" id="msgDash"></div>
+      <div id="dashContenido"><div class="emptylist">Cargando…</div></div>
+    </div>
+    <!-- ===== FIN TAB DASHBOARD ===== -->
+
+    <!-- ===== TAB: GASTOS ===== -->
+    <div class="tabpanel" id="tabGastos">
+
+      <div id="vistaGastosLista">
+        <p class="lead">Todo lo que sale de BBH y lo que sale de tu bolsillo, separado siempre.</p>
+        <div class="fiadosresumen" id="gastosResumen"></div>
+        <button class="btn sec" id="btnNuevoGasto" type="button" style="margin-bottom:16px">+ Registrar gasto</button>
+        <div class="listtoolbar">
+          <input type="text" id="gastosBuscarInput" placeholder="Buscar por concepto">
+        </div>
+        <div class="fiadosfiltros" id="gastosFiltros">
+          <button type="button" class="chipf active" data-f="todos">Todos</button>
+          <button type="button" class="chipf" data-f="BBH">Del negocio</button>
+          <button type="button" class="chipf" data-f="PERSONAL">Personales</button>
+          <button type="button" class="chipf" data-f="REVISAR">Sin clasificar</button>
+        </div>
+        <div class="msg" id="msgGastosLista"></div>
+        <div class="clist" id="listaGastos"><div class="emptylist">Cargando gastos…</div></div>
+      </div>
+
+      <div class="hidden" id="vistaGastoForm">
+        <button class="btn ghost" id="btnVolverGastos">← Volver a gastos</button>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">Registrar gasto</div>
+          <div class="msg" id="msgGastoForm"></div>
+          <form id="formGasto">
+            <div class="field"><label>Fecha</label><input type="text" id="gastoFecha" placeholder="AAAA-MM-DD" required></div>
+            <div class="field"><label>Concepto *</label><input type="text" id="gastoConcepto" required placeholder="Ej: Recibo agua local"></div>
+            <div class="field"><label>Valor *</label><input type="number" id="gastoValor" min="1" step="1" required placeholder="Ej: 30000"></div>
+            <div class="field">
+              <label>¿Es de BBH o personal? *</label>
+              <select id="gastoClasificacion" required>
+                <option value="">Selecciona…</option>
+                <option value="BBH">Del negocio (BBH)</option>
+                <option value="PERSONAL">Personal</option>
+              </select>
+            </div>
+            <div class="field"><label>Categoría (opcional)</label><input type="text" id="gastoCategoria" placeholder="Ej: TRANSPORTE, ALIMENTACION"></div>
+            <div class="field"><label>Proveedor (opcional)</label><input type="text" id="gastoProveedor" placeholder="Opcional"></div>
+            <div class="field"><label>Nota (opcional)</label><input type="text" id="gastoNota" placeholder="Opcional"></div>
+            <button class="btn" type="submit" id="btnGuardarGasto">Guardar gasto</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB GASTOS ===== -->
+
+    <!-- ===== TAB: DEUDAS ===== -->
+    <div class="tabpanel" id="tabDeudas">
+
+      <div id="vistaDeudasLista">
+        <p class="lead">Lo que BBH o tú le deben a alguien. No es lo mismo que Fiados (eso es lo que te deben a ti).</p>
+        <div class="fiadosresumen" id="deudasResumen"></div>
+        <button class="btn sec" id="btnNuevaDeuda" type="button" style="margin-bottom:16px">+ Registrar deuda</button>
+        <div class="fiadosfiltros" id="deudasFiltros">
+          <button type="button" class="chipf active" data-f="pendiente">Pendientes</button>
+          <button type="button" class="chipf" data-f="BBH">Del negocio</button>
+          <button type="button" class="chipf" data-f="PERSONAL">Personales</button>
+          <button type="button" class="chipf" data-f="todos">Todas</button>
+        </div>
+        <div class="msg" id="msgDeudasLista"></div>
+        <div class="clist" id="listaDeudas"><div class="emptylist">Cargando deudas…</div></div>
+      </div>
+
+      <div class="hidden" id="vistaDeudaForm">
+        <button class="btn ghost" id="btnVolverDeudaForm">← Volver a deudas</button>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">Registrar deuda</div>
+          <div class="msg" id="msgDeudaForm"></div>
+          <form id="formDeuda">
+            <div class="field"><label>¿A quién se le debe? *</label><input type="text" id="deudaAcreedor" required placeholder="Ej: Proveedor de pan"></div>
+            <div class="field"><label>Concepto *</label><input type="text" id="deudaConcepto" required placeholder="Ej: Préstamo, factura pendiente"></div>
+            <div class="field"><label>Valor total *</label><input type="number" id="deudaValor" min="1" step="1" required placeholder="Ej: 200000"></div>
+            <div class="field">
+              <label>¿Es del negocio o personal? *</label>
+              <select id="deudaClasificacion" required>
+                <option value="">Selecciona…</option>
+                <option value="BBH">Del negocio (BBH)</option>
+                <option value="PERSONAL">Personal</option>
+              </select>
+            </div>
+            <div class="field"><label>Fecha límite (opcional)</label><input type="text" id="deudaFechaLimite" placeholder="AAAA-MM-DD"></div>
+            <div class="field"><label>Nota (opcional)</label><input type="text" id="deudaNota" placeholder="Opcional"></div>
+            <button class="btn" type="submit" id="btnGuardarDeuda">Guardar deuda</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="hidden" id="vistaDeudaDetalle">
+        <button class="btn ghost" id="btnVolverDeudaDetalle">← Volver a deudas</button>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">Detalle de la deuda</div>
+          <div class="fiadohead">
+            <div class="nm" id="ddAcreedor">—</div>
+            <div class="sub" id="ddSub">—</div>
+          </div>
+          <div class="fiadonums">
+            <div><span class="lbl">Total</span><span class="val" id="ddTotal">—</span></div>
+            <div><span class="lbl">Abonado</span><span class="val" id="ddAbonado">—</span></div>
+            <div><span class="lbl">Saldo</span><span class="val saldo" id="ddSaldo">—</span></div>
+          </div>
+          <div class="debt" id="ddVencida">—</div>
+          <div class="msg" id="msgDeudaDetalle"></div>
+          <form id="formAbonoDeuda">
+            <div class="field"><label>Valor del abono</label><input type="number" id="abonoDeudaValor" min="1" step="1" placeholder="Ej: 50000" required></div>
+            <div class="field">
+              <label>Método de pago</label>
+              <select id="abonoDeudaMetodo">
+                <option value="EFECTIVO">Efectivo</option>
+                <option value="TRANSFERENCIA">Transferencia</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="field"><label>Nota (opcional)</label><input type="text" id="abonoDeudaNota" placeholder="Opcional"></div>
+            <button class="btn" type="submit" id="btnRegistrarAbonoDeuda">Registrar abono</button>
+          </form>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="kicker" style="margin-bottom:10px">Abonos registrados</div>
+          <div id="listaAbonosDeuda"><div class="emptylist">Sin abonos aún.</div></div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB DEUDAS ===== -->
+
+    <!-- ===== TAB: INGRESOS ===== -->
+    <div class="tabpanel" id="tabIngresos">
+
+      <div id="vistaIngresosLista">
+        <p class="lead">Dinero que entra y no es venta: capital propio, préstamos recibidos u otros ingresos.</p>
+        <div class="fiadosresumen" id="ingresosResumen"></div>
+        <button class="btn sec" id="btnNuevoIngreso" type="button" style="margin-bottom:16px">+ Registrar ingreso</button>
+        <div class="fiadosfiltros" id="ingresosFiltros">
+          <button type="button" class="chipf active" data-f="todos">Todos</button>
+          <button type="button" class="chipf" data-f="BBH">Del negocio</button>
+          <button type="button" class="chipf" data-f="PERSONAL">Personales</button>
+        </div>
+        <div class="msg" id="msgIngresosLista"></div>
+        <div class="clist" id="listaIngresos"><div class="emptylist">Cargando ingresos…</div></div>
+      </div>
+
+      <div class="hidden" id="vistaIngresoForm">
+        <button class="btn ghost" id="btnVolverIngresos">← Volver a ingresos</button>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">Registrar ingreso</div>
+          <div class="msg" id="msgIngresoForm"></div>
+          <form id="formIngreso">
+            <div class="field"><label>Concepto *</label><input type="text" id="ingresoConcepto" required placeholder="Ej: Capital propio, préstamo de..."></div>
+            <div class="field"><label>Valor *</label><input type="number" id="ingresoValor" min="1" step="1" required placeholder="Ej: 500000"></div>
+            <div class="field">
+              <label>Tipo *</label>
+              <select id="ingresoTipo" required>
+                <option value="CAPITAL">Capital propio</option>
+                <option value="PRESTAMO_RECIBIDO">Préstamo recibido</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>¿Es del negocio o personal? *</label>
+              <select id="ingresoClasificacion" required>
+                <option value="">Selecciona…</option>
+                <option value="BBH">Del negocio (BBH)</option>
+                <option value="PERSONAL">Personal</option>
+              </select>
+            </div>
+            <div class="field"><label>Nota (opcional)</label><input type="text" id="ingresoNota" placeholder="Opcional"></div>
+            <button class="btn" type="submit" id="btnGuardarIngreso">Guardar ingreso</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB INGRESOS ===== -->
+
+    <!-- ===== TAB: CLIENTES ===== -->
+    <div class="tabpanel" id="tabClientes">
+
+      <!-- vista lista -->
+      <div id="vistaLista">
+        <p class="lead">Todos los clientes del Club, con su nivel y progreso actual.</p>
+        <div class="listtoolbar">
+          <input type="text" id="listaBuscarInput" placeholder="Buscar por nombre, facultad o código">
+        </div>
+        <button class="btn sec" id="btnNuevoCliente" type="button" style="margin-bottom:16px">+ Nuevo cliente</button>
+        <div class="msg" id="msgLista"></div>
+        <div class="clist" id="listaClientes"><div class="emptylist">Cargando clientes…</div></div>
+      </div>
+
+      <!-- vista editar/crear -->
+      <div class="hidden" id="vistaEditar">
+        <button class="btn ghost" id="btnVolverLista">← Volver a la lista</button>
+        <div class="card">
+          <div class="kicker" id="editKicker" style="margin-bottom:10px">Editar cliente</div>
+          <div class="codechip hidden" id="editCodigoChip">—</div>
+          <div class="msg" id="msgEditar"></div>
+          <form id="formEditar">
+            <input type="hidden" id="editId">
+            <div class="formgrid">
+              <div class="field full"><label>Nombre *</label><input type="text" id="editNombre" required placeholder="Nombre completo"></div>
+              <div class="field"><label>Facultad</label><input type="text" id="editFacultad" placeholder="Ej: Derecho"></div>
+              <div class="field"><label>Teléfono *</label><input type="tel" id="editTelefono" required inputmode="numeric" placeholder="Ej: 3001234567"></div>
+              <div class="field full"><label>Alias / apodo</label><input type="text" id="editAlias" placeholder="Opcional"></div>
+              <div class="field full"><label>Notas</label><input type="text" id="editNotas" placeholder="Opcional"></div>
+            </div>
+            <button class="btn" type="submit" id="btnGuardarCliente">Guardar</button>
+          </form>
+        </div>
+
+        <!-- resumen de progreso, solo visible al editar (no al crear) -->
+        <div class="card hidden" id="editResumen" style="margin-top:16px">
+          <div class="kicker" style="margin-bottom:10px">Progreso en el Club</div>
+          <div class="hburgs" style="margin-top:0"><span id="editHamb">0</span> <small>hamburguesas · <span id="editNivel">—</span></small></div>
+          <div class="debt" id="editDeuda">—</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB CLIENTES ===== -->
+
+    <!-- ===== TAB FIADOS ===== -->
+    <div class="tabpanel" id="tabFiados">
+
+      <!-- vista lista de fiados -->
+      <div id="vistaFiadosLista">
+        <p class="lead">Cartera de fiados: quién debe, cuánto y desde cuándo.</p>
+        <div class="fiadosresumen" id="fiadosResumen"></div>
+        <div class="listtoolbar">
+          <input type="text" id="fiadosBuscarInput" placeholder="Buscar por nombre o facultad">
+        </div>
+        <div class="fiadosfiltros" id="fiadosFiltros">
+          <button type="button" class="chipf active" data-f="pendiente">Pendientes</button>
+          <button type="button" class="chipf" data-f="vencido">Vencidos</button>
+          <button type="button" class="chipf" data-f="todos">Todos</button>
+        </div>
+        <div class="msg" id="msgFiadosLista"></div>
+        <div class="clist" id="listaFiados"><div class="emptylist">Cargando fiados…</div></div>
+      </div>
+
+      <!-- vista detalle de un fiado + cobrar abono -->
+      <div class="hidden" id="vistaFiadoDetalle">
+        <button class="btn ghost" id="btnVolverFiados">← Volver a la cartera</button>
+        <div class="card" id="cardFiadoDetalle">
+          <div class="kicker" style="margin-bottom:10px">Detalle del fiado</div>
+          <div class="fiadohead">
+            <div class="nm" id="fdNombre">—</div>
+            <div class="sub" id="fdSub">—</div>
+          </div>
+          <div class="fiadonums">
+            <div><span class="lbl">Total</span><span class="val" id="fdTotal">—</span></div>
+            <div><span class="lbl">Abonado</span><span class="val" id="fdAbonado">—</span></div>
+            <div><span class="lbl">Saldo</span><span class="val saldo" id="fdSaldo">—</span></div>
+          </div>
+          <div class="debt" id="fdVencido">—</div>
+          <div class="msg" id="msgFiadoDetalle"></div>
+          <form id="formAbono">
+            <div class="field">
+              <label>Valor del abono</label>
+              <input type="number" id="abonoValor" min="1" step="1" placeholder="Ej: 20000" required>
+            </div>
+            <div class="field">
+              <label>Método de pago</label>
+              <select id="abonoMetodo">
+                <option value="EFECTIVO">Efectivo</option>
+                <option value="TRANSFERENCIA">Transferencia</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Nota (opcional)</label>
+              <input type="text" id="abonoNota" placeholder="Opcional">
+            </div>
+            <button class="btn" type="submit" id="btnRegistrarAbono">Registrar abono</button>
+          </form>
+        </div>
+
+        <div class="card" id="cardHistAbonos" style="margin-top:16px">
+          <div class="kicker" style="margin-bottom:10px">Abonos registrados</div>
+          <div id="listaAbonos"><div class="emptylist">Sin abonos aún.</div></div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== FIN TAB FIADOS ===== -->
+
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Solo para Realtime (sincronización en vivo entre dispositivos del equipo). Todo lo demás del panel
+     sigue usando fetch() normal contra la API REST de Supabase, sin depender de esta librería. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js"></script>
+<script>
+var U='https://alpazaxehcwjinldcadh.supabase.co', K='sb_publishable_UuG4mqkqShEUK9lqDsZAqw_O3OuoEnd';
+var SESSION_KEY='bbh_panel_session';
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(n){return '$'+Math.round(n).toLocaleString('es-CO')}
+function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}
+
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch(e){return null}}
+function setSession(s){localStorage.setItem(SESSION_KEY, JSON.stringify(s))}
+function clearSession(){localStorage.removeItem(SESSION_KEY)}
+
+// Refresca el access_token usando el refresh_token guardado. Devuelve true si quedó una sesión válida, false si no.
+var refrescoEnCurso = null;
+async function refrescarSesion(){
+  if (refrescoEnCurso) return refrescoEnCurso; // evita refrescos duplicados si varias llamadas expiran al mismo tiempo
+  refrescoEnCurso = (async function(){
+    var s = getSession();
+    if (!s || !s.refresh_token) return false;
+    try{
+      var res = await fetch(U+'/auth/v1/token?grant_type=refresh_token', {
+        method:'POST',
+        headers:{'apikey':K,'Content-Type':'application/json'},
+        body: JSON.stringify({refresh_token: s.refresh_token})
+      });
+      if (!res.ok) return false;
+      var data = await res.json();
+      if (!data.access_token) return false;
+      setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token || s.refresh_token,
+        expires_at: Date.now() + (data.expires_in*1000),
+        email: s.email, user_id: s.user_id, rol: s.rol
+      });
+      actualizarTokenRealtime(); // el token cambió — la conexión de Realtime también debe usar el nuevo, o dejará de recibir cambios
+      return true;
+    }catch(err){
+      return false;
+    }finally{
+      refrescoEnCurso = null;
+    }
+  })();
+  return refrescoEnCurso;
+}
+
+// Cierra la sesión localmente y vuelve a mostrar el login (ej: cuando el refresh_token ya no sirve).
+function cerrarSesionYMostrarLogin(mensaje){
+  clearSession();
+  if (typeof suscribirRealtime === 'function') suscribirRealtime(null); // corta la sincronización en vivo, ya no hay sesión válida para autorizarla
+  var boxPanel = $('boxPanel'), boxAuth = $('boxAuth');
+  if (boxPanel) boxPanel.classList.add('hidden');
+  if (boxAuth) boxAuth.classList.remove('hidden');
+  if (mensaje){
+    var msg = $('msgAuth');
+    if (msg){ msg.textContent = mensaje; msg.className = 'msg err show'; }
+  }
+}
+
+async function authFetch(path, opts){
+  opts = opts || {};
+  var s = getSession();
+  // Si el token está por vencer (o ya venció), refrescamos antes de disparar la petición — evita el 401 en plena escritura.
+  if (s && s.access_token && s.expires_at && s.expires_at < Date.now()+30000){
+    await refrescarSesion();
+    s = getSession();
+  }
+  var headers = Object.assign({'apikey':K,'Content-Type':'application/json'}, opts.headers||{});
+  if (s && s.access_token) headers['Authorization'] = 'Bearer '+s.access_token;
+  var res = await fetch(U+path, Object.assign({}, opts, {headers:headers}));
+  if (res.status === 401 && s && s.access_token){
+    // El token puede haber quedado inválido igual (reloj desfasado, revocación, etc.) — intentamos refrescar una vez más y reintentar.
+    var ok = await refrescarSesion();
+    if (ok){
+      var s2 = getSession();
+      var headers2 = Object.assign({'apikey':K,'Content-Type':'application/json'}, opts.headers||{});
+      if (s2 && s2.access_token) headers2['Authorization'] = 'Bearer '+s2.access_token;
+      res = await fetch(U+path, Object.assign({}, opts, {headers:headers2}));
+    }
+    if (res.status === 401){
+      cerrarSesionYMostrarLogin('Tu sesión expiró. Vuelve a iniciar sesión.');
+    }
+  }
+  return res;
+}
+
+// ---------- REALTIME (sincronización en vivo entre dispositivos del equipo) ----------
+// Regla: esto solo AVISA que algo cambió y vuelve a pedir los datos por la misma API REST de siempre
+// (authFetch). Nunca confiamos en el contenido del evento de Realtime como si fuera el dato final —
+// así seguimos pasando por RLS y por el mismo camino ya auditado, esto es solo el "toque en el hombro".
+var rtClient = null, rtChannel = null, rtContextoActual = null;
+
+function rtDisponible(){ return !!(window.supabase && window.supabase.createClient); }
+
+function getRtClient(){
+  if (!rtClient && rtDisponible()){
+    rtClient = window.supabase.createClient(U, K, { auth: { persistSession: false, autoRefreshToken: false } });
+  }
+  return rtClient;
+}
+
+async function actualizarTokenRealtime(){
+  if (!rtDisponible()) return;
+  var c = getRtClient(); if (!c) return;
+  var s = getSession();
+  if (s && s.access_token){ try{ await c.realtime.setAuth(s.access_token); }catch(e){} }
+}
+
+function debounce(fn, ms){
+  var t;
+  return function(){
+    var args = arguments;
+    clearTimeout(t);
+    t = setTimeout(function(){ fn.apply(null, args); }, ms);
+  };
+}
+
+// contexto: {tab:'cierre', fecha:'2026-08-30'} | {tab:'fiados'} | {tab:'gastos'} | null (apaga todo)
+function suscribirRealtime(contexto){
+  if (!rtDisponible()) return; // si el CDN no cargó (sin internet, bloqueo, etc.) el panel sigue funcionando normal, solo sin la sincronización en vivo
+  var clave = contexto ? contexto.tab + ':' + (contexto.fecha || '') : null;
+  var claveActual = rtContextoActual ? rtContextoActual.tab + ':' + (rtContextoActual.fecha || '') : null;
+  if (clave === claveActual) return; // ya suscrito exactamente a esto
+
+  var c = getRtClient();
+  if (rtChannel){ c.removeChannel(rtChannel); rtChannel = null; }
+  rtContextoActual = contexto;
+  if (!contexto) return;
+
+  if (contexto.tab === 'cierre' && contexto.fecha){
+    var fecha = contexto.fecha;
+    var refrescarListas = debounce(function(){ cargarListasDia(fecha); }, 600);
+    var refrescarTodo = debounce(function(){
+      if ($('cierreFecha').value === fecha){
+        toast('Otro dispositivo actualizó este día — recargando');
+        precargarCamposDia(fecha).then(function(){ cargarListasDia(fecha); });
+      }
+    }, 600);
+    rtChannel = c.channel('rt-cierre-'+fecha)
+      .on('postgres_changes', {event:'*', schema:'public', table:'gastos', filter:'fecha=eq.'+fecha}, refrescarListas)
+      .on('postgres_changes', {event:'*', schema:'public', table:'fiados', filter:'fecha=eq.'+fecha}, refrescarListas)
+      .on('postgres_changes', {event:'*', schema:'public', table:'cierre_excepciones', filter:'fecha=eq.'+fecha}, refrescarListas)
+      .on('postgres_changes', {event:'*', schema:'public', table:'abonos', filter:'fecha=eq.'+fecha}, refrescarListas)
+      .on('postgres_changes', {event:'*', schema:'public', table:'dias_operacion', filter:'fecha=eq.'+fecha}, refrescarTodo)
+      .subscribe();
+  } else if (contexto.tab === 'fiados'){
+    var refrescarFiados = debounce(function(){ cargarFiados(); }, 600);
+    rtChannel = c.channel('rt-fiados')
+      .on('postgres_changes', {event:'*', schema:'public', table:'fiados'}, refrescarFiados)
+      .on('postgres_changes', {event:'*', schema:'public', table:'abonos'}, refrescarFiados)
+      .subscribe();
+  } else if (contexto.tab === 'gastos'){
+    var refrescarGastos = debounce(function(){ cargarGastos(); }, 600);
+    rtChannel = c.channel('rt-gastos')
+      .on('postgres_changes', {event:'*', schema:'public', table:'gastos'}, refrescarGastos)
+      .subscribe();
+  }
+}
+
+// ---------- AUTH ----------
+$('formAuth').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgAuth'); msg.className='msg'; msg.textContent='';
+  var btn = $('btnAuth'); btn.disabled = true; btn.textContent = 'Entrando...';
+  try{
+    var res = await fetch(U+'/auth/v1/token?grant_type=password', {
+      method:'POST',
+      headers:{'apikey':K,'Content-Type':'application/json'},
+      body: JSON.stringify({email: $('email').value.trim(), password: $('pass').value})
+    });
+    var data = await res.json();
+    if (!res.ok){
+      msg.textContent = data.error_description || data.msg || 'No se pudo iniciar sesión.';
+      msg.className = 'msg err show';
+      return;
+    }
+    // Verificar rol de equipo antes de dejar entrar
+    var perfilRes = await fetch(U+'/rest/v1/perfiles?select=rol&user_id=eq.'+data.user.id, {
+      headers:{'apikey':K,'Authorization':'Bearer '+data.access_token}
+    });
+    var perfil = await perfilRes.json();
+    var rol = perfil && perfil[0] ? perfil[0].rol : null;
+    if (rol !== 'DUENO' && rol !== 'EQUIPO'){
+      msg.textContent = 'Esta cuenta no tiene permiso de equipo. Este panel es solo para BBH.';
+      msg.className = 'msg err show';
+      return;
+    }
+    setSession({access_token:data.access_token, refresh_token:data.refresh_token, expires_at:Date.now()+ (data.expires_in*1000), email:data.user.email, user_id:data.user.id, rol:rol});
+    mostrarPanel();
+    cargarProductos();
+    actualizarTokenRealtime();
+    cambiarTab('cierre'); // la pestaña de Cierre ya se ve "activa" por defecto en el HTML, pero sin esto nunca cargaba sus datos (ni siquiera la fecha de hoy) hasta que alguien tocaba la pestaña
+  }catch(err){
+    msg.textContent = 'Error de conexión. Intenta de nuevo.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+
+$('btnLogout').addEventListener('click', function(){
+  clearSession();
+  location.reload();
+});
+
+// ---------- RECUPERAR CONTRASEÑA ----------
+$('btnOlvide').addEventListener('click', function(){
+  $('recoverEmail').value = $('email').value || '';
+  $('boxAuth').querySelector('.card').classList.add('hidden');
+  $('btnOlvide').classList.add('hidden');
+  $('boxRecover').classList.remove('hidden');
+});
+
+$('btnCerrarRecover').addEventListener('click', function(){
+  $('boxRecover').classList.add('hidden');
+  $('boxAuth').querySelector('.card').classList.remove('hidden');
+  $('btnOlvide').classList.remove('hidden');
+});
+
+$('formRecover').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgRecover'); msg.className = 'msg';
+  var btn = $('btnRecover'); btn.disabled = true; btn.textContent = 'Enviando...';
+  try{
+    var redirectTo = window.location.origin + '/reset.html';
+    var res = await fetch(U+'/auth/v1/recover', {
+      method: 'POST',
+      headers: {'apikey':K,'Content-Type':'application/json'},
+      body: JSON.stringify({email: $('recoverEmail').value.trim(), redirect_to: redirectTo})
+    });
+    if (res.ok){
+      msg.textContent = 'Si ese correo tiene cuenta, te llegará un enlace para definir una nueva contraseña. Revisa también spam.';
+      msg.className = 'msg ok show';
+    } else {
+      var data = await res.json().catch(function(){ return {} });
+      msg.textContent = data.error_description || data.msg || 'No se pudo enviar el correo. Intenta de nuevo en unos minutos.';
+      msg.className = 'msg err show';
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión. Intenta de nuevo.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Enviar correo de recuperación';
+  }
+});
+
+function mostrarPanel(){
+  $('boxAuth').classList.add('hidden');
+  $('boxPanel').classList.remove('hidden');
+}
+
+// ---------- CLIENTE DEL CLUB (opcional, para sumar puntos) ----------
+var buscarTimer = null;
+$('buscarInput').addEventListener('input', function(){
+  clearTimeout(buscarTimer);
+  var q = this.value.trim();
+  if (q.length < 2){ $('resultados').innerHTML=''; return; }
+  buscarTimer = setTimeout(function(){ buscarClientes(q) }, 300);
+});
+
+async function buscarClientes(q){
+  var filtro;
+  if (/^BBH-/i.test(q)) {
+    filtro = 'codigo=eq.'+encodeURIComponent(q.toUpperCase());
+  } else {
+    filtro = 'nombre=ilike.*'+encodeURIComponent(q)+'*';
+  }
+  var res = await authFetch('/rest/v1/clientes?select=id,nombre,facultad,codigo&'+filtro+'&limit=8');
+  if (!res.ok){ $('resultados').innerHTML=''; return; }
+  var rows = await res.json();
+  pintarResultados(rows);
+}
+
+function pintarResultados(rows){
+  var el = $('resultados');
+  if (!rows.length){ el.innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:8px 2px">Sin resultados.</div>'; return; }
+  el.innerHTML = rows.map(function(c){
+    return '<div class="rescard" data-id="'+c.id+'"><div><div class="nm">'+esc(c.nombre)+'</div><div class="sub">'+esc(c.facultad||'Sin facultad')+' · '+esc(c.codigo)+'</div></div><div class="tag">→</div></div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.rescard'), function(card){
+    card.addEventListener('click', function(){ seleccionarCliente(card.getAttribute('data-id')) });
+  });
+}
+
+var clienteActual = null;
+
+async function seleccionarCliente(id){
+  var res = await authFetch('/rest/v1/v_mi_club?select=*&cliente_id=eq.'+id);
+  if (!res.ok){ toast('No se pudo cargar el cliente.'); return; }
+  var rows = await res.json();
+  if (!rows.length){ toast('Cliente no encontrado.'); return; }
+  clienteActual = rows[0];
+  $('ccNombre').textContent = clienteActual.nombre;
+  $('ccHamb').textContent = clienteActual.hamburguesas+' 🍔';
+  $('resultados').innerHTML = '';
+  $('buscarInput').value = '';
+  $('clubSeleccionado').classList.remove('hidden');
+  $('btnAbrirClub').classList.add('active');
+  $('btnAbrirClub').textContent = '🎟️ '+clienteActual.nombre+' — sumando al Club';
+}
+
+$('btnCambiarCliente').addEventListener('click', function(e){
+  e.stopPropagation();
+  clienteActual = null;
+  $('clubSeleccionado').classList.add('hidden');
+  $('btnAbrirClub').classList.remove('active');
+  $('btnAbrirClub').textContent = '🎟️ Sumar a Club BBH (opcional)';
+});
+
+$('btnAbrirClub').addEventListener('click', function(){
+  $('boxClubVenta').classList.toggle('hidden');
+});
+
+// ---------- PRODUCTOS / VENTA SIMPLIFICADA ----------
+var PRODUCTOS = [];
+var carrito = {}; // producto_id -> {producto, cantidad}
+var PRINCIPALES = ['Smash','Tailandesa'];
+var precioDescuentoActivo = 0; // 0 = precio normal; si no, precio con descuento aplicado a las hamburguesas principales
+
+// Precio real a cobrar por este producto: el de lista, salvo que sea una hamburguesa principal y haya un descuento activo.
+function precioEfectivo(producto){
+  if (precioDescuentoActivo > 0 && PRINCIPALES.indexOf(producto.nombre) > -1) return precioDescuentoActivo;
+  return producto.precio_lista;
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('#descuentoChips .chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    precioDescuentoActivo = parseInt(chip.getAttribute('data-precio')) || 0;
+    Array.prototype.forEach.call(document.querySelectorAll('#descuentoChips .chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    renderGridsProductos();
+  });
+});
+
+async function cargarProductos(){
+  $('gridPrincipales').innerHTML = '<div class="emptylist">Cargando productos…</div>';
+  var res;
+  try{
+    res = await authFetch('/rest/v1/productos?select=id,nombre,precio_lista,categoria&activo=eq.true&categoria=neq.SALSA&categoria=neq.SERVICIO&order=orden');
+  }catch(err){
+    $('gridPrincipales').innerHTML = '<div class="emptylist">Sin conexión. Desliza para reintentar o revisa tu internet.</div>';
+    return;
+  }
+  if (!res.ok){
+    $('gridPrincipales').innerHTML = '<div class="emptylist">No se pudieron cargar los productos. Vuelve a intentar.</div>';
+    return;
+  }
+  PRODUCTOS = await res.json();
+  renderGridsProductos();
+  cargarContadorDia();
+}
+
+function renderGridsProductos(){
+  var principales = PRODUCTOS.filter(function(p){ return PRINCIPALES.indexOf(p.nombre) > -1 });
+  var secundarios = PRODUCTOS.filter(function(p){ return PRINCIPALES.indexOf(p.nombre) === -1 });
+  $('gridPrincipales').innerHTML = principales.map(botonProducto).join('');
+  $('gridSecundarios').innerHTML = secundarios.map(botonProducto).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#gridPrincipales .prodbtn, #gridSecundarios .prodbtn'), function(btn){
+    btn.addEventListener('click', function(){ cambiarCantidad(btn.getAttribute('data-pid'), 1) });
+  });
+  renderCarritoBar();
+}
+
+function botonProducto(p){
+  var qty = (carrito[p.id] && carrito[p.id].cantidad) || 0;
+  var precio = precioEfectivo(p);
+  var conDescuento = precio !== p.precio_lista;
+  return '<div class="prodbtn'+(qty>0?' hasqty':'')+'" data-pid="'+p.id+'">'+
+    (qty>0 ? '<span class="qtybadge">'+qty+'</span>' : '')+
+    '<div class="pn">'+esc(p.nombre)+'</div><div class="pp"'+(conDescuento?' style="color:var(--yellow)"':'')+'>'+fmt(precio)+(conDescuento?' 🏷️':'')+'</div>'+
+  '</div>';
+}
+
+function cambiarCantidad(pid, delta){
+  var prod = PRODUCTOS.find(function(p){ return String(p.id) === String(pid) });
+  if (!prod) return;
+  var actual = (carrito[pid] && carrito[pid].cantidad) || 0;
+  var nueva = Math.max(0, actual + delta);
+  if (nueva === 0){ delete carrito[pid]; }
+  else { carrito[pid] = {producto: prod, cantidad: nueva}; }
+  renderGridsProductos();
+}
+
+function renderCarritoBar(){
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  var total = 0, unidades = 0;
+  items.forEach(function(it){ total += precioEfectivo(it.producto) * it.cantidad; unidades += it.cantidad; });
+  $('totalVenta').textContent = fmt(total);
+  $('btnCobrar').disabled = (unidades === 0);
+  if (!items.length){
+    $('carritoBar').classList.add('hidden');
+    return;
+  }
+  $('carritoBar').classList.remove('hidden');
+  $('cbResumen').textContent = items.map(function(it){ return it.cantidad+'× '+it.producto.nombre }).join(', ');
+}
+
+// ---------- CONTADOR DE HAMBURGUESAS DEL DÍA ----------
+async function cargarContadorDia(){
+  var hoy = new Date().toISOString().slice(0,10);
+  var res = await authFetch('/rest/v1/movimientos?select=unidades,productos(categoria)&tipo=eq.VENTA&fecha=eq.'+hoy);
+  if (!res.ok) return;
+  var rows = await res.json();
+  var total = rows.reduce(function(sum, r){
+    var cat = r.productos && r.productos.categoria;
+    if (cat === 'HAMBURGUESA' || cat === 'PERRO_CALIENTE' || cat === 'COMBO') sum += r.unidades;
+    return sum;
+  }, 0);
+  $('contadorNum').textContent = total;
+}
+
+// ---------- MODAL DE COBRO ----------
+var metodoCobro = 'EFECTIVO';
+
+$('btnCobrar').addEventListener('click', function(){
+  if ($('btnCobrar').disabled) return;
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  if (!items.length) return;
+  var total = items.reduce(function(s,it){ return s + precioEfectivo(it.producto)*it.cantidad }, 0);
+  $('cobroTotal').textContent = fmt(total);
+  $('recibidoInput').value = '';
+  $('cambioVal').textContent = fmt(0);
+  metodoCobro = 'EFECTIVO';
+  Array.prototype.forEach.call(document.querySelectorAll('.metbtn'), function(b){ b.classList.toggle('active', b.getAttribute('data-met')==='EFECTIVO') });
+  $('boxEfectivo').classList.remove('hidden');
+  $('boxTransferencia').classList.add('hidden');
+  $('msgCobro').className = 'msg';
+  $('modalCobro').classList.remove('hidden');
+});
+
+$('btnCancelarCobro').addEventListener('click', function(){ $('modalCobro').classList.add('hidden') });
+$('modalCobroBg').addEventListener('click', function(){ $('modalCobro').classList.add('hidden') });
+
+Array.prototype.forEach.call(document.querySelectorAll('.metbtn'), function(btn){
+  btn.addEventListener('click', function(){
+    metodoCobro = btn.getAttribute('data-met');
+    Array.prototype.forEach.call(document.querySelectorAll('.metbtn'), function(b){ b.classList.toggle('active', b===btn) });
+    $('boxEfectivo').classList.toggle('hidden', metodoCobro!=='EFECTIVO');
+    $('boxTransferencia').classList.toggle('hidden', metodoCobro!=='TRANSFERENCIA');
+  });
+});
+
+$('recibidoInput').addEventListener('input', function(){
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  var total = items.reduce(function(s,it){ return s + precioEfectivo(it.producto)*it.cantidad }, 0);
+  var recibido = parseFloat(this.value) || 0;
+  $('cambioVal').textContent = fmt(Math.max(0, recibido - total));
+});
+
+$('btnConfirmarCobro').addEventListener('click', async function(){
+  var items = Object.keys(carrito).map(function(pid){ return carrito[pid] });
+  if (!items.length) return;
+  var msg = $('msgCobro'); msg.className = 'msg';
+  var btn = $('btnConfirmarCobro'); btn.disabled = true; btn.textContent = 'Registrando...';
+  try{
+    var hoy = new Date();
+    var fecha = hoy.toISOString().slice(0,10);
+    var hora = hoy.toTimeString().slice(0,8);
+    var canal = $('canalVenta').value;
+    var pedidoId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2));
+    var notaPago = metodoCobro === 'EFECTIVO' ? 'Pago efectivo' : 'Pago transferencia (pendiente de verificar)';
+    if (precioDescuentoActivo > 0) notaPago += ' · Descuento aplicado: '+fmt(precioDescuentoActivo)+' c/u en hamburguesas';
+    var rows = items.map(function(it){
+      var precio = precioEfectivo(it.producto);
+      return {
+        fecha: fecha, hora: hora, tipo: 'VENTA',
+        producto_id: it.producto.id, unidades: it.cantidad,
+        precio_unitario: precio,
+        valor_total: precio * it.cantidad,
+        canal: canal, cliente_id: clienteActual ? clienteActual.cliente_id : null,
+        origen: 'panel_equipo', pedido_id: pedidoId,
+        nota: notaPago
+      };
+    });
+    var res = await authFetch('/rest/v1/movimientos', {
+      method: 'POST',
+      headers: {'Prefer':'return=minimal'},
+      body: JSON.stringify(rows)
+    });
+    if (!res.ok){
+      var errBody = await res.text();
+      msg.textContent = 'No se pudo registrar la venta. Verifica tu conexión.';
+      msg.className = 'msg err show';
+      console.error(errBody);
+      return;
+    }
+    toast(clienteActual ? 'Venta registrada — Club BBH actualizado' : 'Venta registrada');
+    carrito = {};
+    precioDescuentoActivo = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('#descuentoChips .chipf'), function(c){ c.classList.toggle('active', c.getAttribute('data-precio')==='0') });
+    renderGridsProductos();
+    cargarContadorDia();
+    $('modalCobro').classList.add('hidden');
+    if (clienteActual){
+      $('btnCambiarCliente').click();
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión al registrar la venta.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Confirmar venta';
+  }
+});
+
+// ---------- ESCÁNER ----------
+var scanStream = null;
+var scanActive = false;
+
+$('btnScan').addEventListener('click', function(){
+  if (scanActive){ pararScan(); return; }
+  iniciarScan();
+});
+
+async function iniciarScan(){
+  var msg = $('msgScan'); msg.className = 'msg';
+  if (!('BarcodeDetector' in window)){
+    msg.textContent = 'Tu navegador no soporta escaneo de cámara. Escribe el código manualmente arriba.';
+    msg.className = 'msg err show';
+    return;
+  }
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    var video = $('video');
+    video.srcObject = scanStream;
+    await video.play();
+    $('scanwrap').classList.remove('hidden');
+    $('btnScan').textContent = '✕ Detener cámara';
+    scanActive = true;
+    var detector = new BarcodeDetector({formats:['qr_code']});
+    loopScan(detector, video);
+  }catch(err){
+    msg.textContent = 'No se pudo acceder a la cámara. Revisa los permisos del navegador.';
+    msg.className = 'msg err show';
+  }
+}
+
+async function loopScan(detector, video){
+  if (!scanActive) return;
+  try{
+    var codes = await detector.detect(video);
+    if (codes.length){
+      var valor = codes[0].rawValue;
+      pararScan();
+      $('buscarInput').value = valor;
+      buscarClientes(valor);
+      return;
+    }
+  }catch(e){}
+  requestAnimationFrame(function(){ loopScan(detector, video) });
+}
+
+function pararScan(){
+  scanActive = false;
+  if (scanStream){ scanStream.getTracks().forEach(function(t){ t.stop() }); scanStream = null; }
+  $('scanwrap').classList.add('hidden');
+  $('btnScan').textContent = '📷 Escanear código';
+}
+
+// ---------- TABS ----------
+var TAB_IDS = ['cierre','vender','dashboard','gastos','fiados','deudas','ingresos','clientes'];
+var TAB_TITULOS = {cierre:'Cierre del día', vender:'Venta rápida', dashboard:'Cómo va BBH', gastos:'Gastos', fiados:'Cartera de fiados', deudas:'Deudas', ingresos:'Ingresos', clientes:'Clientes del Club'};
+var TAB_ELID = {cierre:'tabCierre', vender:'tabVender', dashboard:'tabDashboard', gastos:'tabGastos', fiados:'tabFiados', deudas:'tabDeudas', ingresos:'tabIngresos', clientes:'tabClientes'};
+
+function cambiarTab(tab){
+  Array.prototype.forEach.call(document.querySelectorAll('.tabbtn'), function(b){ b.classList.toggle('active', b.getAttribute('data-tab')===tab) });
+  TAB_IDS.forEach(function(t){ document.getElementById(TAB_ELID[t]).classList.toggle('active', t===tab) });
+  $('tituloPanel').textContent = TAB_TITULOS[tab] || 'Panel';
+  if (tab === 'clientes' && !listaClientesCargada){
+    cargarListaClientes();
+  }
+  if (tab === 'fiados'){
+    cargarFiados();
+  }
+  if (tab === 'gastos'){
+    cargarGastos();
+  }
+  if (tab === 'deudas'){
+    cargarDeudas();
+  }
+  if (tab === 'ingresos'){
+    cargarIngresos();
+  }
+  if (tab === 'dashboard'){
+    cargarDashboard();
+  }
+  if (tab === 'cierre'){
+    var fechaObjetivoCierre = $('cierreFecha').value || hoyISO();
+    if (fechaObjetivoCierre !== cierreFechaCargada){
+      cargarCierre(); // primera vez, o cambiaste de día: carga todo, incluye los campos principales
+    } else {
+      cargarListasDia(fechaObjetivoCierre); // ya estabas en este día: solo refresca gastos/fiados, sin borrar lo que estás escribiendo
+    }
+  }
+  // Sincronización en vivo: solo se mantiene activa mientras estás en una pestaña que la aprovecha.
+  if (tab === 'cierre'){ suscribirRealtime({tab:'cierre', fecha: $('cierreFecha').value || hoyISO()}); }
+  else if (tab === 'fiados'){ suscribirRealtime({tab:'fiados'}); }
+  else if (tab === 'gastos'){ suscribirRealtime({tab:'gastos'}); }
+  else { suscribirRealtime(null); }
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('.tabbtn'), function(btn){
+  btn.addEventListener('click', function(){ cambiarTab(btn.getAttribute('data-tab')) });
+});
+
+// ---------- CLIENTES: LISTA ----------
+var TODOS_CLIENTES = [];
+var listaClientesCargada = false;
+
+async function cargarListaClientes(){
+  var msg = $('msgLista'); msg.className = 'msg';
+  $('listaClientes').innerHTML = '<div class="emptylist">Cargando clientes…</div>';
+  var res = await authFetch('/rest/v1/v_mi_club?select=cliente_id,nombre,facultad,codigo,hamburguesas,nivel_actual,saldo_fiado&order=nombre.asc');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la lista de clientes.';
+    msg.className = 'msg err show';
+    $('listaClientes').innerHTML = '';
+    return;
+  }
+  TODOS_CLIENTES = await res.json();
+  listaClientesCargada = true;
+  renderListaClientes(TODOS_CLIENTES);
+}
+
+function renderListaClientes(rows){
+  var el = $('listaClientes');
+  if (!rows.length){ el.innerHTML = '<div class="emptylist">Sin clientes todavía.</div>'; return; }
+  el.innerHTML = rows.map(function(c){
+    var deuda = (c.saldo_fiado && Number(c.saldo_fiado) > 0) ? ('<div class="dbt">Debe '+fmt(c.saldo_fiado)+'</div>') : '';
+    return '<div class="clirow" data-id="'+c.cliente_id+'">'+
+      '<div><div class="nm">'+esc(c.nombre)+'</div><div class="sub">'+esc(c.facultad||'Sin facultad')+' · '+esc(c.codigo)+'</div></div>'+
+      '<div class="stat"><div class="hb">'+c.hamburguesas+'</div><div class="lv">'+esc(c.nivel_actual||'—')+'</div>'+deuda+'</div>'+
+    '</div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
+    row.addEventListener('click', function(){ abrirEditar(row.getAttribute('data-id')) });
+  });
+}
+
+$('listaBuscarInput').addEventListener('input', function(){
+  var q = this.value.trim().toLowerCase();
+  if (!q){ renderListaClientes(TODOS_CLIENTES); return; }
+  var filtrados = TODOS_CLIENTES.filter(function(c){
+    return (c.nombre||'').toLowerCase().indexOf(q) > -1 ||
+           (c.facultad||'').toLowerCase().indexOf(q) > -1 ||
+           (c.codigo||'').toLowerCase().indexOf(q) > -1;
+  });
+  renderListaClientes(filtrados);
+});
+
+// ---------- CLIENTES: CREAR / EDITAR ----------
+var editandoId = null;
+
+$('btnNuevoCliente').addEventListener('click', function(){ abrirCrear() });
+$('btnVolverLista').addEventListener('click', function(){ volverALista() });
+
+function volverALista(){
+  $('vistaEditar').classList.add('hidden');
+  $('vistaLista').classList.remove('hidden');
+  editandoId = null;
+}
+
+function limpiarFormEditar(){
+  $('formEditar').reset();
+  $('editId').value = '';
+  $('msgEditar').className = 'msg';
+  $('msgEditar').textContent = '';
+}
+
+function abrirCrear(){
+  limpiarFormEditar();
+  editandoId = null;
+  $('editKicker').textContent = 'Nuevo cliente';
+  $('editCodigoChip').classList.add('hidden');
+  $('editResumen').classList.add('hidden');
+  $('btnGuardarCliente').textContent = 'Crear cliente';
+  $('vistaLista').classList.add('hidden');
+  $('vistaEditar').classList.remove('hidden');
+  $('editNombre').focus();
+}
+
+function abrirEditar(id){
+  var c = TODOS_CLIENTES.find(function(x){ return String(x.cliente_id) === String(id) });
+  if (!c) return;
+  limpiarFormEditar();
+  editandoId = id;
+  $('editKicker').textContent = 'Editar cliente';
+  $('editId').value = id;
+  $('editNombre').value = c.nombre || '';
+  $('editFacultad').value = c.facultad || '';
+  $('editCodigoChip').textContent = c.codigo;
+  $('editCodigoChip').classList.remove('hidden');
+  $('btnGuardarCliente').textContent = 'Guardar cambios';
+
+  // datos extra (telefono, alias, notas) no vienen en v_mi_club: se piden aparte
+  authFetch('/rest/v1/clientes?select=telefono,alias,notas&id=eq.'+id).then(function(r){ return r.json() }).then(function(rows){
+    if (rows && rows[0]){
+      $('editTelefono').value = rows[0].telefono || '';
+      $('editAlias').value = rows[0].alias || '';
+      $('editNotas').value = rows[0].notas || '';
+    }
+  });
+
+  $('editHamb').textContent = c.hamburguesas;
+  $('editNivel').textContent = c.nivel_actual || 'Sin nivel';
+  var deuda = $('editDeuda');
+  if (c.saldo_fiado && Number(c.saldo_fiado) > 0){
+    deuda.textContent = 'Fiado pendiente: '+fmt(c.saldo_fiado);
+    deuda.classList.add('show');
+  } else {
+    deuda.classList.remove('show');
+  }
+  $('editResumen').classList.remove('hidden');
+
+  $('vistaLista').classList.add('hidden');
+  $('vistaEditar').classList.remove('hidden');
+}
+
+$('formEditar').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgEditar'); msg.className = 'msg';
+  var telDigits = $('editTelefono').value.trim().replace(/\D/g,'');
+  if (telDigits.length < 7 || telDigits.length > 15){
+    msg.textContent = 'Escribe un número de teléfono válido (solo números, sin espacios).';
+    msg.className = 'msg err show';
+    return;
+  }
+  var btn = $('btnGuardarCliente'); btn.disabled = true;
+  var payload = {
+    nombre: $('editNombre').value.trim(),
+    facultad: $('editFacultad').value.trim() || null,
+    telefono: telDigits,
+    alias: $('editAlias').value.trim() || null,
+    notas: $('editNotas').value.trim() || null
+  };
+  try{
+    var res;
+    if (editandoId){
+      res = await authFetch('/rest/v1/clientes?id=eq.'+editandoId, {
+        method: 'PATCH',
+        headers: {'Prefer':'return=minimal'},
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await authFetch('/rest/v1/clientes', {
+        method: 'POST',
+        headers: {'Prefer':'return=minimal'},
+        body: JSON.stringify(payload)
+      });
+    }
+    if (!res.ok){
+      var errBody = await res.text();
+      msg.textContent = 'No se pudo guardar. Revisa los datos e intenta de nuevo.';
+      msg.className = 'msg err show';
+      console.error(errBody);
+      return;
+    }
+    toast(editandoId ? 'Cliente actualizado' : 'Cliente creado');
+    listaClientesCargada = false;
+    await cargarListaClientes();
+    volverALista();
+  }catch(err){
+    msg.textContent = 'Error de conexión al guardar.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ---------- FIADOS: LISTA ----------
+var TODOS_FIADOS = [];
+var filtroFiadosActual = 'pendiente';
+var fiadoActual = null;
+
+async function cargarFiados(){
+  var msg = $('msgFiadosLista'); msg.className = 'msg';
+  $('listaFiados').innerHTML = '<div class="emptylist">Cargando fiados…</div>';
+  var res = await authFetch('/rest/v1/v_fiados_saldo?select=*&order=dias_vencido.desc.nullslast');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la cartera de fiados.';
+    msg.className = 'msg err show';
+    $('listaFiados').innerHTML = '';
+    return;
+  }
+  TODOS_FIADOS = await res.json();
+  pintarResumenFiados();
+  renderListaFiados();
+}
+
+function pintarResumenFiados(){
+  var pendientes = TODOS_FIADOS.filter(function(f){ return f.saldo > 0 });
+  var totalSaldo = pendientes.reduce(function(s,f){ return s + parseFloat(f.saldo) }, 0);
+  var vencidos = pendientes.filter(function(f){ return f.dias_vencido != null && f.dias_vencido > 0 });
+  var pendientesConUnid = pendientes.filter(function(f){ return f.unidades != null });
+  var totalUnid = pendientesConUnid.reduce(function(s,f){ return s + f.unidades }, 0);
+  var unidTxt = totalUnid + (pendientesConUnid.length < pendientes.length ? '+' : ''); // '+' si algún fiado pendiente no tiene unidades capturadas (históricos)
+  $('fiadosResumen').innerHTML =
+    '<div class="rescard"><div class="n">'+fmt(totalSaldo)+'</div><div class="l">Cartera pendiente</div></div>'+
+    '<div class="rescard"><div class="n">'+unidTxt+'</div><div class="l">Hamburguesas fiadas pendientes</div></div>'+
+    '<div class="rescard"><div class="n'+(vencidos.length?' warn':'')+'">'+vencidos.length+'</div><div class="l">Fiados vencidos</div></div>';
+}
+
+function fiadosFiltrados(){
+  var q = ($('fiadosBuscarInput').value||'').trim().toLowerCase();
+  var lista = TODOS_FIADOS.slice();
+  if (filtroFiadosActual === 'pendiente') lista = lista.filter(function(f){ return f.saldo > 0 });
+  else if (filtroFiadosActual === 'vencido') lista = lista.filter(function(f){ return f.saldo > 0 && f.dias_vencido != null && f.dias_vencido > 0 });
+  if (q){
+    lista = lista.filter(function(f){
+      return (f.cliente||'').toLowerCase().indexOf(q) > -1 || (f.facultad||'').toLowerCase().indexOf(q) > -1;
+    });
+  }
+  return lista;
+}
+
+function renderListaFiados(){
+  var lista = fiadosFiltrados();
+  var el = $('listaFiados');
+  if (!lista.length){
+    el.innerHTML = '<div class="emptylist">No hay fiados en este filtro.</div>';
+    return;
+  }
+  el.innerHTML = lista.map(function(f){
+    var vencTxt = '';
+    if (f.saldo > 0 && f.dias_vencido != null){
+      vencTxt = f.dias_vencido > 0
+        ? '<div class="venc">Vencido hace '+f.dias_vencido+' día'+(f.dias_vencido===1?'':'s')+'</div>'
+        : '<div class="sub">Vence en '+Math.abs(f.dias_vencido)+' día'+(Math.abs(f.dias_vencido)===1?'':'s')+'</div>';
+    }
+    var unidTxt = f.unidades != null ? ' · '+f.unidades+' unid.' : '';
+    return '<div class="clirow" data-id="'+f.id+'">'+
+      '<div><div class="nm">'+esc(f.cliente)+unidTxt+'</div><div class="sub">'+esc(f.facultad||'Sin facultad')+'</div></div>'+
+      '<div class="stat"><div class="hb">'+fmt(f.saldo)+'</div><div class="lv">'+esc(f.estado)+'</div>'+vencTxt+'</div>'+
+    '</div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
+    row.addEventListener('click', function(){ abrirFiadoDetalle(row.getAttribute('data-id')) });
+  });
+}
+
+$('fiadosBuscarInput').addEventListener('input', renderListaFiados);
+
+Array.prototype.forEach.call(document.querySelectorAll('.chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    filtroFiadosActual = chip.getAttribute('data-f');
+    Array.prototype.forEach.call(document.querySelectorAll('.chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    renderListaFiados();
+  });
+});
+
+// ---------- FIADOS: DETALLE + ABONO ----------
+function abrirFiadoDetalle(id){
+  var f = TODOS_FIADOS.find(function(x){ return String(x.id) === String(id) });
+  if (!f) return;
+  fiadoActual = f;
+  pintarFiadoDetalle(f);
+  cargarAbonosDeFiado(f.id);
+  $('vistaFiadosLista').classList.add('hidden');
+  $('vistaFiadoDetalle').classList.remove('hidden');
+  $('formAbono').reset();
+  $('msgFiadoDetalle').className = 'msg';
+}
+
+function pintarFiadoDetalle(f){
+  $('fdNombre').textContent = f.cliente;
+  $('fdSub').textContent = (f.facultad||'Sin facultad')+' · '+(f.telefono||'Sin teléfono');
+  $('fdTotal').textContent = fmt(f.valor_total);
+  $('fdAbonado').textContent = fmt(f.abonado);
+  $('fdSaldo').textContent = fmt(f.saldo);
+  var venc = $('fdVencido');
+  if (f.saldo > 0 && f.dias_vencido != null && f.dias_vencido > 0){
+    venc.textContent = 'Vencido hace '+f.dias_vencido+' día'+(f.dias_vencido===1?'':'s')+' (prometió pagar el '+f.pago_prometido+').';
+    venc.classList.add('show');
+  } else {
+    venc.classList.remove('show');
+  }
+  var form = $('formAbono');
+  if (f.saldo <= 0){
+    form.classList.add('hidden');
+  } else {
+    form.classList.remove('hidden');
+    $('abonoValor').max = f.saldo;
+  }
+}
+
+async function cargarAbonosDeFiado(fiadoId){
+  var el = $('listaAbonos');
+  el.innerHTML = '<div class="emptylist">Cargando…</div>';
+  var res = await authFetch('/rest/v1/abonos?select=id,fecha,valor,metodo,nota&fiado_id=eq.'+fiadoId+'&order=fecha.desc,id.desc');
+  if (!res.ok){ el.innerHTML = '<div class="emptylist">No se pudo cargar el historial.</div>'; return; }
+  var abonos = await res.json();
+  if (!abonos.length){ el.innerHTML = '<div class="emptylist">Sin abonos aún.</div>'; return; }
+  el.innerHTML = abonos.map(function(a){
+    return '<div class="abonorow"><div><div class="am">'+fmt(a.valor)+'</div><div class="dt">'+esc(a.metodo||'')+(a.nota?' · '+esc(a.nota):'')+'</div></div><div class="dt">'+esc(a.fecha)+'</div></div>';
+  }).join('');
+}
+
+$('btnVolverFiados').addEventListener('click', function(){
+  $('vistaFiadoDetalle').classList.add('hidden');
+  $('vistaFiadosLista').classList.remove('hidden');
+  fiadoActual = null;
+});
+
+$('formAbono').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if (!fiadoActual) return;
+  var msg = $('msgFiadoDetalle'); msg.className = 'msg';
+  var valor = parseFloat($('abonoValor').value);
+  if (!valor || valor <= 0){
+    msg.textContent = 'Escribe un valor válido.';
+    msg.className = 'msg err show';
+    return;
+  }
+  var btn = $('btnRegistrarAbono'); btn.disabled = true;
+  try{
+    var res = await authFetch('/rest/v1/rpc/registrar_abono', {
+      method: 'POST',
+      body: JSON.stringify({
+        p_fiado_id: fiadoActual.id,
+        p_valor: valor,
+        p_metodo: $('abonoMetodo').value,
+        p_nota: $('abonoNota').value.trim() || null
+      })
+    });
+    var data = await res.json();
+    if (!res.ok){
+      var texto = (data && (data.message || data.msg)) || 'No se pudo registrar el abono.';
+      msg.textContent = texto;
+      msg.className = 'msg err show';
+      return;
+    }
+    if (data.ajustado){
+      toast('Abono ajustado a '+fmt(data.monto_registrado)+' (era el saldo restante)');
+    } else {
+      toast('Abono de '+fmt(data.monto_registrado)+' registrado');
+    }
+    await cargarFiados();
+    var actualizado = TODOS_FIADOS.find(function(x){ return String(x.id) === String(fiadoActual.id) });
+    if (actualizado){
+      fiadoActual = actualizado;
+      pintarFiadoDetalle(actualizado);
+      await cargarAbonosDeFiado(actualizado.id);
+      $('formAbono').reset();
+    } else {
+      $('vistaFiadoDetalle').classList.add('hidden');
+      $('vistaFiadosLista').classList.remove('hidden');
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión al registrar el abono.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ---------- UTIL: fecha hoy / rangos ----------
+function hoyISO(){ return new Date().toISOString().slice(0,10) }
+function fechaISO(d){ return d.toISOString().slice(0,10) }
+function inicioSemanaISO(){
+  var d = new Date();
+  var dow = d.getDay(); // 0=domingo
+  var diff = (dow === 0) ? 6 : dow - 1; // lunes como inicio
+  d.setDate(d.getDate() - diff);
+  return fechaISO(d);
+}
+function inicioMesISO(){
+  var d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';
+}
+
+// ---------- EXPORTAR CSV ----------
+function exportarCSV(nombreArchivo, filas, columnas){
+  if (!filas.length){ toast('No hay datos para exportar'); return; }
+  var header = columnas.map(function(c){ return '"'+c.titulo.replace(/"/g,'""')+'"' }).join(',');
+  var lineas = filas.map(function(row){
+    return columnas.map(function(c){
+      var v = row[c.campo];
+      if (v == null) v = '';
+      return '"'+String(v).replace(/"/g,'""')+'"';
+    }).join(',');
+  });
+  var csv = '﻿' + header + '\n' + lineas.join('\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = nombreArchivo;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ==================== GASTOS ====================
+var TODOS_GASTOS = [];
+var filtroGastosActual = 'todos';
+var editandoGastoId = null;
+
+async function cargarGastos(){
+  var msg = $('msgGastosLista'); msg.className = 'msg';
+  $('listaGastos').innerHTML = '<div class="emptylist">Cargando gastos…</div>';
+  var res = await authFetch('/rest/v1/gastos?select=id,fecha,concepto,valor,clasificacion,categoria,proveedor,nota&order=fecha.desc,id.desc&limit=500');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la lista de gastos.';
+    msg.className = 'msg err show';
+    $('listaGastos').innerHTML = '';
+    return;
+  }
+  TODOS_GASTOS = await res.json();
+  pintarResumenGastos();
+  renderListaGastos();
+}
+
+function pintarResumenGastos(){
+  var hoy = hoyISO();
+  var inicioMes = inicioMesISO();
+  var delMes = TODOS_GASTOS.filter(function(g){ return g.fecha >= inicioMes });
+  var bbhMes = delMes.filter(function(g){ return g.clasificacion === 'BBH' }).reduce(function(s,g){ return s+parseFloat(g.valor) }, 0);
+  var personalMes = delMes.filter(function(g){ return g.clasificacion === 'PERSONAL' }).reduce(function(s,g){ return s+parseFloat(g.valor) }, 0);
+  var sinClasificar = TODOS_GASTOS.filter(function(g){ return g.clasificacion === 'REVISAR' }).length;
+  $('gastosResumen').innerHTML =
+    '<div class="rescard"><div class="n">'+fmt(bbhMes)+'</div><div class="l">Gastos BBH este mes</div></div>'+
+    '<div class="rescard"><div class="n">'+fmt(personalMes)+'</div><div class="l">Gastos personales este mes</div></div>'+
+    '<div class="rescard" style="grid-column:1/-1"><div class="n'+(sinClasificar?' warn':'')+'">'+sinClasificar+'</div><div class="l">Sin clasificar (revisar)</div></div>';
+}
+
+function gastosFiltrados(){
+  var q = ($('gastosBuscarInput').value||'').trim().toLowerCase();
+  var lista = TODOS_GASTOS.slice();
+  if (filtroGastosActual !== 'todos') lista = lista.filter(function(g){ return g.clasificacion === filtroGastosActual });
+  if (q) lista = lista.filter(function(g){ return (g.concepto||'').toLowerCase().indexOf(q) > -1 });
+  return lista;
+}
+
+function renderListaGastos(){
+  var lista = gastosFiltrados();
+  var el = $('listaGastos');
+  if (!lista.length){ el.innerHTML = '<div class="emptylist">No hay gastos en este filtro.</div>'; return; }
+  el.innerHTML = lista.map(function(g){
+    return '<div class="clirow gastorow" data-id="'+g.id+'">'+
+      '<div><div class="nm">'+esc(g.concepto)+'</div><div class="sub">'+esc(g.fecha)+(g.categoria?' · '+esc(g.categoria):'')+'</div>'+
+      '<span class="cl '+esc(g.clasificacion)+'">'+(g.clasificacion==='BBH'?'Negocio':(g.clasificacion==='PERSONAL'?'Personal':'Revisar'))+'</span></div>'+
+      '<div class="stat"><div class="hb">'+fmt(g.valor)+'</div></div>'+
+    '</div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
+    row.addEventListener('click', function(){ abrirEditarGasto(row.getAttribute('data-id')) });
+  });
+  var wrap = $('vistaGastosLista');
+  var existente = document.getElementById('btnExportGastos');
+  if (!existente){
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'btnexport'; btn.id = 'btnExportGastos';
+    btn.textContent = '⬇️ Descargar en Excel (CSV)';
+    btn.addEventListener('click', function(){
+      exportarCSV('bbh_gastos_'+hoyISO()+'.csv', gastosFiltrados(), [
+        {campo:'fecha', titulo:'Fecha'}, {campo:'concepto', titulo:'Concepto'}, {campo:'valor', titulo:'Valor'},
+        {campo:'clasificacion', titulo:'Clasificación'}, {campo:'categoria', titulo:'Categoría'},
+        {campo:'proveedor', titulo:'Proveedor'}, {campo:'nota', titulo:'Nota'}
+      ]);
+    });
+    wrap.appendChild(btn);
+  }
+}
+
+$('gastosBuscarInput').addEventListener('input', renderListaGastos);
+Array.prototype.forEach.call(document.querySelectorAll('#gastosFiltros .chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    filtroGastosActual = chip.getAttribute('data-f');
+    Array.prototype.forEach.call(document.querySelectorAll('#gastosFiltros .chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    renderListaGastos();
+  });
+});
+
+function limpiarFormGasto(){
+  $('formGasto').reset();
+  $('gastoFecha').value = hoyISO();
+  $('msgGastoForm').className = 'msg'; $('msgGastoForm').textContent = '';
+}
+
+$('btnNuevoGasto').addEventListener('click', function(){
+  editandoGastoId = null;
+  limpiarFormGasto();
+  $('vistaGastosLista').classList.add('hidden');
+  $('vistaGastoForm').classList.remove('hidden');
+});
+$('btnVolverGastos').addEventListener('click', function(){
+  $('vistaGastoForm').classList.add('hidden');
+  $('vistaGastosLista').classList.remove('hidden');
+});
+
+function abrirEditarGasto(id){
+  var g = TODOS_GASTOS.find(function(x){ return String(x.id) === String(id) });
+  if (!g) return;
+  editandoGastoId = id;
+  limpiarFormGasto();
+  $('gastoFecha').value = g.fecha;
+  $('gastoConcepto').value = g.concepto;
+  $('gastoValor').value = g.valor;
+  $('gastoClasificacion').value = g.clasificacion === 'REVISAR' ? '' : g.clasificacion;
+  $('gastoCategoria').value = g.categoria || '';
+  $('gastoProveedor').value = g.proveedor || '';
+  $('gastoNota').value = g.nota || '';
+  $('vistaGastosLista').classList.add('hidden');
+  $('vistaGastoForm').classList.remove('hidden');
+}
+
+$('formGasto').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgGastoForm'); msg.className = 'msg';
+  var valor = parseFloat($('gastoValor').value);
+  if (!valor || valor <= 0){ msg.textContent = 'Escribe un valor válido.'; msg.className = 'msg err show'; return; }
+  if (!$('gastoClasificacion').value){ msg.textContent = 'Debes decir si es del negocio o personal.'; msg.className = 'msg err show'; return; }
+  var btn = $('btnGuardarGasto'); btn.disabled = true;
+  var payload = {
+    fecha: $('gastoFecha').value || hoyISO(),
+    concepto: $('gastoConcepto').value.trim(),
+    valor: valor,
+    clasificacion: $('gastoClasificacion').value,
+    categoria: $('gastoCategoria').value.trim() || null,
+    proveedor: $('gastoProveedor').value.trim() || null,
+    nota: $('gastoNota').value.trim() || null
+  };
+  try{
+    var res;
+    if (editandoGastoId){
+      res = await authFetch('/rest/v1/gastos?id=eq.'+editandoGastoId, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify(payload)});
+    } else {
+      res = await authFetch('/rest/v1/gastos', {method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify(payload)});
+    }
+    if (!res.ok){
+      msg.textContent = 'No se pudo guardar el gasto.'; msg.className = 'msg err show';
+      console.error(await res.text());
+      return;
+    }
+    toast(editandoGastoId ? 'Gasto actualizado' : 'Gasto registrado');
+    await cargarGastos();
+    $('vistaGastoForm').classList.add('hidden');
+    $('vistaGastosLista').classList.remove('hidden');
+  }catch(err){
+    msg.textContent = 'Error de conexión al guardar.'; msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ==================== DEUDAS ====================
+var TODAS_DEUDAS = [];
+var filtroDeudasActual = 'pendiente';
+var deudaActual = null;
+
+async function cargarDeudas(){
+  var msg = $('msgDeudasLista'); msg.className = 'msg';
+  $('listaDeudas').innerHTML = '<div class="emptylist">Cargando deudas…</div>';
+  var res = await authFetch('/rest/v1/v_deudas_saldo?select=*&order=fecha.desc');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la lista de deudas.'; msg.className = 'msg err show';
+    $('listaDeudas').innerHTML = '';
+    return;
+  }
+  TODAS_DEUDAS = await res.json();
+  pintarResumenDeudas();
+  renderListaDeudas();
+}
+
+function pintarResumenDeudas(){
+  var pendientes = TODAS_DEUDAS.filter(function(d){ return d.saldo > 0 });
+  var bbh = pendientes.filter(function(d){ return d.clasificacion === 'BBH' }).reduce(function(s,d){ return s+parseFloat(d.saldo) }, 0);
+  var personal = pendientes.filter(function(d){ return d.clasificacion === 'PERSONAL' }).reduce(function(s,d){ return s+parseFloat(d.saldo) }, 0);
+  var vencidas = pendientes.filter(function(d){ return d.vencida }).length;
+  $('deudasResumen').innerHTML =
+    '<div class="rescard"><div class="n">'+fmt(bbh)+'</div><div class="l">Debe BBH</div></div>'+
+    '<div class="rescard"><div class="n">'+fmt(personal)+'</div><div class="l">Debes tú (personal)</div></div>'+
+    '<div class="rescard" style="grid-column:1/-1"><div class="n'+(vencidas?' warn':'')+'">'+vencidas+'</div><div class="l">Deudas vencidas</div></div>';
+}
+
+function deudasFiltradas(){
+  var lista = TODAS_DEUDAS.slice();
+  if (filtroDeudasActual === 'pendiente') lista = lista.filter(function(d){ return d.saldo > 0 });
+  else if (filtroDeudasActual === 'BBH' || filtroDeudasActual === 'PERSONAL') lista = lista.filter(function(d){ return d.clasificacion === filtroDeudasActual });
+  return lista;
+}
+
+function renderListaDeudas(){
+  var lista = deudasFiltradas();
+  var el = $('listaDeudas');
+  if (!lista.length){ el.innerHTML = '<div class="emptylist">No hay deudas en este filtro.</div>'; return; }
+  el.innerHTML = lista.map(function(d){
+    var venc = d.vencida ? '<div class="venc">Vencida</div>' : '';
+    return '<div class="clirow" data-id="'+d.id+'">'+
+      '<div><div class="nm">'+esc(d.acreedor)+'</div><div class="sub">'+esc(d.concepto)+' · '+(d.clasificacion==='BBH'?'Negocio':'Personal')+'</div></div>'+
+      '<div class="stat"><div class="hb">'+fmt(d.saldo)+'</div><div class="lv">'+esc(d.estado_calculado)+'</div>'+venc+'</div>'+
+    '</div>';
+  }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
+    row.addEventListener('click', function(){ abrirDeudaDetalle(row.getAttribute('data-id')) });
+  });
+  var wrapD = $('vistaDeudasLista');
+  if (!document.getElementById('btnExportDeudas')){
+    var btnD = document.createElement('button');
+    btnD.type = 'button'; btnD.className = 'btnexport'; btnD.id = 'btnExportDeudas';
+    btnD.textContent = '⬇️ Descargar en Excel (CSV)';
+    btnD.addEventListener('click', function(){
+      exportarCSV('bbh_deudas_'+hoyISO()+'.csv', deudasFiltradas(), [
+        {campo:'fecha', titulo:'Fecha'}, {campo:'acreedor', titulo:'Acreedor'}, {campo:'concepto', titulo:'Concepto'},
+        {campo:'valor_total', titulo:'Valor total'}, {campo:'total_abonado', titulo:'Abonado'}, {campo:'saldo', titulo:'Saldo'},
+        {campo:'clasificacion', titulo:'Clasificación'}, {campo:'estado_calculado', titulo:'Estado'}
+      ]);
+    });
+    wrapD.appendChild(btnD);
+  }
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('#deudasFiltros .chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    filtroDeudasActual = chip.getAttribute('data-f');
+    Array.prototype.forEach.call(document.querySelectorAll('#deudasFiltros .chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    renderListaDeudas();
+  });
+});
+
+function limpiarFormDeuda(){
+  $('formDeuda').reset();
+  $('msgDeudaForm').className = 'msg'; $('msgDeudaForm').textContent = '';
+}
+
+$('btnNuevaDeuda').addEventListener('click', function(){
+  limpiarFormDeuda();
+  $('vistaDeudasLista').classList.add('hidden');
+  $('vistaDeudaForm').classList.remove('hidden');
+});
+$('btnVolverDeudaForm').addEventListener('click', function(){
+  $('vistaDeudaForm').classList.add('hidden');
+  $('vistaDeudasLista').classList.remove('hidden');
+});
+
+$('formDeuda').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgDeudaForm'); msg.className = 'msg';
+  var valor = parseFloat($('deudaValor').value);
+  if (!valor || valor <= 0){ msg.textContent = 'Escribe un valor válido.'; msg.className = 'msg err show'; return; }
+  if (!$('deudaClasificacion').value){ msg.textContent = 'Debes decir si es del negocio o personal.'; msg.className = 'msg err show'; return; }
+  var btn = $('btnGuardarDeuda'); btn.disabled = true;
+  var payload = {
+    acreedor: $('deudaAcreedor').value.trim(),
+    concepto: $('deudaConcepto').value.trim(),
+    valor_total: valor,
+    clasificacion: $('deudaClasificacion').value,
+    fecha_limite: $('deudaFechaLimite').value || null,
+    nota: $('deudaNota').value.trim() || null
+  };
+  try{
+    var res = await authFetch('/rest/v1/deudas', {method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify(payload)});
+    if (!res.ok){
+      msg.textContent = 'No se pudo guardar la deuda.'; msg.className = 'msg err show';
+      console.error(await res.text());
+      return;
+    }
+    toast('Deuda registrada');
+    await cargarDeudas();
+    $('vistaDeudaForm').classList.add('hidden');
+    $('vistaDeudasLista').classList.remove('hidden');
+  }catch(err){
+    msg.textContent = 'Error de conexión al guardar.'; msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+function abrirDeudaDetalle(id){
+  var d = TODAS_DEUDAS.find(function(x){ return String(x.id) === String(id) });
+  if (!d) return;
+  deudaActual = d;
+  pintarDeudaDetalle(d);
+  cargarAbonosDeDeuda(d.id);
+  $('vistaDeudasLista').classList.add('hidden');
+  $('vistaDeudaDetalle').classList.remove('hidden');
+  $('formAbonoDeuda').reset();
+  $('msgDeudaDetalle').className = 'msg';
+}
+
+function pintarDeudaDetalle(d){
+  $('ddAcreedor').textContent = d.acreedor;
+  $('ddSub').textContent = d.concepto+' · '+(d.clasificacion==='BBH'?'Negocio':'Personal');
+  $('ddTotal').textContent = fmt(d.valor_total);
+  $('ddAbonado').textContent = fmt(d.total_abonado);
+  $('ddSaldo').textContent = fmt(d.saldo);
+  var venc = $('ddVencida');
+  if (d.vencida){
+    venc.textContent = 'Vencida (límite: '+d.fecha_limite+').';
+    venc.classList.add('show');
+  } else {
+    venc.classList.remove('show');
+  }
+  var form = $('formAbonoDeuda');
+  if (d.saldo <= 0){ form.classList.add('hidden') } else { form.classList.remove('hidden'); $('abonoDeudaValor').max = d.saldo; }
+}
+
+async function cargarAbonosDeDeuda(deudaId){
+  var el = $('listaAbonosDeuda');
+  el.innerHTML = '<div class="emptylist">Cargando…</div>';
+  var res = await authFetch('/rest/v1/deudas_abonos?select=id,fecha,valor,metodo,nota&deuda_id=eq.'+deudaId+'&order=fecha.desc,id.desc');
+  if (!res.ok){ el.innerHTML = '<div class="emptylist">No se pudo cargar el historial.</div>'; return; }
+  var abonos = await res.json();
+  if (!abonos.length){ el.innerHTML = '<div class="emptylist">Sin abonos aún.</div>'; return; }
+  el.innerHTML = abonos.map(function(a){
+    return '<div class="abonorow"><div><div class="am">'+fmt(a.valor)+'</div><div class="dt">'+esc(a.metodo||'')+(a.nota?' · '+esc(a.nota):'')+'</div></div><div class="dt">'+esc(a.fecha)+'</div></div>';
+  }).join('');
+}
+
+$('btnVolverDeudaDetalle').addEventListener('click', function(){
+  $('vistaDeudaDetalle').classList.add('hidden');
+  $('vistaDeudasLista').classList.remove('hidden');
+  deudaActual = null;
+});
+
+$('formAbonoDeuda').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if (!deudaActual) return;
+  var msg = $('msgDeudaDetalle'); msg.className = 'msg';
+  var valor = parseFloat($('abonoDeudaValor').value);
+  if (!valor || valor <= 0){ msg.textContent = 'Escribe un valor válido.'; msg.className = 'msg err show'; return; }
+  var btn = $('btnRegistrarAbonoDeuda'); btn.disabled = true;
+  try{
+    var res = await authFetch('/rest/v1/rpc/registrar_abono_deuda', {
+      method: 'POST',
+      body: JSON.stringify({
+        p_deuda_id: deudaActual.id,
+        p_valor: valor,
+        p_metodo: $('abonoDeudaMetodo').value,
+        p_nota: $('abonoDeudaNota').value.trim() || null
+      })
+    });
+    var data = await res.json();
+    if (!res.ok){
+      msg.textContent = (data && (data.message || data.msg)) || 'No se pudo registrar el abono.';
+      msg.className = 'msg err show';
+      return;
+    }
+    if (data.ajustado){ toast('Abono ajustado a '+fmt(data.monto_registrado)+' (era el saldo restante)') }
+    else { toast('Abono de '+fmt(data.monto_registrado)+' registrado') }
+    await cargarDeudas();
+    var actualizado = TODAS_DEUDAS.find(function(x){ return String(x.id) === String(deudaActual.id) });
+    if (actualizado){
+      deudaActual = actualizado;
+      pintarDeudaDetalle(actualizado);
+      await cargarAbonosDeDeuda(actualizado.id);
+      $('formAbonoDeuda').reset();
+    } else {
+      $('vistaDeudaDetalle').classList.add('hidden');
+      $('vistaDeudasLista').classList.remove('hidden');
+    }
+  }catch(err){
+    msg.textContent = 'Error de conexión al registrar el abono.'; msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ==================== INGRESOS ====================
+var TODOS_INGRESOS = [];
+var filtroIngresosActual = 'todos';
+
+async function cargarIngresos(){
+  var msg = $('msgIngresosLista'); msg.className = 'msg';
+  $('listaIngresos').innerHTML = '<div class="emptylist">Cargando ingresos…</div>';
+  var res = await authFetch('/rest/v1/ingresos_otros?select=id,fecha,concepto,valor,tipo,clasificacion,nota&order=fecha.desc,id.desc&limit=500');
+  if (!res.ok){
+    msg.textContent = 'No se pudo cargar la lista de ingresos.'; msg.className = 'msg err show';
+    $('listaIngresos').innerHTML = '';
+    return;
+  }
+  TODOS_INGRESOS = await res.json();
+  pintarResumenIngresos();
+  renderListaIngresos();
+}
+
+function pintarResumenIngresos(){
+  var inicioMes = inicioMesISO();
+  var delMes = TODOS_INGRESOS.filter(function(i){ return i.fecha >= inicioMes });
+  var bbh = delMes.filter(function(i){ return i.clasificacion === 'BBH' }).reduce(function(s,i){ return s+parseFloat(i.valor) }, 0);
+  var personal = delMes.filter(function(i){ return i.clasificacion === 'PERSONAL' }).reduce(function(s,i){ return s+parseFloat(i.valor) }, 0);
+  $('ingresosResumen').innerHTML =
+    '<div class="rescard"><div class="n">'+fmt(bbh)+'</div><div class="l">Ingresos BBH este mes</div></div>'+
+    '<div class="rescard"><div class="n">'+fmt(personal)+'</div><div class="l">Ingresos personales este mes</div></div>';
+}
+
+function ingresosFiltrados(){
+  var lista = TODOS_INGRESOS.slice();
+  if (filtroIngresosActual !== 'todos') lista = lista.filter(function(i){ return i.clasificacion === filtroIngresosActual });
+  return lista;
+}
+
+function renderListaIngresos(){
+  var lista = ingresosFiltrados();
+  var el = $('listaIngresos');
+  if (!lista.length){ el.innerHTML = '<div class="emptylist">No hay ingresos en este filtro.</div>'; return; }
+  var TIPOS = {CAPITAL:'Capital propio', PRESTAMO_RECIBIDO:'Préstamo recibido', OTRO:'Otro'};
+  el.innerHTML = lista.map(function(i){
+    return '<div class="clirow gastorow" data-id="'+i.id+'">'+
+      '<div><div class="nm">'+esc(i.concepto)+'</div><div class="sub">'+esc(i.fecha)+' · '+(TIPOS[i.tipo]||i.tipo)+'</div>'+
+      '<span class="cl '+esc(i.clasificacion)+'">'+(i.clasificacion==='BBH'?'Negocio':'Personal')+'</span></div>'+
+      '<div class="stat"><div class="hb">'+fmt(i.valor)+'</div></div>'+
+    '</div>';
+  }).join('');
+  var wrapI = $('vistaIngresosLista');
+  if (!document.getElementById('btnExportIngresos')){
+    var btnI = document.createElement('button');
+    btnI.type = 'button'; btnI.className = 'btnexport'; btnI.id = 'btnExportIngresos';
+    btnI.textContent = '⬇️ Descargar en Excel (CSV)';
+    btnI.addEventListener('click', function(){
+      exportarCSV('bbh_ingresos_'+hoyISO()+'.csv', ingresosFiltrados(), [
+        {campo:'fecha', titulo:'Fecha'}, {campo:'concepto', titulo:'Concepto'}, {campo:'valor', titulo:'Valor'},
+        {campo:'tipo', titulo:'Tipo'}, {campo:'clasificacion', titulo:'Clasificación'}, {campo:'nota', titulo:'Nota'}
+      ]);
+    });
+    wrapI.appendChild(btnI);
+  }
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('#ingresosFiltros .chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    filtroIngresosActual = chip.getAttribute('data-f');
+    Array.prototype.forEach.call(document.querySelectorAll('#ingresosFiltros .chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    renderListaIngresos();
+  });
+});
+
+function limpiarFormIngreso(){
+  $('formIngreso').reset();
+  $('msgIngresoForm').className = 'msg'; $('msgIngresoForm').textContent = '';
+}
+
+$('btnNuevoIngreso').addEventListener('click', function(){
+  limpiarFormIngreso();
+  $('vistaIngresosLista').classList.add('hidden');
+  $('vistaIngresoForm').classList.remove('hidden');
+});
+$('btnVolverIngresos').addEventListener('click', function(){
+  $('vistaIngresoForm').classList.add('hidden');
+  $('vistaIngresosLista').classList.remove('hidden');
+});
+
+$('formIngreso').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = $('msgIngresoForm'); msg.className = 'msg';
+  var valor = parseFloat($('ingresoValor').value);
+  if (!valor || valor <= 0){ msg.textContent = 'Escribe un valor válido.'; msg.className = 'msg err show'; return; }
+  if (!$('ingresoClasificacion').value){ msg.textContent = 'Debes decir si es del negocio o personal.'; msg.className = 'msg err show'; return; }
+  var btn = $('btnGuardarIngreso'); btn.disabled = true;
+  var payload = {
+    concepto: $('ingresoConcepto').value.trim(),
+    valor: valor,
+    tipo: $('ingresoTipo').value,
+    clasificacion: $('ingresoClasificacion').value,
+    nota: $('ingresoNota').value.trim() || null
+  };
+  try{
+    var res = await authFetch('/rest/v1/ingresos_otros', {method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify(payload)});
+    if (!res.ok){
+      msg.textContent = 'No se pudo guardar el ingreso.'; msg.className = 'msg err show';
+      console.error(await res.text());
+      return;
+    }
+    toast('Ingreso registrado');
+    await cargarIngresos();
+    $('vistaIngresoForm').classList.add('hidden');
+    $('vistaIngresosLista').classList.remove('hidden');
+  }catch(err){
+    msg.textContent = 'Error de conexión al guardar.'; msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ==================== CIERRE DIARIO (simplificado) ====================
+// Contrato con el resto del panel: expone cargarCierre(), precargarCamposDia(fecha),
+// cargarListasDia(fecha) y la variable cierreFechaCargada, porque los usan cambiarTab()
+// y la sincronización en vivo (Realtime). No cambiar esos nombres sin revisar allá.
+
+var cierreFechaCargada = null; // última fecha cuyos campos se cargaron desde la base — evita reescribir lo que se está tecleando
+var CI_P14 = 14000, CI_P13 = 13000, CI_P12 = 12000;
+
+var ciGastosDia = [];      // gastos reales de la fecha abierta
+var ciClasSel = 'BBH';     // clasificación elegida en el formulario de gasto
+var ciFiadosDia = null;    // {unidades, valor} traído de la tabla fiados
+var ciVentasPos = null;    // {unidades, valor} traído de movimientos tipo VENTA
+
+function ciNum(id){ return parseInt($(id).value, 10) || 0 }
+
+// ---------- cálculo: un solo lugar donde se hacen todas las cuentas ----------
+function calcularCierrePreview(){
+  var entraron = ciNum('ciEntraron');
+  var v14 = ciNum('ciV14'), v13 = ciNum('ciV13'), v12 = ciNum('ciV12');
+  var fiadas = ciNum('ciFiadas'), merma = ciNum('ciMerma'), quedaron = ciNum('ciQuedaron');
+
+  var vendidas = v14 + v13 + v12;
+  var repartidos = vendidas + fiadas + merma + quedaron;
+  var dif = entraron - repartidos;
+
+  // --- cuadre del pan ---
+  var box = $('ciCuadreBox');
+  box.classList.toggle('ok', dif === 0);
+  box.classList.toggle('bad', dif !== 0);
+  $('ciCuadreNum').textContent = (dif > 0 ? '+' : '') + dif;
+  if (dif === 0){
+    $('ciCuadreTitulo').textContent = 'Cuadra';
+    $('ciCuadreDetalle').textContent = 'Entraron ' + entraron + ' · repartidos ' + repartidos;
+  } else if (dif > 0){
+    $('ciCuadreTitulo').textContent = 'Faltan ' + dif + ' por explicar';
+    $('ciCuadreDetalle').textContent = 'Entraron ' + entraron + ' pero solo contaste ' + repartidos;
+  } else {
+    $('ciCuadreTitulo').textContent = 'Sobran ' + Math.abs(dif) + ' contados';
+    $('ciCuadreDetalle').textContent = 'Contaste ' + repartidos + ' pero solo entraron ' + entraron;
+  }
+
+  // --- dinero ---
+  var bruto = v14*CI_P14 + v13*CI_P13 + v12*CI_P12;
+  var porCobrar = fiadas * CI_P14;
+
+  var gBBH = 0, nBBH = 0, gPer = 0, nPer = 0, gRev = 0, nRev = 0;
+  for (var i = 0; i < ciGastosDia.length; i++){
+    var g = ciGastosDia[i], v = parseFloat(g.valor) || 0;
+    if (g.clasificacion === 'BBH'){ gBBH += v; nBBH++; }
+    else if (g.clasificacion === 'PERSONAL'){ gPer += v; nPer++; }
+    else { gRev += v; nRev++; }
+  }
+
+  var netoNegocio = bruto - gBBH;
+  var netoFinal = netoNegocio - gPer;
+
+  $('ciTotalBruto').textContent = fmt(bruto);
+  $('ciDetVendido').textContent = vendidas + (vendidas === 1 ? ' hamburguesa pagada' : ' hamburguesas pagadas');
+  $('ciTotalGastoBBH').textContent = '−' + fmt(gBBH);
+  $('ciDetGastoBBH').textContent = nBBH + (nBBH === 1 ? ' gasto' : ' gastos');
+  $('ciNetoNegocio').textContent = fmt(netoNegocio);
+  $('ciTotalGastoPersonal').textContent = '−' + fmt(gPer);
+  $('ciDetGastoPersonal').textContent = nPer + (nPer === 1 ? ' gasto' : ' gastos');
+  $('ciNetoFinal').textContent = fmt(netoFinal);
+  $('ciTotalFiado').textContent = fmt(porCobrar);
+  $('ciDetFiado').textContent = fiadas + (fiadas === 1 ? ' fiada' : ' fiadas') + ' × ' + fmt(CI_P14);
+
+  // --- caja contada (opcional) ---
+  var recibidoTxt = $('ciValorRecibido').value;
+  var fila = $('ciFilaDifCaja');
+  if (recibidoTxt !== '' && recibidoTxt != null){
+    var recibido = parseFloat(recibidoTxt) || 0;
+    var difCaja = recibido - bruto;
+    fila.style.display = 'flex';
+    $('ciDifCaja').textContent = (difCaja > 0 ? '+' : '') + fmt(difCaja);
+    $('ciDifCaja').style.color = difCaja === 0 ? '#43d17c' : '#ff5f56';
+    $('ciDetDifCaja').textContent = difCaja === 0 ? 'Cuadra con lo vendido'
+      : (difCaja > 0 ? 'Hay más plata de la esperada' : 'Falta plata frente a lo vendido');
+  } else {
+    fila.style.display = 'none';
+  }
+
+  // --- avisos: conexión con el resto del sistema ---
+  var av = $('ciAvisoRevisar');
+  if (nRev > 0){
+    av.textContent = '⚠️ Hay ' + nRev + (nRev === 1 ? ' gasto' : ' gastos') + ' sin clasificar por ' + fmt(gRev) +
+                     '. No están restados en ningún total hasta que decidas si son del negocio o personales.';
+    av.classList.remove('hidden');
+  } else { av.classList.add('hidden'); }
+
+  var ap = $('ciAvisoCruce'), avisos = [];
+  if (ciFiadosDia && ciFiadosDia.unidades !== fiadas){
+    avisos.push('En la pestaña Fiados hay ' + ciFiadosDia.unidades + ' unidad(es) registradas para este día y aquí contaste ' + fiadas + '.');
+  }
+  if (ciVentasPos && ciVentasPos.unidades > 0 && ciVentasPos.unidades !== vendidas){
+    avisos.push('Venta rápida registró ' + ciVentasPos.unidades + ' unidad(es) hoy (' + fmt(ciVentasPos.valor) + ') y aquí contaste ' + vendidas + '.');
+  }
+  if (avisos.length){ ap.innerHTML = '⚠️ ' + avisos.map(esc).join('<br>'); ap.classList.remove('hidden'); }
+  else { ap.classList.add('hidden'); }
+}
+
+// ---------- gastos del día ----------
+function ciPintarGastos(){
+  var cont = $('ciListaGastos');
+  if (!ciGastosDia.length){
+    cont.innerHTML = '<div class="ci-empty">Todavía no hay gastos registrados este día.</div>';
+    return;
+  }
+  var orden = {BBH:0, PERSONAL:1, REVISAR:2};
+  var lista = ciGastosDia.slice().sort(function(a,b){
+    return (orden[a.clasificacion] == null ? 2 : orden[a.clasificacion]) - (orden[b.clasificacion] == null ? 2 : orden[b.clasificacion]);
+  });
+  cont.innerHTML = lista.map(function(g){
+    var et = g.clasificacion === 'BBH' ? '<span class="ci-tag">FUNCIONAMIENTO</span>'
+           : g.clasificacion === 'PERSONAL' ? '<span class="ci-tag">PERSONAL</span>'
+           : '<span class="ci-tag loss">SIN CLASIFICAR</span>';
+    return '<div class="ci-gitem">' +
+             '<div class="ci-gi"><b>' + esc(g.concepto) + '</b>' + et + '</div>' +
+             '<div class="ci-gv">' + fmt(g.valor) + '</div>' +
+             '<button class="ci-gx" type="button" data-cidel="' + g.id + '" title="Eliminar">×</button>' +
+           '</div>';
+  }).join('');
+}
+
+$('ciAddGasto').addEventListener('click', async function(){
+  var concepto = $('ciGConcepto').value.trim();
+  var valor = parseFloat($('ciGValor').value) || 0;
+  var msg = $('ciMsgGasto'); msg.className = 'msg';
+  if (!concepto){ msg.textContent = 'Escribe de qué fue el gasto.'; msg.className = 'msg err show'; return; }
+  if (valor <= 0){ msg.textContent = 'El valor tiene que ser mayor a cero.'; msg.className = 'msg err show'; return; }
+  var btn = this; btn.disabled = true; btn.textContent = 'Guardando...';
+  try{
+    var res = await authFetch('/rest/v1/gastos', {
+      method: 'POST', headers: {'Prefer':'return=representation'},
+      body: JSON.stringify({ fecha: $('cierreFecha').value, concepto: concepto, valor: valor, clasificacion: ciClasSel })
+    });
+    if (!res.ok) throw new Error('fallo');
+    var creado = await res.json();
+    if (creado && creado.length) ciGastosDia.unshift(creado[0]);
+    $('ciGConcepto').value = ''; $('ciGValor').value = '';
+    ciPintarGastos(); calcularCierrePreview();
+    toast('Gasto agregado');
+  }catch(err){
+    msg.textContent = 'No se pudo guardar el gasto. Revisa tu conexión.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Agregar gasto';
+  }
+});
+
+$('ciListaGastos').addEventListener('click', async function(e){
+  var b = e.target.closest('[data-cidel]');
+  if (!b) return;
+  var id = b.getAttribute('data-cidel');
+  if (!confirm('¿Eliminar este gasto?')) return;
+  b.disabled = true;
+  try{
+    var res = await authFetch('/rest/v1/gastos?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
+    if (!res.ok) throw new Error('fallo');
+    ciGastosDia = ciGastosDia.filter(function(g){ return String(g.id) !== String(id) });
+    ciPintarGastos(); calcularCierrePreview();
+    toast('Gasto eliminado');
+  }catch(err){
+    b.disabled = false; toast('No se pudo eliminar');
+  }
+});
+
+Array.prototype.forEach.call(document.querySelectorAll('.ci-chip'), function(c){
+  c.addEventListener('click', function(){
+    ciClasSel = c.getAttribute('data-ciclas');
+    Array.prototype.forEach.call(document.querySelectorAll('.ci-chip'), function(x){ x.classList.toggle('on', x === c) });
+  });
+});
+
+// ---------- contadores ----------
+Array.prototype.forEach.call(document.querySelectorAll('[data-cistep]'), function(b){
+  b.addEventListener('click', function(){
+    var el = $(b.getAttribute('data-cit'));
+    var paso = parseInt(b.getAttribute('data-cistep'), 10);
+    el.value = Math.max(0, (parseInt(el.value, 10) || 0) + paso);
+    calcularCierrePreview();
+  });
+});
+Array.prototype.forEach.call(document.querySelectorAll('.ci-step input'), function(i){
+  i.addEventListener('input', calcularCierrePreview);
+  i.addEventListener('focus', function(){ i.select() });
+});
+$('ciValorRecibido').addEventListener('input', calcularCierrePreview);
+
+// ---------- carga desde la base ----------
+// Trae SOLO las listas del día (gastos, fiados, ventas) sin tocar lo que se está tecleando.
+async function cargarListasDia(fecha){
+  var resGas, resFia, resVen;
+  try{
+    resGas = await authFetch('/rest/v1/gastos?select=id,concepto,valor,clasificacion&fecha=eq.' + fecha + '&order=created_at.desc');
+    resFia = await authFetch('/rest/v1/fiados?select=unidades,valor_total&fecha=eq.' + fecha);
+    resVen = await authFetch('/rest/v1/movimientos?select=unidades,valor_total&tipo=eq.VENTA&fecha=eq.' + fecha);
+  }catch(err){ return; }
+
+  ciGastosDia = (resGas && resGas.ok) ? await resGas.json() : [];
+  ciPintarGastos();
+
+  ciFiadosDia = null;
+  if (resFia && resFia.ok){
+    var fl = await resFia.json();
+    ciFiadosDia = fl.reduce(function(a, f){
+      a.unidades += (parseInt(f.unidades, 10) || 0);
+      a.valor += (parseFloat(f.valor_total) || 0);
+      return a;
+    }, {unidades:0, valor:0});
+    $('ciFiadasHint').textContent = ciFiadosDia.unidades > 0
+      ? 'En Fiados hay ' + ciFiadosDia.unidades + ' registrada(s) este día'
+      : 'Entregadas sin pagar hoy';
+  }
+
+  ciVentasPos = null;
+  if (resVen && resVen.ok){
+    var vl = await resVen.json();
+    ciVentasPos = vl.reduce(function(a, m){
+      a.unidades += (parseInt(m.unidades, 10) || 0);
+      a.valor += (parseFloat(m.valor_total) || 0);
+      return a;
+    }, {unidades:0, valor:0});
+  }
+
+  calcularCierrePreview();
+}
+
+// Rellena los contadores con lo que ya está guardado de ese día.
+async function precargarCamposDia(fecha){
+  var d = null;
+  try{
+    var res = await authFetch('/rest/v1/dias_operacion?select=*&fecha=eq.' + fecha);
+    if (res.ok){ var arr = await res.json(); d = arr.length ? arr[0] : null; }
+  }catch(err){ /* si falla, se dejan los campos como están */ }
+
+  if (d){
+    var v12 = d.pan_vendido_12k || 0, v13 = d.pan_vendido_13k || 0;
+    $('ciEntraron').value = d.pan_entregado || 0;
+    $('ciV12').value = v12;
+    $('ciV13').value = v13;
+    $('ciV14').value = Math.max(0, (d.pan_vendido || 0) - v12 - v13);
+    $('ciFiadas').value = d.pan_fiado || 0;
+    $('ciMerma').value = d.pan_perdido || 0;
+    $('ciQuedaron').value = d.pan_devuelto || 0;
+    $('ciValorRecibido').value = d.valor_recibido != null ? d.valor_recibido : '';
+    $('btnGuardarCierre').textContent = d.cerrado ? 'Actualizar cierre' : 'Guardar cierre';
+  } else {
+    $('ciEntraron').value = 0; $('ciV12').value = 0; $('ciV13').value = 0; $('ciV14').value = 0;
+    $('ciFiadas').value = 0; $('ciMerma').value = 0; $('ciQuedaron').value = 0;
+    $('ciValorRecibido').value = '';
+    $('btnGuardarCierre').textContent = 'Guardar cierre';
+  }
+  cierreFechaCargada = fecha;
+}
+
+// Carga completa del día (campos + listas). La usa cambiarTab cuando cambias de fecha.
+async function cargarCierre(){
+  if (!$('cierreFecha').value) $('cierreFecha').value = hoyISO();
+  var fecha = $('cierreFecha').value;
+  await precargarCamposDia(fecha);
+  await cargarListasDia(fecha);
+  // Si no hay nada guardado todavía, propone las fiadas ya registradas de ese día.
+  if (ciFiadosDia && ciFiadosDia.unidades > 0 && ciNum('ciFiadas') === 0){
+    $('ciFiadas').value = ciFiadosDia.unidades;
+  }
+  calcularCierrePreview();
+}
+
+// ---------- navegación de fechas ----------
+function ciMoverDia(n){
+  var f = $('cierreFecha').value || hoyISO();
+  var p = f.split('-');
+  var d = new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10));
+  d.setDate(d.getDate() + n);
+  $('cierreFecha').value = d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  cargarCierre();
+  suscribirRealtime({tab:'cierre', fecha: $('cierreFecha').value});
+}
+$('ciDiaAnt').addEventListener('click', function(){ ciMoverDia(-1) });
+$('ciDiaSig').addEventListener('click', function(){ ciMoverDia(1) });
+$('cierreFecha').addEventListener('change', function(){
+  if (!this.value) return;
+  cargarCierre();
+  suscribirRealtime({tab:'cierre', fecha: this.value});
+});
+
+// ---------- guardar ----------
+$('btnGuardarCierre').addEventListener('click', async function(){
+  var fecha = $('cierreFecha').value;
+  var msg = $('msgCierre'); msg.className = 'msg';
+  if (!fecha){ msg.textContent = 'Elige una fecha.'; msg.className = 'msg err show'; return; }
+
+  var v14 = ciNum('ciV14'), v13 = ciNum('ciV13'), v12 = ciNum('ciV12');
+  var vendidas = v14 + v13 + v12;
+  var entraron = ciNum('ciEntraron'), fiadas = ciNum('ciFiadas');
+  var merma = ciNum('ciMerma'), quedaron = ciNum('ciQuedaron');
+  var dif = entraron - (vendidas + fiadas + merma + quedaron);
+
+  if (dif !== 0){
+    var txt = dif > 0
+      ? 'Faltan ' + dif + ' pan(es) por explicar.'
+      : 'Sobran ' + Math.abs(dif) + ' pan(es) contados de más.';
+    if (!confirm(txt + '\n\n¿Guardar el cierre así de todos modos?')) return;
+  }
+
+  var bruto = v14*CI_P14 + v13*CI_P13 + v12*CI_P12;
+  // precio_promedio = lo realmente cobrado por unidad. La base calcula sola valor_esperado
+  // (pan_vendido × precio_promedio) — por eso ese campo NUNCA se envía aquí.
+  var precioProm = vendidas > 0 ? Math.round(bruto / vendidas) : null;
+  var recibidoTxt = $('ciValorRecibido').value;
+  var recibido = (recibidoTxt === '' || recibidoTxt == null) ? null : (parseFloat(recibidoTxt) || 0);
+
+  var btn = this; btn.disabled = true; var textoPrevio = btn.textContent; btn.textContent = 'Guardando...';
+  try{
+    var payload = {
+      fecha: fecha,
+      opero: true,
+      pan_entregado: entraron,
+      pan_vendido: vendidas,
+      pan_vendido_12k: v12,
+      pan_vendido_13k: v13,
+      pan_fiado: fiadas,
+      pan_perdido: merma,
+      pan_devuelto: quedaron,
+      precio_normal: CI_P14,
+      precio_promedio: precioProm,
+      valor_recibido: recibido,
+      cerrado: true,
+      cerrado_en: new Date().toISOString()
+    };
+    var res = await authFetch('/rest/v1/dias_operacion', {
+      method: 'POST',
+      headers: {'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok){
+      var err = await res.text();
+      console.error(err);
+      msg.textContent = 'No se pudo guardar el cierre.';
+      msg.className = 'msg err show';
+      return;
+    }
+    textoPrevio = 'Actualizar cierre';
+    msg.textContent = 'Cierre guardado.';
+    msg.className = 'msg ok show';
+    toast('Cierre guardado');
+  }catch(e){
+    msg.textContent = 'Error de conexión al guardar.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = textoPrevio;
+  }
+});
+
+// ==================== DASHBOARD ====================
+var periodoDashActual = 'dia';
+var fechaDashDia = null; // cuando no es null, la vista "dia" muestra ESE día específico (abierto desde la tabla semanal/mensual) en vez de hoy
+
+Array.prototype.forEach.call(document.querySelectorAll('#dashPeriodos .chipf'), function(chip){
+  chip.addEventListener('click', function(){
+    periodoDashActual = chip.getAttribute('data-p');
+    fechaDashDia = null; // clic manual en los chips siempre vuelve a "hoy" / periodo normal
+    Array.prototype.forEach.call(document.querySelectorAll('#dashPeriodos .chipf'), function(c){ c.classList.toggle('active', c===chip) });
+    cargarDashboard();
+  });
+});
+
+function abrirDashboardDeDia(fecha){
+  periodoDashActual = 'dia';
+  fechaDashDia = fecha;
+  Array.prototype.forEach.call(document.querySelectorAll('#dashPeriodos .chipf'), function(c){ c.classList.toggle('active', c.getAttribute('data-p')==='dia') });
+  cargarDashboard();
+  var cont = $('dashContenido');
+  if (cont && cont.scrollIntoView) cont.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function irEditarDia(fecha){
+  $('cierreFecha').value = fecha;
+  cambiarTab('cierre');
+}
+
+function rangoDash(periodo){
+  var hoy = hoyISO();
+  if (periodo === 'semana') return {desde: inicioSemanaISO(), hasta: hoy, etiqueta: 'esta semana'};
+  if (periodo === 'mes') return {desde: inicioMesISO(), hasta: hoy, etiqueta: 'este mes'};
+  if (fechaDashDia && fechaDashDia !== hoy) return {desde: fechaDashDia, hasta: fechaDashDia, etiqueta: nombreDiaCorto(fechaDashDia)+' '+fechaDashDia.slice(5), esDiaEspecifico: true};
+  return {desde: hoy, hasta: hoy, etiqueta: 'hoy'};
+}
+
+function nombreDiaCorto(fechaISOstr){
+  var dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var d = new Date(fechaISOstr+'T12:00:00');
+  return dias[d.getDay()];
+}
+
+// Trae los fiados del rango agrupados por fecha: cuántos, cuánto valen, cuántas unidades (si se registraron) y a quién.
+async function fiadosPorDiaEnRango(desde, hasta){
+  var res = await authFetch('/rest/v1/fiados?select=fecha,valor_total,unidades,clientes(nombre)&fecha=gte.'+desde+'&fecha=lte.'+hasta+'&order=fecha.asc');
+  if (!res.ok) return {};
+  var rows = await res.json();
+  var map = {};
+  rows.forEach(function(f){
+    if (!f.fecha) return; // los 3 fiados históricos sin fecha no se cuentan aquí a propósito
+    if (!map[f.fecha]) map[f.fecha] = {registros:0, unidades:0, unidadesConDato:0, valor:0, nombres:[]};
+    var m = map[f.fecha];
+    m.registros++;
+    m.valor += parseFloat(f.valor_total)||0;
+    if (f.unidades != null){ m.unidades += f.unidades; m.unidadesConDato++; }
+    m.nombres.push((f.clientes ? f.clientes.nombre : '—')+(f.unidades!=null?' ('+f.unidades+')':''));
+  });
+  return map;
+}
+
+// Trae los gastos del rango agrupados por fecha: total, cuánto es BBH, cuánto personal, cuánto sin clasificar y el detalle.
+async function gastosPorDiaEnRango(desde, hasta){
+  var res = await authFetch('/rest/v1/gastos?select=fecha,valor,clasificacion,concepto&fecha=gte.'+desde+'&fecha=lte.'+hasta+'&order=fecha.asc');
+  if (!res.ok) return {};
+  var rows = await res.json();
+  var map = {};
+  rows.forEach(function(g){
+    if (!g.fecha) return;
+    if (!map[g.fecha]) map[g.fecha] = {total:0, bbh:0, personal:0, revisar:0, items:[]};
+    var m = map[g.fecha];
+    var v = parseFloat(g.valor)||0;
+    m.total += v;
+    if (g.clasificacion === 'BBH') m.bbh += v;
+    else if (g.clasificacion === 'PERSONAL') m.personal += v;
+    else m.revisar += v;
+    m.items.push((g.concepto||'Gasto')+' ('+fmt(v)+(g.clasificacion?'':' · sin clasificar')+')');
+  });
+  return map;
+}
+
+async function tablaSemanalHTML(desde, hasta, etiquetaTotal){
+  var res = await authFetch('/rest/v1/dias_operacion?select=fecha,pan_entregado,pan_vendido,pan_vendido_12k,pan_vendido_13k,pan_devuelto,pan_perdido,valor_esperado,valor_recibido&fecha=gte.'+desde+'&fecha=lte.'+hasta+'&order=fecha.asc');
+  if (!res.ok) return '';
+  var dias = await res.json();
+  if (!dias.length) return '<p class="lead">Sin cierres registrados en este periodo todavía.</p>';
+  var fiadosMap = await fiadosPorDiaEnRango(desde, hasta);
+  var gastosMap = await gastosPorDiaEnRango(desde, hasta);
+  var totE=0,totV=0,totEsp=0,totRec=0,totDev=0,totPer=0,totFiadoUnid=0,totFiadoVal=0,totGasto=0,totV12=0,totV13=0;
+  var filas = dias.map(function(d){
+    var excedente = (d.pan_entregado||0) - (d.pan_vendido||0) - (d.pan_devuelto||0) - (d.pan_perdido||0);
+    var diferencia = (parseFloat(d.valor_esperado)||0) - (parseFloat(d.valor_recibido)||0);
+    totE += d.pan_entregado||0; totV += d.pan_vendido||0; totEsp += parseFloat(d.valor_esperado)||0; totRec += parseFloat(d.valor_recibido)||0; totDev += d.pan_devuelto||0; totPer += d.pan_perdido||0;
+    var v12 = d.pan_vendido_12k||0, v13 = d.pan_vendido_13k||0;
+    totV12 += v12; totV13 += v13;
+    var vendidoTxt = (d.pan_vendido||0)+((v12>0||v13>0)?' 🏷️':'');
+    var detalleDescuento = (v12>0||v13>0) ? '<tr><td colspan="9" style="text-align:left;color:var(--muted);font-size:.74rem;padding-top:0;border-bottom:1px solid var(--line)">Vendido con descuento: '+v12+' a $12.000 + '+v13+' a $13.000</td></tr>' : '';
+    var fd = fiadosMap[d.fecha];
+    var fiadoTxt = '—';
+    var detalleFiado = '';
+    if (fd){
+      totFiadoUnid += fd.unidades; totFiadoVal += fd.valor;
+      var unidTxt = fd.unidadesConDato === fd.registros ? fd.unidades : (fd.unidades+'+'); // '+' si algún registro no tenía unidades capturadas
+      fiadoTxt = unidTxt+' · '+fmt(fd.valor);
+      detalleFiado = '<tr><td colspan="9" style="text-align:left;color:var(--muted);font-size:.74rem;padding-top:0;border-bottom:1px solid var(--line)">Fiado a: '+esc(fd.nombres.join(', '))+'</td></tr>';
+    }
+    var gd = gastosMap[d.fecha];
+    var gastoTxt = '—';
+    var detalleGasto = '';
+    if (gd){
+      totGasto += gd.total;
+      gastoTxt = fmt(gd.total)+(gd.revisar>0?' ⚠':'');
+      detalleGasto = '<tr><td colspan="9" style="text-align:left;color:var(--muted);font-size:.74rem;padding-top:0;border-bottom:1px solid var(--line)">Gastos: '+esc(gd.items.join(', '))+'</td></tr>';
+    }
+    return '<tr class="filadia" data-fecha="'+esc(d.fecha)+'" style="cursor:pointer"><td>'+nombreDiaCorto(d.fecha)+' '+d.fecha.slice(5)+'</td><td>'+(d.pan_entregado||0)+'</td><td'+(excedente!==0?' class="neg"':'')+'>'+excedente+'</td><td>'+vendidoTxt+'</td><td>'+fiadoTxt+'</td><td'+(gd&&gd.revisar>0?' class="neg"':'')+'>'+gastoTxt+'</td><td>'+fmt(d.valor_esperado||0)+'</td><td>'+fmt(d.valor_recibido||0)+'</td><td'+(diferencia!==0?' class="neg"':'')+'>'+fmt(diferencia)+'</td></tr>'+detalleDescuento+detalleFiado+detalleGasto;
+  }).join('');
+  var totDiferencia = totEsp - totRec;
+  var totVendidoTxt = totV+((totV12>0||totV13>0)?' 🏷️':'');
+  var totalRow = '<tr class="totalrow"><td>Total '+etiquetaTotal+'</td><td>'+totE+'</td><td>'+(totE-totV-totDev-totPer)+'</td><td>'+totVendidoTxt+'</td><td>'+totFiadoUnid+' · '+fmt(totFiadoVal)+'</td><td>'+fmt(totGasto)+'</td><td>'+fmt(totEsp)+'</td><td>'+fmt(totRec)+'</td><td>'+fmt(totDiferencia)+'</td></tr>';
+  var notaDescuento = (totV12>0||totV13>0) ? '<p class="lead" style="margin-top:6px">🏷️ = ese día hubo ventas con descuento. Total del periodo con descuento: '+totV12+' a $12.000 + '+totV13+' a $13.000.</p>' : '';
+  return '<div class="semtabla-wrap"><table class="semtabla"><thead><tr><th>Día</th><th>Entregado</th><th>Excedente</th><th>Vendidos</th><th>Fiado</th><th>Gastos</th><th>Esperado</th><th>Real</th><th>Diferencia</th></tr></thead><tbody>'+filas+totalRow+'</tbody></table></div>'+notaDescuento;
+}
+
+async function cargarDashboard(){
+  var msg = $('msgDash'); msg.className = 'msg';
+  $('dashContenido').innerHTML = '<div class="emptylist">Cargando…</div>';
+  var r = rangoDash(periodoDashActual);
+  try{
+    var etiquetaTotal = periodoDashActual === 'dia' ? 'del día' : (periodoDashActual === 'semana' ? 'semana' : 'del mes');
+    var semanalHTML = await tablaSemanalHTML(r.desde, r.hasta, etiquetaTotal);
+    var qVentas = "/rest/v1/movimientos?select=valor_total,unidades,tipo,canal&tipo=eq.VENTA&fecha=gte."+r.desde+"&fecha=lte."+r.hasta;
+    var qGastos = "/rest/v1/gastos?select=valor,clasificacion&fecha=gte."+r.desde+"&fecha=lte."+r.hasta;
+    var qFiadosNuevos = "/rest/v1/movimientos?select=valor_total&tipo=eq.FIADO&fecha=gte."+r.desde+"&fecha=lte."+r.hasta;
+    var qAbonos = "/rest/v1/abonos?select=valor&fecha=gte."+r.desde+"&fecha=lte."+r.hasta;
+    var qIngresosOtros = "/rest/v1/ingresos_otros?select=valor,clasificacion&fecha=gte."+r.desde+"&fecha=lte."+r.hasta;
+    var qFiadosSaldo = "/rest/v1/v_fiados_saldo?select=saldo";
+    var qDeudasSaldo = "/rest/v1/v_deudas_saldo?select=saldo,clasificacion";
+
+    var results = await Promise.all([qVentas, qGastos, qFiadosNuevos, qAbonos, qIngresosOtros, qFiadosSaldo, qDeudasSaldo].map(function(q){ return authFetch(q) }));
+    var okAll = results.every(function(r2){ return r2.ok });
+    if (!okAll){
+      msg.textContent = 'No se pudo cargar el dashboard completo.'; msg.className = 'msg err show';
+      $('dashContenido').innerHTML = '';
+      return;
+    }
+    var data = await Promise.all(results.map(function(r2){ return r2.json() }));
+    var ventas = data[0], gastos = data[1], fiadosNuevos = data[2], abonos = data[3], ingresosOtros = data[4], fiadosSaldo = data[5], deudasSaldo = data[6];
+
+    var totalVentas = ventas.reduce(function(s,v){ return s+parseFloat(v.valor_total) }, 0);
+    var unidadesVendidas = ventas.reduce(function(s,v){ return s+v.unidades }, 0);
+    var gastosBBH = gastos.filter(function(g){ return g.clasificacion==='BBH' }).reduce(function(s,g){ return s+parseFloat(g.valor) }, 0);
+    var gastosPersonal = gastos.filter(function(g){ return g.clasificacion==='PERSONAL' }).reduce(function(s,g){ return s+parseFloat(g.valor) }, 0);
+    var gastosRevisar = gastos.length - gastos.filter(function(g){ return g.clasificacion==='BBH'||g.clasificacion==='PERSONAL' }).length;
+    var totalFiadosNuevos = fiadosNuevos.reduce(function(s,f){ return s+parseFloat(f.valor_total) }, 0);
+    var totalAbonos = abonos.reduce(function(s,a){ return s+parseFloat(a.valor) }, 0);
+    var ingresosBBH = ingresosOtros.filter(function(i){ return i.clasificacion==='BBH' }).reduce(function(s,i){ return s+parseFloat(i.valor) }, 0);
+    var ingresosPersonal = ingresosOtros.filter(function(i){ return i.clasificacion==='PERSONAL' }).reduce(function(s,i){ return s+parseFloat(i.valor) }, 0);
+    var carteraFiados = fiadosSaldo.reduce(function(s,f){ return s+parseFloat(f.saldo||0) }, 0);
+    var deudasBBH = deudasSaldo.filter(function(d){ return d.clasificacion==='BBH' }).reduce(function(s,d){ return s+parseFloat(d.saldo||0) }, 0);
+    var deudasPersonal = deudasSaldo.filter(function(d){ return d.clasificacion==='PERSONAL' }).reduce(function(s,d){ return s+parseFloat(d.saldo||0) }, 0);
+
+    // Caja = dinero que efectivamente entró: ventas de contado + abonos + ingresos BBH (no incluye fiados nuevos, eso es cartera por cobrar)
+    var cajaAprox = totalVentas + totalAbonos + ingresosBBH;
+    // Utilidad operativa estimada = ventas - gastos BBH (NO se puede calcular utilidad real: costo_unitario está vacío en productos)
+    var utilidadEstimada = totalVentas - gastosBBH;
+
+    var bannerDia = '';
+    if (r.esDiaEspecifico){
+      bannerDia = '<div class="dashcard full" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+        '<div><div class="l" style="margin-bottom:2px">Dashboard del día</div><div class="n" style="font-size:1.1rem">'+esc(r.etiqueta)+'</div></div>'+
+        '<div class="row" style="gap:8px">'+
+          '<button type="button" class="btn ghost" id="btnDashVolverHoy">← Volver a hoy</button>'+
+          '<button type="button" class="btn" id="btnDashEditarDia" data-fecha="'+esc(r.desde)+'">✏️ Editar / corregir este día</button>'+
+        '</div>'+
+      '</div>';
+    }
+
+    $('dashContenido').innerHTML =
+      bannerDia+
+      semanalHTML+
+      '<div class="dashutilidad">'+
+        '<div class="n">'+fmt(utilidadEstimada)+'</div>'+
+        '<div class="l">Utilidad operativa estimada ('+r.etiqueta+')</div>'+
+        '<div class="dashnota">Ventas − Gastos BBH. No incluye costo de producto (dato no encontrado en el sistema aún), así que esta cifra es optimista, no la utilidad real.</div>'+
+      '</div>'+
+      '<div class="dashgrid">'+
+        '<div class="dashcard"><div class="n">'+fmt(totalVentas)+'</div><div class="l">Ventas ('+unidadesVendidas+' unid.)</div></div>'+
+        '<div class="dashcard"><div class="n pos">'+fmt(cajaAprox)+'</div><div class="l">Caja aproximada</div></div>'+
+        '<div class="dashcard"><div class="n neg">'+fmt(gastosBBH)+'</div><div class="l">Gastos BBH</div></div>'+
+        '<div class="dashcard"><div class="n neg">'+fmt(gastosPersonal)+'</div><div class="l">Gastos personales</div></div>'+
+        '<div class="dashcard"><div class="n">'+fmt(totalFiadosNuevos)+'</div><div class="l">Fiado nuevo (no es caja)</div></div>'+
+        '<div class="dashcard"><div class="n pos">'+fmt(totalAbonos)+'</div><div class="l">Abonos de fiados cobrados</div></div>'+
+        '<div class="dashcard"><div class="n">'+fmt(ingresosBBH)+'</div><div class="l">Otros ingresos BBH</div></div>'+
+        '<div class="dashcard"><div class="n">'+fmt(ingresosPersonal)+'</div><div class="l">Otros ingresos personales</div></div>'+
+        '<div class="dashcard full"><div class="n'+(carteraFiados>0?' warn':'')+'">'+fmt(carteraFiados)+'</div><div class="l">Cartera total por cobrar (todos los fiados pendientes, no solo del periodo)</div></div>'+
+        '<div class="dashcard"><div class="n neg">'+fmt(deudasBBH)+'</div><div class="l">Deudas BBH pendientes</div></div>'+
+        '<div class="dashcard"><div class="n neg">'+fmt(deudasPersonal)+'</div><div class="l">Deudas personales pendientes</div></div>'+
+      '</div>'+
+      (gastosRevisar>0 ? '<div class="msg err show">⚠️ Hay '+gastosRevisar+' gasto(s) sin clasificar en este periodo — no están sumados ni en BBH ni en Personal. Revísalos en la pestaña Gastos.</div>' : '');
+
+    Array.prototype.forEach.call(document.querySelectorAll('.filadia'), function(row){
+      row.addEventListener('click', function(){
+        abrirDashboardDeDia(row.getAttribute('data-fecha'));
+      });
+    });
+    if ($('btnDashVolverHoy')) $('btnDashVolverHoy').addEventListener('click', function(){
+      periodoDashActual = 'dia'; fechaDashDia = null;
+      Array.prototype.forEach.call(document.querySelectorAll('#dashPeriodos .chipf'), function(c){ c.classList.toggle('active', c.getAttribute('data-p')==='dia') });
+      cargarDashboard();
+    });
+    if ($('btnDashEditarDia')) $('btnDashEditarDia').addEventListener('click', function(){
+      irEditarDia(this.getAttribute('data-fecha'));
+    });
+  }catch(err){
+    msg.textContent = 'Error de conexión al cargar el dashboard.'; msg.className = 'msg err show';
+    $('dashContenido').innerHTML = '';
+  }
+}
+
+// ---------- INIT ----------
+(async function init(){
+  var s = getSession();
+  if (!s || !s.access_token) return;
+  var listo = s.expires_at > Date.now();
+  if (!listo && s.refresh_token){
+    listo = await refrescarSesion(); // el token venció mientras la pestaña estaba cerrada/dormida, pero el refresh_token puede seguir sirviendo
+  }
+  if (listo){
+    mostrarPanel();
+    cargarProductos();
+    actualizarTokenRealtime();
+    cambiarTab('cierre'); // la pestaña de Cierre ya se ve "activa" por defecto en el HTML, pero sin esto nunca cargaba sus datos (ni siquiera la fecha de hoy) hasta que alguien tocaba la pestaña
+  } else {
+    clearSession();
+  }
+})();
+
+// ---------- PWA: registrar el service worker (instalación en iPhone/Android) ----------
+// Si falla o el navegador no lo soporta, el panel sigue funcionando igual — solo no será instalable.
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
