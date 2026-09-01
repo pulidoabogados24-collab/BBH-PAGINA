@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cierre del día — BBH</title>
+<meta name="description" content="Cierre diario de BBH: panes, gastos y totales.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cierre BBH">
+<style>
+:root{
+  --black:#0b0b0b; --ink:#161614; --ink2:#1e1e1b; --line:#2e2e29;
+  --yellow:#FDF100; --text:#f2f2ec; --dim:#9a9a90; --dim2:#5c5c56;
+  --ok:#43d17c; --bad:#ff5f56; --warn:#ffb020;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--black); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px; line-height:1.45;
+  padding-bottom:96px;
+  -webkit-font-smoothing:antialiased;
+}
+.hidden{display:none !important}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px}
+
+/* ---------- cabecera ---------- */
+.top{
+  position:sticky;top:0;z-index:30;background:rgba(11,11,11,.94);
+  backdrop-filter:saturate(140%) blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.topin{max-width:760px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:900;letter-spacing:.5px;font-size:15px}
+.brand span{color:var(--yellow)}
+.spacer{flex:1}
+.fechabox{display:flex;align-items:center;gap:6px}
+.fechabox input{
+  background:var(--ink);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;padding:8px 10px;font-size:14px;font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.iconbtn{
+  background:var(--ink);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;width:36px;height:36px;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.iconbtn:active{background:var(--ink2)}
+.diatxt{font-size:12px;color:var(--yellow);font-weight:700;text-align:right;min-width:74px}
+
+/* ---------- tarjetas ---------- */
+.card{
+  background:var(--ink);border:1px solid var(--line);border-radius:16px;
+  padding:16px;margin-top:14px;
+}
+.card h2{
+  margin:0 0 4px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--dim);font-weight:800;
+}
+.card .sub{font-size:12px;color:var(--dim2);margin-bottom:14px}
+
+/* ---------- contadores de pan ---------- */
+.rowc{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 0;border-bottom:1px solid var(--line);
+}
+.rowc:last-child{border-bottom:0}
+.rowc .lbl{flex:1;min-width:0}
+.rowc .lbl b{display:block;font-size:15px;font-weight:700}
+.rowc .lbl i{display:block;font-size:11.5px;color:var(--dim2);font-style:normal;margin-top:1px}
+.stepper{display:flex;align-items:center;gap:0;flex-shrink:0}
+.stepper button{
+  width:34px;height:34px;border:1px solid var(--line);background:var(--ink2);
+  color:var(--text);font-size:19px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.stepper button:first-child{border-radius:9px 0 0 9px}
+.stepper button:last-child{border-radius:0 9px 9px 0}
+.stepper button:active{background:#2a2a26}
+.stepper input{
+  width:56px;height:34px;text-align:center;border:1px solid var(--line);
+  border-left:0;border-right:0;background:var(--black);color:var(--text);
+  font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;
+  -moz-appearance:textfield;
+}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rowc.money .stepper input{width:66px}
+.tag{
+  font-size:10px;font-weight:800;letter-spacing:.6px;padding:2px 6px;border-radius:5px;
+  background:var(--ink2);color:var(--dim);margin-left:6px;vertical-align:middle;
+}
+.tag.pay{background:rgba(67,209,124,.14);color:var(--ok)}
+.tag.owe{background:rgba(255,176,32,.14);color:var(--warn)}
+.tag.loss{background:rgba(255,95,86,.14);color:var(--bad)}
+
+/* ---------- barra de cuadre ---------- */
+.cuadre{
+  margin-top:14px;border-radius:12px;padding:12px 14px;
+  border:1px solid var(--line);background:var(--black);
+  display:flex;align-items:center;gap:12px;
+}
+.cuadre .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cuadre.ok{border-color:rgba(67,209,124,.4)}
+.cuadre.ok .dot{background:var(--ok)}
+.cuadre.bad{border-color:rgba(255,95,86,.45)}
+.cuadre.bad .dot{background:var(--bad)}
+.cuadre .txt{flex:1;min-width:0}
+.cuadre .txt b{display:block;font-size:14px}
+.cuadre .txt i{display:block;font-style:normal;font-size:11.5px;color:var(--dim);margin-top:2px}
+.cuadre .num{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.cuadre.ok .num{color:var(--ok)}
+.cuadre.bad .num{color:var(--bad)}
+
+/* ---------- gastos ---------- */
+.gform{display:grid;grid-template-columns:1fr 108px;gap:8px;margin-bottom:10px}
+.gform input{
+  background:var(--black);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;padding:11px 12px;font-size:15px;width:100%;
+}
+.gform input::placeholder{color:var(--dim2)}
+.gform input[type=number]{font-variant-numeric:tabular-nums;font-weight:700}
+.chips{display:flex;gap:8px;margin-bottom:10px}
+.chip{
+  flex:1;border:1px solid var(--line);background:var(--black);color:var(--dim);
+  border-radius:10px;padding:9px 8px;font-size:12.5px;font-weight:800;cursor:pointer;
+  letter-spacing:.3px;
+}
+.chip.on{border-color:var(--yellow);color:var(--yellow);background:rgba(253,241,0,.07)}
+.btn{
+  width:100%;border:0;border-radius:11px;padding:12px;font-size:14.5px;font-weight:800;
+  background:var(--yellow);color:#0b0b0b;cursor:pointer;letter-spacing:.3px;
+}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.ghost{background:var(--ink2);color:var(--text);border:1px solid var(--line)}
+.glist{margin-top:14px}
+.gitem{
+  display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+.gitem:last-child{border-bottom:0}
+.gitem .gi{flex:1;min-width:0}
+.gitem .gi b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gitem .gv{font-weight:800;font-variant-numeric:tabular-nums;font-size:14px}
+.gitem .gx{
+  width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+  background:var(--ink2);color:var(--dim);cursor:pointer;font-size:15px;flex-shrink:0;
+}
+.empty{color:var(--dim2);font-size:13px;text-align:center;padding:16px 0}
+
+/* ---------- totales ---------- */
+.tline{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:10px 0;border-bottom:1px solid var(--line);
+}
+.tline:last-child{border-bottom:0}
+.tline .k{font-size:13.5px;color:var(--dim)}
+.tline .k small{display:block;font-size:11px;color:var(--dim2)}
+.tline .v{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.tline.minus .v{color:var(--bad)}
+.tline.big{padding:14px 0}
+.tline.big .k{font-size:14px;color:var(--text);font-weight:700}
+.tline.big .v{font-size:26px;font-weight:900}
+.tline.final{
+  margin-top:8px;border-top:2px solid var(--yellow);border-bottom:0;padding-top:16px;
+}
+.tline.final .k{color:var(--yellow);font-size:14px;font-weight:800;letter-spacing:.5px}
+.tline.final .v{font-size:32px;font-weight:900;color:var(--yellow)}
+.aviso{
+  margin-top:12px;border-radius:10px;padding:10px 12px;font-size:12.5px;
+  background:rgba(255,176,32,.09);border:1px solid rgba(255,176,32,.3);color:var(--warn);
+}
+
+/* ---------- guardar ---------- */
+.savebar{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:rgba(11,11,11,.96);backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+}
+.savein{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.savein .st{flex:1;min-width:0;font-size:12px;color:var(--dim)}
+.savein .st b{display:block;font-size:16px;color:var(--yellow);font-variant-numeric:tabular-nums}
+.savein .btn{width:auto;padding:13px 22px;flex-shrink:0}
+
+/* ---------- login ---------- */
+.auth{max-width:380px;margin:14vh auto;padding:0 18px}
+.auth .card{margin-top:0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:5px;font-weight:700}
+.field input{
+  width:100%;background:var(--black);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;padding:12px;font-size:15px;
+}
+.msg{display:none;margin-top:10px;font-size:13px;border-radius:9px;padding:9px 11px}
+.msg.show{display:block}
+.msg.err{background:rgba(255,95,86,.1);border:1px solid rgba(255,95,86,.35);color:#ff8a82}
+.msg.ok{background:rgba(67,209,124,.1);border:1px solid rgba(67,209,124,.35);color:var(--ok)}
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(120%);
+  bottom:96px;background:var(--yellow);color:#0b0b0b;font-weight:800;font-size:13.5px;
+  padding:11px 18px;border-radius:11px;z-index:60;transition:transform .25s;
+  max-width:88vw;text-align:center;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+.loading{text-align:center;color:var(--dim2);padding:30px 0;font-size:13px}
+@media (max-width:400px){
+  .rowc .lbl b{font-size:14px}
+  .stepper input{width:50px}
+}
+</style>
+</head>
+<body>
+
+<!-- ====================== LOGIN ====================== -->
+<div id="boxAuth" class="auth hidden">
+  <div class="card">
+    <h2>Cierre del día</h2>
+    <div class="sub">Entra con tu cuenta del equipo BBH.</div>
+    <form id="formLogin">
+      <div class="field">
+        <label>Correo</label>
+        <input type="email" id="email" required placeholder="tucorreo@ejemplo.com" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" id="pass" required placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn" type="submit" id="btnLogin">Entrar</button>
+      <div class="msg" id="msgAuth"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ====================== APP ====================== -->
+<div id="boxApp" class="hidden">
+
+  <div class="top">
+    <div class="topin">
+      <div class="brand">BBH <span>· Cierre</span></div>
+      <div class="spacer"></div>
+      <button class="iconbtn" id="btnDiaAnt" type="button" title="Día anterior">‹</button>
+      <div class="fechabox"><input type="date" id="fecha"></div>
+      <button class="iconbtn" id="btnDiaSig" type="button" title="Día siguiente">›</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div id="cargando" class="loading">Cargando el día…</div>
+
+    <div id="contenido" class="hidden">
+
+      <!-- ============ 1. PANES ============ -->
+      <div class="card">
+        <h2>1 · Panes del día</h2>
+        <div class="sub">Cuenta física. Todo pan que salió tiene que quedar en alguna fila.</div>
+
+        <div class="rowc">
+          <div class="lbl"><b>Entraron</b><i>Panes que recibiste hoy</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="entraron">−</button>
+            <input type="number" id="entraron" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="entraron">+</button>
+          </div>
+        </div>
+
+        <div class="rowc money">
+          <div class="lbl"><b>Vendidas a $14.000 <span class="tag pay">paga</span></b><i>Precio normal</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="v14">−</button>
+            <input type="number" id="v14" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="v14">+</button>
+          </div>
+        </div>
+
+        <div class="rowc money">
+          <div class="lbl"><b>Vendidas a $13.000 <span class="tag pay">paga</span></b><i>Con descuento</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="v13">−</button>
+            <input type="number" id="v13" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="v13">+</button>
+          </div>
+        </div>
+
+        <div class="rowc money">
+          <div class="lbl"><b>Vendidas a $12.000 <span class="tag pay">paga</span></b><i>Con descuento</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="v12">−</button>
+            <input type="number" id="v12" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="v12">+</button>
+          </div>
+        </div>
+
+        <div class="rowc">
+          <div class="lbl"><b>Fiadas <span class="tag owe">por cobrar</span></b><i id="fiadasHint">Entregadas sin pagar hoy</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="fiadas">−</button>
+            <input type="number" id="fiadas" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="fiadas">+</button>
+          </div>
+        </div>
+
+        <div class="rowc">
+          <div class="lbl"><b>Merma / perdido <span class="tag loss">pérdida</span></b><i>Dañado, quemado, botado</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="merma">−</button>
+            <input type="number" id="merma" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="merma">+</button>
+          </div>
+        </div>
+
+        <div class="rowc">
+          <div class="lbl"><b>Quedaron</b><i>Panes buenos que sobraron</i></div>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-t="quedaron">−</button>
+            <input type="number" id="quedaron" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-step="1" data-t="quedaron">+</button>
+          </div>
+        </div>
+
+        <div class="cuadre ok" id="cuadreBox">
+          <div class="dot"></div>
+          <div class="txt">
+            <b id="cuadreTitulo">Cuadra</b>
+            <i id="cuadreDetalle">Entraron 0 · repartidos 0</i>
+          </div>
+          <div class="num" id="cuadreNum">0</div>
+        </div>
+      </div>
+
+      <!-- ============ 2. GASTOS ============ -->
+      <div class="card">
+        <h2>2 · Gastos del día</h2>
+        <div class="sub">Marca si cada gasto es del negocio o personal tuyo. No se mezclan en el total.</div>
+
+        <div class="gform">
+          <input type="text" id="gConcepto" placeholder="Ej: Carne, gas, transporte">
+          <input type="number" id="gValor" min="1" step="500" placeholder="Valor" inputmode="numeric">
+        </div>
+        <div class="chips">
+          <button type="button" class="chip on" id="chipBBH" data-clas="BBH">FUNCIONAMIENTO</button>
+          <button type="button" class="chip" id="chipPersonal" data-clas="PERSONAL">PERSONAL</button>
+        </div>
+        <button class="btn ghost" type="button" id="btnAddGasto">Agregar gasto</button>
+        <div class="msg" id="msgGasto"></div>
+
+        <div class="glist" id="listaGastos"></div>
+      </div>
+
+      <!-- ============ 3. TOTALES ============ -->
+      <div class="card">
+        <h2>3 · Cuentas del día</h2>
+        <div class="sub">Lo fiado no entra: todavía no es plata en la mano.</div>
+
+        <div class="tline big">
+          <div class="k">Total vendido<small id="detVendido">0 hamburguesas pagadas</small></div>
+          <div class="v" id="totalBruto">$0</div>
+        </div>
+
+        <div class="tline minus">
+          <div class="k">Gastos de funcionamiento<small id="detGastoBBH">0 gastos</small></div>
+          <div class="v" id="totalGastoBBH">−$0</div>
+        </div>
+
+        <div class="tline big">
+          <div class="k">Neto del negocio<small>Vendido menos gastos de funcionamiento</small></div>
+          <div class="v" id="netoNegocio">$0</div>
+        </div>
+
+        <div class="tline minus">
+          <div class="k">Gastos personales<small id="detGastoPersonal">0 gastos</small></div>
+          <div class="v" id="totalGastoPersonal">−$0</div>
+        </div>
+
+        <div class="tline final">
+          <div class="k">NETO FINAL</div>
+          <div class="v" id="netoFinal">$0</div>
+        </div>
+
+        <div class="tline">
+          <div class="k">Queda por cobrar (fiado)<small id="detFiado">0 fiadas</small></div>
+          <div class="v" id="totalFiado">$0</div>
+        </div>
+
+        <div class="aviso hidden" id="avisoRevisar"></div>
+        <div class="aviso hidden" id="avisoPos"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="savebar">
+    <div class="savein">
+      <div class="st">Neto final<b id="savebarNeto">$0</b></div>
+      <button class="btn" type="button" id="btnGuardar">Guardar cierre</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+var U='https://alpazaxehcwjinldcadh.supabase.co', K='sb_publishable_UuG4mqkqShEUK9lqDsZAqw_O3OuoEnd';
+var SESSION_KEY='bbh_panel_session';
+var PRECIO_NORMAL = 14000, PRECIO_13 = 13000, PRECIO_12 = 12000;
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(n){return '$'+Math.round(n||0).toLocaleString('es-CO')}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}
+function hoyISO(){var d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function num(id){return parseInt($(id).value,10)||0}
+
+/* ---------------- sesión (misma que el panel) ---------------- */
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch(e){return null}}
+function setSession(s){localStorage.setItem(SESSION_KEY, JSON.stringify(s))}
+function clearSession(){localStorage.removeItem(SESSION_KEY)}
+
+var refrescoEnCurso = null;
+async function refrescarSesion(){
+  if (refrescoEnCurso) return refrescoEnCurso;
+  refrescoEnCurso = (async function(){
+    var s = getSession();
+    if (!s || !s.refresh_token) return false;
+    try{
+      var res = await fetch(U+'/auth/v1/token?grant_type=refresh_token', {
+        method:'POST', headers:{'apikey':K,'Content-Type':'application/json'},
+        body: JSON.stringify({refresh_token: s.refresh_token})
+      });
+      if (!res.ok) return false;
+      var data = await res.json();
+      if (!data.access_token) return false;
+      setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token || s.refresh_token,
+        expires_at: Date.now() + (data.expires_in*1000),
+        email: s.email, user_id: s.user_id, rol: s.rol
+      });
+      return true;
+    }catch(err){ return false; }
+    finally{ refrescoEnCurso = null; }
+  })();
+  return refrescoEnCurso;
+}
+
+function mostrarLogin(mensaje){
+  clearSession();
+  $('boxApp').classList.add('hidden');
+  $('boxAuth').classList.remove('hidden');
+  if (mensaje){ var m=$('msgAuth'); m.textContent=mensaje; m.className='msg err show'; }
+}
+
+async function authFetch(path, opts){
+  opts = opts || {};
+  var s = getSession();
+  if (s && s.access_token && s.expires_at && s.expires_at < Date.now()+30000){
+    await refrescarSesion(); s = getSession();
+  }
+  var headers = Object.assign({'apikey':K,'Content-Type':'application/json'}, opts.headers||{});
+  if (s && s.access_token) headers['Authorization'] = 'Bearer '+s.access_token;
+  var res = await fetch(U+path, Object.assign({}, opts, {headers:headers}));
+  if (res.status === 401 && s && s.access_token){
+    var ok = await refrescarSesion();
+    if (ok){
+      var s2 = getSession();
+      var h2 = Object.assign({'apikey':K,'Content-Type':'application/json'}, opts.headers||{});
+      if (s2 && s2.access_token) h2['Authorization'] = 'Bearer '+s2.access_token;
+      res = await fetch(U+path, Object.assign({}, opts, {headers:h2}));
+    }
+    if (res.status === 401) mostrarLogin('Tu sesión expiró. Vuelve a iniciar sesión.');
+  }
+  return res;
+}
+
+/* ---------------- estado del día ---------------- */
+var gastosDia = [];      // gastos reales traídos de la base
+var clasSel = 'BBH';     // clasificación elegida en el formulario
+var fiadosDia = null;    // {unidades, valor} de la tabla fiados
+var ventasPos = null;    // {unidades, valor} de movimientos tipo VENTA
+var cerradoYa = false;
+
+/* ---------------- cálculo (todo en un solo lugar) ---------------- */
+function calcular(){
+  var entraron = num('entraron');
+  var v14 = num('v14'), v13 = num('v13'), v12 = num('v12');
+  var fiadas = num('fiadas'), merma = num('merma'), quedaron = num('quedaron');
+
+  var vendidas = v14 + v13 + v12;
+  var repartidos = vendidas + fiadas + merma + quedaron;
+  var dif = entraron - repartidos;
+
+  // --- cuadre del pan ---
+  var box = $('cuadreBox');
+  box.classList.toggle('ok', dif === 0);
+  box.classList.toggle('bad', dif !== 0);
+  $('cuadreNum').textContent = (dif > 0 ? '+' : '') + dif;
+  if (dif === 0){
+    $('cuadreTitulo').textContent = 'Cuadra';
+    $('cuadreDetalle').textContent = 'Entraron ' + entraron + ' · repartidos ' + repartidos;
+  } else if (dif > 0){
+    $('cuadreTitulo').textContent = 'Faltan ' + dif + ' por explicar';
+    $('cuadreDetalle').textContent = 'Entraron ' + entraron + ' pero solo contaste ' + repartidos;
+  } else {
+    $('cuadreTitulo').textContent = 'Sobran ' + Math.abs(dif) + ' contados';
+    $('cuadreDetalle').textContent = 'Contaste ' + repartidos + ' pero solo entraron ' + entraron;
+  }
+
+  // --- dinero ---
+  var bruto = v14*PRECIO_NORMAL + v13*PRECIO_13 + v12*PRECIO_12;
+  var porCobrar = fiadas * PRECIO_NORMAL;
+
+  var gBBH = 0, nBBH = 0, gPer = 0, nPer = 0, gRev = 0, nRev = 0;
+  for (var i=0;i<gastosDia.length;i++){
+    var g = gastosDia[i], v = parseFloat(g.valor)||0;
+    if (g.clasificacion === 'BBH'){ gBBH += v; nBBH++; }
+    else if (g.clasificacion === 'PERSONAL'){ gPer += v; nPer++; }
+    else { gRev += v; nRev++; }
+  }
+
+  var netoNegocio = bruto - gBBH;
+  var netoFinal = netoNegocio - gPer;
+
+  $('totalBruto').textContent = fmt(bruto);
+  $('detVendido').textContent = vendidas + (vendidas===1?' hamburguesa pagada':' hamburguesas pagadas');
+  $('totalGastoBBH').textContent = '−' + fmt(gBBH);
+  $('detGastoBBH').textContent = nBBH + (nBBH===1?' gasto':' gastos');
+  $('netoNegocio').textContent = fmt(netoNegocio);
+  $('totalGastoPersonal').textContent = '−' + fmt(gPer);
+  $('detGastoPersonal').textContent = nPer + (nPer===1?' gasto':' gastos');
+  $('netoFinal').textContent = fmt(netoFinal);
+  $('savebarNeto').textContent = fmt(netoFinal);
+  $('totalFiado').textContent = fmt(porCobrar);
+  $('detFiado').textContent = fiadas + (fiadas===1?' fiada':' fiadas') + ' × ' + fmt(PRECIO_NORMAL);
+
+  // --- avisos conectados con el resto del sistema ---
+  var av = $('avisoRevisar');
+  if (nRev > 0){
+    av.textContent = '⚠️ Hay ' + nRev + (nRev===1?' gasto':' gastos') + ' sin clasificar por ' + fmt(gRev) +
+                     '. No están restados en ningún total hasta que decidas si son del negocio o personales.';
+    av.classList.remove('hidden');
+  } else { av.classList.add('hidden'); }
+
+  var ap = $('avisoPos');
+  var avisos = [];
+  if (fiadosDia && fiadosDia.unidades !== fiadas){
+    avisos.push('En fiados hay ' + fiadosDia.unidades + ' unidad(es) registradas para este día y aquí contaste ' + fiadas + '.');
+  }
+  if (ventasPos && ventasPos.unidades > 0 && ventasPos.unidades !== vendidas){
+    avisos.push('El POS registró ' + ventasPos.unidades + ' venta(s) hoy (' + fmt(ventasPos.valor) + ') y aquí contaste ' + vendidas + '.');
+  }
+  if (avisos.length){ ap.innerHTML = '⚠️ ' + avisos.map(esc).join('<br>'); ap.classList.remove('hidden'); }
+  else { ap.classList.add('hidden'); }
+}
+
+/* ---------------- gastos ---------------- */
+function pintarGastos(){
+  var cont = $('listaGastos');
+  if (!gastosDia.length){
+    cont.innerHTML = '<div class="empty">Todavía no hay gastos registrados hoy.</div>';
+    return;
+  }
+  var orden = {BBH:0, PERSONAL:1, REVISAR:2};
+  var lista = gastosDia.slice().sort(function(a,b){
+    return (orden[a.clasificacion]||2) - (orden[b.clasificacion]||2);
+  });
+  cont.innerHTML = lista.map(function(g){
+    var et = g.clasificacion === 'BBH' ? '<span class="tag">FUNCIONAMIENTO</span>'
+           : g.clasificacion === 'PERSONAL' ? '<span class="tag">PERSONAL</span>'
+           : '<span class="tag loss">SIN CLASIFICAR</span>';
+    return '<div class="gitem">' +
+             '<div class="gi"><b>' + esc(g.concepto) + '</b>' + et + '</div>' +
+             '<div class="gv">' + fmt(g.valor) + '</div>' +
+             '<button class="gx" type="button" data-del="' + g.id + '" title="Eliminar">×</button>' +
+           '</div>';
+  }).join('');
+}
+
+async function cargarGastos(fecha){
+  var res = await authFetch('/rest/v1/gastos?select=id,concepto,valor,clasificacion&fecha=eq.' + fecha + '&order=created_at.desc');
+  gastosDia = res.ok ? await res.json() : [];
+  pintarGastos();
+}
+
+$('btnAddGasto').addEventListener('click', async function(){
+  var concepto = $('gConcepto').value.trim();
+  var valor = parseFloat($('gValor').value) || 0;
+  var msg = $('msgGasto'); msg.className = 'msg';
+  if (!concepto){ msg.textContent='Escribe de qué fue el gasto.'; msg.className='msg err show'; return; }
+  if (valor <= 0){ msg.textContent='El valor tiene que ser mayor a cero.'; msg.className='msg err show'; return; }
+  var btn = this; btn.disabled = true; btn.textContent = 'Guardando...';
+  try{
+    var res = await authFetch('/rest/v1/gastos', {
+      method:'POST', headers:{'Prefer':'return=representation'},
+      body: JSON.stringify({ fecha: $('fecha').value, concepto: concepto, valor: valor, clasificacion: clasSel })
+    });
+    if (!res.ok) throw new Error('fallo');
+    var creado = await res.json();
+    if (creado && creado.length) gastosDia.unshift(creado[0]);
+    $('gConcepto').value = ''; $('gValor').value = '';
+    pintarGastos(); calcular();
+    toast('Gasto agregado');
+  }catch(err){
+    msg.textContent = 'No se pudo guardar el gasto. Revisa tu conexión.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Agregar gasto';
+  }
+});
+
+$('listaGastos').addEventListener('click', async function(e){
+  var b = e.target.closest('[data-del]');
+  if (!b) return;
+  var id = b.getAttribute('data-del');
+  if (!confirm('¿Eliminar este gasto?')) return;
+  b.disabled = true;
+  try{
+    var res = await authFetch('/rest/v1/gastos?id=eq.' + encodeURIComponent(id), { method:'DELETE' });
+    if (!res.ok) throw new Error('fallo');
+    gastosDia = gastosDia.filter(function(g){ return String(g.id) !== String(id) });
+    pintarGastos(); calcular();
+    toast('Gasto eliminado');
+  }catch(err){
+    b.disabled = false;
+    toast('No se pudo eliminar');
+  }
+});
+
+Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){
+  c.addEventListener('click', function(){
+    clasSel = c.getAttribute('data-clas');
+    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(x){ x.classList.toggle('on', x===c) });
+  });
+});
+
+/* ---------------- steppers y recálculo en vivo ---------------- */
+Array.prototype.forEach.call(document.querySelectorAll('.stepper button'), function(b){
+  b.addEventListener('click', function(){
+    var campo = b.getAttribute('data-t');
+    var paso = parseInt(b.getAttribute('data-step'), 10);
+    var el = $(campo);
+    el.value = Math.max(0, (parseInt(el.value,10)||0) + paso);
+    calcular();
+  });
+});
+Array.prototype.forEach.call(document.querySelectorAll('.stepper input'), function(i){
+  i.addEventListener('input', calcular);
+  i.addEventListener('focus', function(){ i.select(); });
+});
+
+/* ---------------- cargar un día completo ---------------- */
+async function cargarDia(fecha){
+  $('cargando').classList.remove('hidden');
+  $('contenido').classList.add('hidden');
+  cerradoYa = false;
+
+  var qDia = authFetch('/rest/v1/dias_operacion?select=*&fecha=eq.' + fecha);
+  var qFiados = authFetch('/rest/v1/fiados?select=unidades,valor_total&fecha=eq.' + fecha);
+  var qVentas = authFetch('/rest/v1/movimientos?select=unidades,valor_total&tipo=eq.VENTA&fecha=eq.' + fecha);
+
+  var resDia, resFia, resVen;
+  try{
+    resDia = await qDia; resFia = await qFiados; resVen = await qVentas;
+  }catch(err){
+    $('cargando').textContent = 'No se pudo cargar el día. Revisa tu conexión.';
+    return;
+  }
+
+  // fiados ya registrados ese día
+  fiadosDia = null;
+  if (resFia && resFia.ok){
+    var fl = await resFia.json();
+    fiadosDia = fl.reduce(function(acc, f){
+      acc.unidades += (parseInt(f.unidades,10) || 0);
+      acc.valor += (parseFloat(f.valor_total) || 0);
+      return acc;
+    }, {unidades:0, valor:0});
+    $('fiadasHint').textContent = fiadosDia.unidades > 0
+      ? 'En fiados hay ' + fiadosDia.unidades + ' registrada(s) hoy'
+      : 'Entregadas sin pagar hoy';
+  }
+
+  // ventas registradas por el POS ese día
+  ventasPos = null;
+  if (resVen && resVen.ok){
+    var vl = await resVen.json();
+    ventasPos = vl.reduce(function(acc, m){
+      acc.unidades += (parseInt(m.unidades,10) || 0);
+      acc.valor += (parseFloat(m.valor_total) || 0);
+      return acc;
+    }, {unidades:0, valor:0});
+  }
+
+  // el día guardado (si ya existe)
+  var d = null;
+  if (resDia && resDia.ok){
+    var arr = await resDia.json();
+    d = arr.length ? arr[0] : null;
+  }
+
+  if (d){
+    cerradoYa = !!d.cerrado;
+    var v12 = d.pan_vendido_12k || 0, v13 = d.pan_vendido_13k || 0;
+    $('entraron').value = d.pan_entregado || 0;
+    $('v12').value = v12;
+    $('v13').value = v13;
+    $('v14').value = Math.max(0, (d.pan_vendido || 0) - v12 - v13);
+    $('fiadas').value = d.pan_fiado || (fiadosDia ? fiadosDia.unidades : 0) || 0;
+    $('merma').value = d.pan_perdido || 0;
+    $('quedaron').value = d.pan_devuelto || 0;
+  } else {
+    $('entraron').value = 0; $('v12').value = 0; $('v13').value = 0; $('v14').value = 0;
+    $('fiadas').value = fiadosDia ? fiadosDia.unidades : 0;
+    $('merma').value = 0; $('quedaron').value = 0;
+  }
+
+  $('btnGuardar').textContent = cerradoYa ? 'Actualizar cierre' : 'Guardar cierre';
+
+  await cargarGastos(fecha);
+  calcular();
+
+  $('cargando').classList.add('hidden');
+  $('contenido').classList.remove('hidden');
+}
+
+/* ---------------- guardar ---------------- */
+$('btnGuardar').addEventListener('click', async function(){
+  var fecha = $('fecha').value;
+  if (!fecha){ toast('Elige una fecha'); return; }
+
+  var v14 = num('v14'), v13 = num('v13'), v12 = num('v12');
+  var vendidas = v14 + v13 + v12;
+  var entraron = num('entraron'), fiadas = num('fiadas'), merma = num('merma'), quedaron = num('quedaron');
+  var dif = entraron - (vendidas + fiadas + merma + quedaron);
+
+  if (dif !== 0){
+    var txt = dif > 0
+      ? 'Faltan ' + dif + ' pan(es) por explicar.'
+      : 'Sobran ' + Math.abs(dif) + ' pan(es) contados de más.';
+    if (!confirm(txt + '\n\n¿Guardar el cierre así de todos modos?')) return;
+  }
+
+  var bruto = v14*PRECIO_NORMAL + v13*PRECIO_13 + v12*PRECIO_12;
+  // precio_promedio = lo realmente cobrado por unidad. La base calcula sola valor_esperado
+  // (pan_vendido × precio_promedio), por eso NUNCA se envía ese campo aquí.
+  var precioProm = vendidas > 0 ? Math.round(bruto / vendidas) : null;
+
+  var btn = this; btn.disabled = true; var textoPrevio = btn.textContent; btn.textContent = 'Guardando...';
+  try{
+    var payload = {
+      fecha: fecha,
+      opero: true,
+      pan_entregado: entraron,
+      pan_vendido: vendidas,
+      pan_vendido_12k: v12,
+      pan_vendido_13k: v13,
+      pan_fiado: fiadas,
+      pan_perdido: merma,
+      pan_devuelto: quedaron,
+      precio_normal: PRECIO_NORMAL,
+      precio_promedio: precioProm,
+      cerrado: true,
+      cerrado_en: new Date().toISOString()
+    };
+    var res = await authFetch('/rest/v1/dias_operacion', {
+      method: 'POST',
+      headers: {'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok){
+      var err = await res.text();
+      console.error(err);
+      toast('No se pudo guardar el cierre');
+      return;
+    }
+    cerradoYa = true;
+    btn.textContent = 'Actualizar cierre';
+    textoPrevio = 'Actualizar cierre';
+    toast('Cierre guardado');
+  }catch(e){
+    toast('Error de conexión al guardar');
+  }finally{
+    btn.disabled = false; btn.textContent = textoPrevio;
+  }
+});
+
+/* ---------------- navegación de fechas ---------------- */
+function moverDia(n){
+  var f = $('fecha').value || hoyISO();
+  var p = f.split('-');
+  var d = new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10));
+  d.setDate(d.getDate() + n);
+  var iso = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  $('fecha').value = iso;
+  cargarDia(iso);
+}
+$('btnDiaAnt').addEventListener('click', function(){ moverDia(-1) });
+$('btnDiaSig').addEventListener('click', function(){ moverDia(1) });
+$('fecha').addEventListener('change', function(){ if (this.value) cargarDia(this.value) });
+
+/* ---------------- login ---------------- */
+$('formLogin').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = $('btnLogin'), msg = $('msgAuth');
+  msg.className = 'msg'; btn.disabled = true; btn.textContent = 'Entrando...';
+  try{
+    var res = await fetch(U+'/auth/v1/token?grant_type=password', {
+      method:'POST', headers:{'apikey':K,'Content-Type':'application/json'},
+      body: JSON.stringify({email: $('email').value.trim(), password: $('pass').value})
+    });
+    var data = await res.json();
+    if (!res.ok || !data.access_token){
+      msg.textContent = 'Correo o contraseña incorrectos.';
+      msg.className = 'msg err show';
+      return;
+    }
+    setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: Date.now() + (data.expires_in*1000),
+      email: data.user ? data.user.email : '',
+      user_id: data.user ? data.user.id : ''
+    });
+    await arrancar();
+  }catch(err){
+    msg.textContent = 'No se pudo conectar. Revisa tu internet.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+
+/* ---------------- arranque ---------------- */
+async function arrancar(){
+  $('boxAuth').classList.add('hidden');
+  $('boxApp').classList.remove('hidden');
+  if (!$('fecha').value) $('fecha').value = hoyISO();
+  await cargarDia($('fecha').value);
+}
+
+(async function init(){
+  var s = getSession();
+  if (!s || !s.access_token){ mostrarLogin(); return; }
+  if (s.expires_at && s.expires_at < Date.now()+30000){
+    var ok = await refrescarSesion();
+    if (!ok){ mostrarLogin('Tu sesión expiró. Vuelve a iniciar sesión.'); return; }
+  }
+  await arrancar();
+})();
+
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}) });
+}
+</script>
+</body>
+</html>
