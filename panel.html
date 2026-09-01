@@ -288,118 +288,222 @@ input::placeholder{color:#5c5c56}
 
     <!-- ===== TAB: CIERRE DEL DÍA ===== -->
     <div class="tabpanel active" id="tabCierre">
-      <p class="lead">Al final del día, cuenta los panes físicos y anota el resumen. Así lo maneja el equipo: no se registra hamburguesa por hamburguesa, solo el cierre.</p>
 
-      <div id="vistaCierreForm">
-        <div class="msg" id="msgCierre"></div>
-        <div class="card">
-          <div class="kicker" style="margin-bottom:10px">Panes</div>
-          <div class="formgrid">
-            <div class="field"><label>Fecha <span id="cierreFechaDia" style="color:var(--yellow);font-weight:700;text-transform:none;letter-spacing:0"></span></label><input type="text" id="cierreFecha" placeholder="AAAA-MM-DD"></div>
-            <div class="field"><label>Panes entregados</label><input type="number" id="cierreEntregado" min="0" step="1" placeholder="Ej: 70"></div>
-            <div class="field"><label>Fiadas (unidades)</label><input type="number" id="cierreFiadasUnid" min="0" step="1" placeholder="Ej: 3"></div>
-            <div class="field"><label>Cantidad de excepciones</label><input type="number" id="cierreExcepcionesN" min="0" step="1" placeholder="Ej: 2"></div>
-            <div class="field"><label>Pan devuelto</label><input type="number" id="cierreDevuelto" min="0" step="1" placeholder="Ej: 0"></div>
-            <div class="field"><label>Pan perdido / merma</label><input type="number" id="cierrePerdido" min="0" step="1" placeholder="Ej: 0"></div>
-          </div>
+      <style>
+      /* --- Cierre simplificado --- */
+      .ci-rowc{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+      .ci-rowc:last-child{border-bottom:0}
+      .ci-rowc .ci-lbl{flex:1;min-width:0}
+      .ci-rowc .ci-lbl b{display:block;font-size:15px;font-weight:700}
+      .ci-rowc .ci-lbl i{display:block;font-size:11.5px;color:var(--dim2, #5c5c56);font-style:normal;margin-top:1px}
+      .ci-step{display:flex;align-items:center;flex-shrink:0}
+      .ci-step button{width:34px;height:34px;border:1px solid var(--line);background:var(--ink2, #1e1e1b);color:var(--text);font-size:19px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+      .ci-step button:first-child{border-radius:9px 0 0 9px}
+      .ci-step button:last-child{border-radius:0 9px 9px 0}
+      .ci-step input{width:58px;height:34px;text-align:center;border:1px solid var(--line);border-left:0;border-right:0;background:var(--black, #0b0b0b);color:var(--text);font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+      .ci-step input::-webkit-outer-spin-button,.ci-step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+      .ci-tag{font-size:10px;font-weight:800;letter-spacing:.6px;padding:2px 6px;border-radius:5px;background:var(--ink2, #1e1e1b);color:var(--dim, #9a9a90);margin-left:6px;vertical-align:middle}
+      .ci-tag.pay{background:rgba(67,209,124,.14);color:#43d17c}
+      .ci-tag.owe{background:rgba(255,176,32,.14);color:#ffb020}
+      .ci-tag.loss{background:rgba(255,95,86,.14);color:#ff5f56}
+      .ci-cuadre{margin-top:14px;border-radius:12px;padding:12px 14px;border:1px solid var(--line);display:flex;align-items:center;gap:12px}
+      .ci-cuadre .ci-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+      .ci-cuadre.ok{border-color:rgba(67,209,124,.4)}
+      .ci-cuadre.ok .ci-dot{background:#43d17c}
+      .ci-cuadre.ok .ci-num{color:#43d17c}
+      .ci-cuadre.bad{border-color:rgba(255,95,86,.45)}
+      .ci-cuadre.bad .ci-dot{background:#ff5f56}
+      .ci-cuadre.bad .ci-num{color:#ff5f56}
+      .ci-cuadre .ci-txt{flex:1;min-width:0}
+      .ci-cuadre .ci-txt b{display:block;font-size:14px}
+      .ci-cuadre .ci-txt i{display:block;font-style:normal;font-size:11.5px;color:var(--dim, #9a9a90);margin-top:2px}
+      .ci-cuadre .ci-num{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+      .ci-gform{display:grid;grid-template-columns:1fr 112px;gap:8px;margin-bottom:10px}
+      .ci-chips{display:flex;gap:8px;margin-bottom:10px}
+      .ci-chip{flex:1;border:1px solid var(--line);background:transparent;color:var(--dim, #9a9a90);border-radius:10px;padding:9px 8px;font-size:12.5px;font-weight:800;cursor:pointer;letter-spacing:.3px}
+      .ci-chip.on{border-color:var(--yellow);color:var(--yellow);background:rgba(253,241,0,.07)}
+      .ci-gitem{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+      .ci-gitem:last-child{border-bottom:0}
+      .ci-gitem .ci-gi{flex:1;min-width:0}
+      .ci-gitem .ci-gi b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .ci-gitem .ci-gv{font-weight:800;font-variant-numeric:tabular-nums;font-size:14px}
+      .ci-gitem .ci-gx{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--ink2, #1e1e1b);color:var(--dim, #9a9a90);cursor:pointer;font-size:15px;flex-shrink:0}
+      .ci-tline{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+      .ci-tline:last-child{border-bottom:0}
+      .ci-tline .ci-k{font-size:13.5px;color:var(--dim, #9a9a90)}
+      .ci-tline .ci-k small{display:block;font-size:11px;color:var(--dim2, #5c5c56)}
+      .ci-tline .ci-v{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+      .ci-tline.minus .ci-v{color:#ff5f56}
+      .ci-tline.big{padding:14px 0}
+      .ci-tline.big .ci-k{font-size:14px;color:var(--text);font-weight:700}
+      .ci-tline.big .ci-v{font-size:26px;font-weight:900}
+      .ci-tline.final{margin-top:8px;border-top:2px solid var(--yellow);border-bottom:0;padding-top:16px}
+      .ci-tline.final .ci-k{color:var(--yellow);font-size:14px;font-weight:800;letter-spacing:.5px}
+      .ci-tline.final .ci-v{font-size:32px;font-weight:900;color:var(--yellow)}
+      .ci-aviso{margin-top:12px;border-radius:10px;padding:10px 12px;font-size:12.5px;background:rgba(255,176,32,.09);border:1px solid rgba(255,176,32,.3);color:#ffb020}
+      .ci-empty{color:var(--dim2, #5c5c56);font-size:13px;text-align:center;padding:16px 0}
+      .ci-fechabar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+      .ci-fechabar input{flex:1;font-weight:700;font-variant-numeric:tabular-nums}
+      .ci-navbtn{width:38px;height:38px;flex-shrink:0;border:1px solid var(--line);background:var(--ink2, #1e1e1b);color:var(--text);border-radius:10px;font-size:17px;cursor:pointer}
+      </style>
 
-          <div class="field full" style="margin-top:4px">
-            <label>Vendidos (pagados) — por precio</label>
-            <div class="formgrid" style="margin-top:6px">
-              <div class="field"><label>A precio normal</label><input type="number" id="cierreVendidoNormal" min="0" step="1" placeholder="Ej: 52"></div>
-              <div class="field"><label>A $12.000</label><input type="number" id="cierreVendido12k" min="0" step="1" placeholder="Ej: 0"></div>
-              <div class="field"><label>A $13.000</label><input type="number" id="cierreVendido13k" min="0" step="1" placeholder="Ej: 0"></div>
-            </div>
-            <div class="totalbar" style="margin-top:8px"><div class="lb">Total vendidos</div><div class="val" id="cierreVendidoTotalVal">0</div></div>
-          </div>
+      <p class="lead">Cuenta los panes físicos al final del día. Todo pan que salió tiene que quedar en alguna fila.</p>
 
-          <div class="totalbar" id="cierreExcedenteBar">
-            <div class="lb">Excedente (debería ser 0)</div>
-            <div class="val" id="cierreExcedenteVal">0</div>
-          </div>
-        </div>
+      <div class="msg" id="msgCierre"></div>
 
-        <div class="card" style="margin-top:16px" id="cardResumenDia">
-          <div class="kicker" style="margin-bottom:10px">Resumen del día (se actualiza mientras escribes)</div>
-          <div class="totalbar"><div class="lb">Vendido (pagado, sin fiado)</div><div class="val" id="resVendidoVal">0 · $0</div></div>
-          <div class="totalbar"><div class="lb">Fiado hoy (nuevo + ya registrado — no es caja)</div><div class="val" id="resFiadoVal">0 · $0</div></div>
-          <div class="totalbar"><div class="lb">Excepciones (regalos, consumo interno, merma con valor — no es caja)</div><div class="val" id="resExcepcionalVal">0 · $0</div></div>
-          <div class="totalbar"><div class="lb">Gastos del día</div><div class="val" id="resGastosVal">$0</div></div>
-        </div>
+      <div class="ci-fechabar">
+        <button class="ci-navbtn" type="button" id="ciDiaAnt" title="Día anterior">&lsaquo;</button>
+        <input type="date" id="cierreFecha">
+        <button class="ci-navbtn" type="button" id="ciDiaSig" title="Día siguiente">&rsaquo;</button>
+      </div>
 
-        <div class="card hidden" id="cardCierreFiadasDetalle" style="margin-top:16px">
-          <div class="kicker" style="margin-bottom:6px">Datos de cada fiada</div>
-          <p class="lead" style="margin-bottom:14px">Escribe a quién le fiaste, para que quede en la cartera de Fiados y puedas cobrarle después. Si no sabes algún dato todavía, puedes dejarlo y completarlo luego en la pestaña Fiados.</p>
-          <div id="listaCierreFiadas"></div>
-        </div>
+      <!-- ===== 1. PANES ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">1 · Panes del día</div>
 
-        <div class="card hidden" id="cardCierreExcepcionesDetalle" style="margin-top:16px">
-          <div class="kicker" style="margin-bottom:6px">Datos de cada excepción</div>
-          <p class="lead" style="margin-bottom:14px">Ejemplos: "1 Big BBH regalo cliente" valor $25.000, o "Trabajador se comió 1 hamburguesa" valor -14.000 (negativo, porque era plata que no entró). El valor es opcional — solo las unidades afectan el Excedente.</p>
-          <div id="listaCierreExcepcionesForm"></div>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-          <div class="kicker" style="margin-bottom:6px">Excepciones de este día</div>
-          <p class="lead" style="margin-bottom:12px">Lo ya guardado (regalos, consumo interno, promociones, merma con valor).</p>
-          <div id="listaCierreExcepciones"><div class="emptylist">—</div></div>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-          <div class="kicker" style="margin-bottom:10px">Dinero</div>
-          <div class="formgrid">
-            <div class="field"><label>Precio normal de hoy</label><input type="number" id="cierrePrecioProm" min="0" step="500" placeholder="Ej: 14000"></div>
-            <div class="field"><label>Valor recibido en caja</label><input type="number" id="cierreValorRecibido" min="0" step="1000" placeholder="Efectivo + transferencia"></div>
-          </div>
-          <p class="lead" style="margin:6px 0 0" id="cierreEsperadoFormula"></p>
-          <div class="totalbar"><div class="lb">Esperado (solo lo vendido pagado — no incluye fiado ni excepciones)</div><div class="val" id="cierreEsperadoVal">$0</div></div>
-          <div class="totalbar" id="cierreDiferenciaBar"><div class="lb">Diferencia (esperado − recibido)</div><div class="val" id="cierreDiferenciaVal">$0</div></div>
-          <p class="lead" style="margin:6px 0 0" id="cierreDiferenciaNota"></p>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-          <div class="kicker" style="margin-bottom:6px">Gastos de este día</div>
-          <p class="lead" style="margin-bottom:12px">Se pueden editar desde aquí o desde la pestaña Gastos — es el mismo dato.</p>
-          <div id="listaCierreGastos"><div class="emptylist">—</div></div>
-          <button class="btn sec" type="button" id="btnCierreNuevoGasto" style="margin-top:10px">+ Agregar gasto de este día</button>
-          <div class="hidden" id="formCierreGasto" style="margin-top:12px">
-            <div class="formgrid">
-              <div class="field full"><label>Concepto *</label><input type="text" id="cierreGastoConcepto" placeholder="Ej: Recibo agua local"></div>
-              <div class="field"><label>Valor *</label><input type="number" id="cierreGastoValor" min="1" step="1" placeholder="Ej: 30000"></div>
-              <div class="field"><label>Clasificación *</label>
-                <select id="cierreGastoClasificacion">
-                  <option value="">Selecciona…</option>
-                  <option value="BBH">Del negocio</option>
-                  <option value="PERSONAL">Personal</option>
-                </select>
-              </div>
-            </div>
-            <div class="msg" id="msgCierreGasto"></div>
-            <div class="row" style="margin-top:10px;gap:10px">
-              <button class="btn ghost" type="button" id="btnCierreGastoCancelar">Cancelar</button>
-              <button class="btn" type="button" id="btnCierreGastoGuardar">Guardar gasto</button>
-            </div>
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Entraron</b><i>Panes que recibiste hoy</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciEntraron">&minus;</button>
+            <input type="number" id="ciEntraron" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciEntraron">+</button>
           </div>
         </div>
 
-        <div class="card" style="margin-top:16px">
-          <div class="kicker" style="margin-bottom:6px">Fiados de este día</div>
-          <p class="lead" style="margin-bottom:12px">Toca uno para ver el detalle o registrar un abono.</p>
-          <div id="listaCierreFiados"><div class="emptylist">—</div></div>
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Vendidas a $14.000 <span class="ci-tag pay">paga</span></b><i>Precio normal</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciV14">&minus;</button>
+            <input type="number" id="ciV14" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciV14">+</button>
+          </div>
         </div>
 
-        <div class="card" style="margin-top:16px">
-          <div class="field"><label>Notas (opcional)</label><input type="text" id="cierreNotas" placeholder="Ej: incidencias del día"></div>
-          <button class="btn" type="button" id="btnGuardarCierre" style="margin-top:6px">Guardar cambios de este día</button>
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Vendidas a $13.000 <span class="ci-tag pay">paga</span></b><i>Con descuento</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciV13">&minus;</button>
+            <input type="number" id="ciV13" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciV13">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Vendidas a $12.000 <span class="ci-tag pay">paga</span></b><i>Con descuento</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciV12">&minus;</button>
+            <input type="number" id="ciV12" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciV12">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Fiadas <span class="ci-tag owe">por cobrar</span></b><i id="ciFiadasHint">Entregadas sin pagar hoy</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciFiadas">&minus;</button>
+            <input type="number" id="ciFiadas" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciFiadas">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Merma / perdido <span class="ci-tag loss">pérdida</span></b><i>Dañado, quemado, botado</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciMerma">&minus;</button>
+            <input type="number" id="ciMerma" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciMerma">+</button>
+          </div>
+        </div>
+
+        <div class="ci-rowc">
+          <div class="ci-lbl"><b>Quedaron</b><i>Panes buenos que sobraron</i></div>
+          <div class="ci-step">
+            <button type="button" data-cistep="-1" data-cit="ciQuedaron">&minus;</button>
+            <input type="number" id="ciQuedaron" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" data-cistep="1" data-cit="ciQuedaron">+</button>
+          </div>
+        </div>
+
+        <div class="ci-cuadre ok" id="ciCuadreBox">
+          <div class="ci-dot"></div>
+          <div class="ci-txt">
+            <b id="ciCuadreTitulo">Cuadra</b>
+            <i id="ciCuadreDetalle">Entraron 0 · repartidos 0</i>
+          </div>
+          <div class="ci-num" id="ciCuadreNum">0</div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <div class="kicker" style="margin-bottom:10px">Últimos cierres</div>
-        <div id="listaCierres"><div class="emptylist">Cargando…</div></div>
+      <!-- ===== 2. GASTOS ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">2 · Gastos del día</div>
+        <p class="lead" style="margin:6px 0 12px">Marca si cada gasto es del negocio o personal tuyo. No se mezclan en el total.</p>
+
+        <div class="ci-gform">
+          <input type="text" id="ciGConcepto" placeholder="Ej: Carne, gas, transporte">
+          <input type="number" id="ciGValor" min="1" step="500" placeholder="Valor" inputmode="numeric">
+        </div>
+        <div class="ci-chips">
+          <button type="button" class="ci-chip on" data-ciclas="BBH">FUNCIONAMIENTO</button>
+          <button type="button" class="ci-chip" data-ciclas="PERSONAL">PERSONAL</button>
+        </div>
+        <button class="btn ghost" type="button" id="ciAddGasto">Agregar gasto</button>
+        <div class="msg" id="ciMsgGasto"></div>
+
+        <div style="margin-top:14px" id="ciListaGastos"></div>
       </div>
+
+      <!-- ===== 3. CUENTAS ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">3 · Cuentas del día</div>
+        <p class="lead" style="margin:6px 0 12px">Lo fiado no entra: todavía no es plata en la mano.</p>
+
+        <div class="ci-tline big">
+          <div class="ci-k">Total vendido<small id="ciDetVendido">0 hamburguesas pagadas</small></div>
+          <div class="ci-v" id="ciTotalBruto">$0</div>
+        </div>
+        <div class="ci-tline minus">
+          <div class="ci-k">Gastos de funcionamiento<small id="ciDetGastoBBH">0 gastos</small></div>
+          <div class="ci-v" id="ciTotalGastoBBH">&minus;$0</div>
+        </div>
+        <div class="ci-tline big">
+          <div class="ci-k">Neto del negocio<small>Vendido menos gastos de funcionamiento</small></div>
+          <div class="ci-v" id="ciNetoNegocio">$0</div>
+        </div>
+        <div class="ci-tline minus">
+          <div class="ci-k">Gastos personales<small id="ciDetGastoPersonal">0 gastos</small></div>
+          <div class="ci-v" id="ciTotalGastoPersonal">&minus;$0</div>
+        </div>
+        <div class="ci-tline final">
+          <div class="ci-k">NETO FINAL</div>
+          <div class="ci-v" id="ciNetoFinal">$0</div>
+        </div>
+        <div class="ci-tline">
+          <div class="ci-k">Queda por cobrar (fiado)<small id="ciDetFiado">0 fiadas</small></div>
+          <div class="ci-v" id="ciTotalFiado">$0</div>
+        </div>
+
+        <div class="ci-aviso hidden" id="ciAvisoRevisar"></div>
+        <div class="ci-aviso hidden" id="ciAvisoCruce"></div>
+      </div>
+
+      <!-- ===== 4. CAJA (opcional) ===== -->
+      <div class="card">
+        <div class="kicker" style="margin-bottom:4px">4 · Caja contada <span style="color:var(--dim2,#5c5c56);font-weight:600;letter-spacing:0;text-transform:none">— opcional</span></div>
+        <p class="lead" style="margin:6px 0 12px">Si cuentas el efectivo + transferencias recibidas, aquí se compara contra lo que debería haber. Déjalo vacío si no lo cuentas.</p>
+        <div class="field">
+          <label>Valor recibido en caja</label>
+          <input type="number" id="ciValorRecibido" min="0" step="1000" placeholder="Efectivo + transferencia" inputmode="numeric">
+        </div>
+        <div class="ci-tline" id="ciFilaDifCaja" style="display:none">
+          <div class="ci-k">Diferencia de caja<small id="ciDetDifCaja"></small></div>
+          <div class="ci-v" id="ciDifCaja">$0</div>
+        </div>
+      </div>
+
+      <button class="btn" type="button" id="btnGuardarCierre" style="margin-top:6px">Guardar cierre</button>
+
     </div>
-    <!-- ===== FIN TAB CIERRE ===== -->
 
     <!-- ===== TAB: VENDER ===== -->
     <div class="tabpanel" id="tabVender">
@@ -2275,510 +2379,359 @@ $('formIngreso').addEventListener('submit', async function(e){
   }
 });
 
-// ==================== CIERRE DIARIO ====================
-var cierreFiadasFilas = []; // {nombre, facultad, promesaPago}
-var cierreFechaCargada = null; // última fecha cuyos campos principales (panes/dinero) se cargaron desde la base — evita reescribir lo que el usuario está tecleando
+// ==================== CIERRE DIARIO (simplificado) ====================
+// Contrato con el resto del panel: expone cargarCierre(), precargarCamposDia(fecha),
+// cargarListasDia(fecha) y la variable cierreFechaCargada, porque los usan cambiarTab()
+// y la sincronización en vivo (Realtime). No cambiar esos nombres sin revisar allá.
 
-function renderCierreFiadasDetalle(){
-  var n = parseInt($('cierreFiadasUnid').value) || 0;
-  var card = $('cardCierreFiadasDetalle');
-  if (n <= 0){ card.classList.add('hidden'); cierreFiadasFilas = []; return; }
-  card.classList.remove('hidden');
-  // ajustar tamaño del arreglo sin perder lo ya escrito
-  while (cierreFiadasFilas.length < n) cierreFiadasFilas.push({nombre:'', facultad:'', cantidad:'1', promesaPago:''});
-  while (cierreFiadasFilas.length > n) cierreFiadasFilas.pop();
-  var el = $('listaCierreFiadas');
-  el.innerHTML = cierreFiadasFilas.map(function(f, i){
-    return '<div class="card" style="background:var(--ink);margin-bottom:'+(i<n-1?'10px':'0')+'">'+
-      '<div class="formgrid">'+
-        '<div class="field full"><label>Fiada '+(i+1)+' — Nombre</label><input type="text" class="cfNombre" data-i="'+i+'" placeholder="Ej: Juan" value="'+esc(f.nombre)+'"></div>'+
-        '<div class="field"><label>Facultad</label><input type="text" class="cfFacultad" data-i="'+i+'" placeholder="Ej: Derecho" value="'+esc(f.facultad)+'"></div>'+
-        '<div class="field"><label>Cantidad</label><input type="number" min="1" step="1" class="cfCantidad" data-i="'+i+'" placeholder="1" value="'+esc(f.cantidad||'1')+'"></div>'+
-        '<div class="field"><label>Promete pagar</label><input type="text" class="cfPromesa" data-i="'+i+'" placeholder="AAAA-MM-DD" value="'+esc(f.promesaPago)+'"></div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  Array.prototype.forEach.call(el.querySelectorAll('.cfNombre'), function(inp){
-    inp.addEventListener('input', function(){ cierreFiadasFilas[+inp.getAttribute('data-i')].nombre = inp.value; });
-  });
-  Array.prototype.forEach.call(el.querySelectorAll('.cfFacultad'), function(inp){
-    inp.addEventListener('input', function(){ cierreFiadasFilas[+inp.getAttribute('data-i')].facultad = inp.value; });
-  });
-  Array.prototype.forEach.call(el.querySelectorAll('.cfPromesa'), function(inp){
-    inp.addEventListener('input', function(){ cierreFiadasFilas[+inp.getAttribute('data-i')].promesaPago = inp.value; });
-  });
-  Array.prototype.forEach.call(el.querySelectorAll('.cfCantidad'), function(inp){
-    inp.addEventListener('input', function(){ cierreFiadasFilas[+inp.getAttribute('data-i')].cantidad = inp.value; calcularCierrePreview(); });
-  });
-}
-$('cierreFiadasUnid').addEventListener('input', function(){ renderCierreFiadasDetalle(); calcularCierrePreview(); });
+var cierreFechaCargada = null; // última fecha cuyos campos se cargaron desde la base — evita reescribir lo que se está tecleando
+var CI_P14 = 14000, CI_P13 = 13000, CI_P12 = 12000;
 
-var cierreExcepcionesFilas = []; // {concepto, unidades, valor}
+var ciGastosDia = [];      // gastos reales de la fecha abierta
+var ciClasSel = 'BBH';     // clasificación elegida en el formulario de gasto
+var ciFiadosDia = null;    // {unidades, valor} traído de la tabla fiados
+var ciVentasPos = null;    // {unidades, valor} traído de movimientos tipo VENTA
 
-function renderCierreExcepcionesDetalle(){
-  var n = parseInt($('cierreExcepcionesN').value) || 0;
-  var card = $('cardCierreExcepcionesDetalle');
-  if (n <= 0){ card.classList.add('hidden'); cierreExcepcionesFilas = []; return; }
-  card.classList.remove('hidden');
-  while (cierreExcepcionesFilas.length < n) cierreExcepcionesFilas.push({concepto:'', unidades:'1', valor:''});
-  while (cierreExcepcionesFilas.length > n) cierreExcepcionesFilas.pop();
-  var el = $('listaCierreExcepcionesForm');
-  el.innerHTML = cierreExcepcionesFilas.map(function(x, i){
-    return '<div class="card" style="background:var(--ink);margin-bottom:'+(i<n-1?'10px':'0')+'">'+
-      '<div class="formgrid">'+
-        '<div class="field full"><label>Excepción '+(i+1)+' — Concepto</label><input type="text" class="cxConcepto" data-i="'+i+'" placeholder="Ej: 1 Big BBH regalo cliente" value="'+esc(x.concepto)+'"></div>'+
-        '<div class="field"><label>Unidades (panes)</label><input type="number" min="0" step="1" class="cxUnidades" data-i="'+i+'" placeholder="1" value="'+esc(x.unidades||'1')+'"></div>'+
-        '<div class="field"><label>Valor (opcional, puede ser negativo)</label><input type="number" step="1" class="cxValor" data-i="'+i+'" placeholder="Ej: -14000 ó 25000" value="'+esc(x.valor)+'"></div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  Array.prototype.forEach.call(el.querySelectorAll('.cxConcepto'), function(inp){
-    inp.addEventListener('input', function(){ cierreExcepcionesFilas[+inp.getAttribute('data-i')].concepto = inp.value; });
-  });
-  Array.prototype.forEach.call(el.querySelectorAll('.cxUnidades'), function(inp){
-    inp.addEventListener('input', function(){ cierreExcepcionesFilas[+inp.getAttribute('data-i')].unidades = inp.value; calcularCierrePreview(); });
-  });
-  Array.prototype.forEach.call(el.querySelectorAll('.cxValor'), function(inp){
-    inp.addEventListener('input', function(){ cierreExcepcionesFilas[+inp.getAttribute('data-i')].valor = inp.value; calcularCierrePreview(); });
-  });
-}
-$('cierreExcepcionesN').addEventListener('input', function(){ renderCierreExcepcionesDetalle(); calcularCierrePreview(); });
+function ciNum(id){ return parseInt($(id).value, 10) || 0 }
 
-function actualizarCierreFechaDia(){
-  var v = $('cierreFecha').value;
-  $('cierreFechaDia').textContent = v ? ('· '+nombreDiaCorto(v)) : '';
-}
-$('cierreFecha').addEventListener('input', actualizarCierreFechaDia);
-
-var PRECIO_DESC_12K = 12000;
-var PRECIO_DESC_13K = 13000;
-
-// Cuántos panes se vendieron en total hoy, sumando los tres precios. Se usa en el Excedente y en Dinero.
-function vendidoTotalCierre(){
-  var n = parseInt($('cierreVendidoNormal').value) || 0;
-  var d12 = parseInt($('cierreVendido12k').value) || 0;
-  var d13 = parseInt($('cierreVendido13k').value) || 0;
-  return n + d12 + d13;
-}
-
-// Totales de lo YA guardado en la base para el día que se está viendo (fiados, gastos, excepciones).
-// Se actualizan en cargarListasDia() cada vez que se recarga un día, y se suman a lo que se está tecleando ahora.
-var fiadoGuardadoDia = {unidades:0, valor:0};
-var gastosGuardadoDia = 0;
-var excepcionesGuardadoDia = {unidades:0, valor:0};
-
+// ---------- cálculo: un solo lugar donde se hacen todas las cuentas ----------
 function calcularCierrePreview(){
-  var entregado = parseInt($('cierreEntregado').value) || 0;
-  var vNormal = parseInt($('cierreVendidoNormal').value) || 0;
-  var v12 = parseInt($('cierreVendido12k').value) || 0;
-  var v13 = parseInt($('cierreVendido13k').value) || 0;
-  var vendido = vNormal + v12 + v13;
-  $('cierreVendidoTotalVal').textContent = vendido;
-  var fiadasNuevasUnid = parseInt($('cierreFiadasUnid').value) || 0;
-  var excepcionesNuevasUnid = cierreExcepcionesFilas.reduce(function(s,x){ return s + (parseInt(x.unidades)||0) }, 0);
-  var devuelto = parseInt($('cierreDevuelto').value) || 0;
-  var perdido = parseInt($('cierrePerdido').value) || 0;
-  var excedente = entregado - vendido - fiadasNuevasUnid - excepcionesNuevasUnid - devuelto - perdido;
-  var bar = $('cierreExcedenteBar');
-  $('cierreExcedenteVal').textContent = excedente;
-  bar.querySelector('.val').style.color = excedente === 0 ? 'var(--green)' : (excedente < 0 ? '#ff8a7a' : 'var(--yellow)');
+  var entraron = ciNum('ciEntraron');
+  var v14 = ciNum('ciV14'), v13 = ciNum('ciV13'), v12 = ciNum('ciV12');
+  var fiadas = ciNum('ciFiadas'), merma = ciNum('ciMerma'), quedaron = ciNum('ciQuedaron');
 
-  var precioNormal = parseFloat($('cierrePrecioProm').value) || 0;
-  var recibido = parseFloat($('cierreValorRecibido').value) || 0;
-  var esperado = (vNormal * precioNormal) + (v12 * PRECIO_DESC_12K) + (v13 * PRECIO_DESC_13K);
-  var diferencia = esperado - recibido;
-  $('cierreEsperadoVal').textContent = fmt(esperado);
-  var dbar = $('cierreDiferenciaBar');
-  $('cierreDiferenciaVal').textContent = fmt(diferencia);
-  dbar.querySelector('.val').style.color = diferencia === 0 ? 'var(--green)' : (diferencia > 0 ? '#ff8a7a' : 'var(--yellow)');
+  var vendidas = v14 + v13 + v12;
+  var repartidos = vendidas + fiadas + merma + quedaron;
+  var dif = entraron - repartidos;
 
-  var formulaEl = $('cierreEsperadoFormula');
-  if (vendido > 0){
-    var partes = [];
-    if (vNormal>0) partes.push(vNormal+' × '+fmt(precioNormal));
-    if (v12>0) partes.push(v12+' × '+fmt(PRECIO_DESC_12K));
-    if (v13>0) partes.push(v13+' × '+fmt(PRECIO_DESC_13K));
-    formulaEl.textContent = partes.join(' + ')+' = '+fmt(esperado)+' ('+vendido+' hamburguesas pagadas en total)';
+  // --- cuadre del pan ---
+  var box = $('ciCuadreBox');
+  box.classList.toggle('ok', dif === 0);
+  box.classList.toggle('bad', dif !== 0);
+  $('ciCuadreNum').textContent = (dif > 0 ? '+' : '') + dif;
+  if (dif === 0){
+    $('ciCuadreTitulo').textContent = 'Cuadra';
+    $('ciCuadreDetalle').textContent = 'Entraron ' + entraron + ' · repartidos ' + repartidos;
+  } else if (dif > 0){
+    $('ciCuadreTitulo').textContent = 'Faltan ' + dif + ' por explicar';
+    $('ciCuadreDetalle').textContent = 'Entraron ' + entraron + ' pero solo contaste ' + repartidos;
   } else {
-    formulaEl.textContent = '';
+    $('ciCuadreTitulo').textContent = 'Sobran ' + Math.abs(dif) + ' contados';
+    $('ciCuadreDetalle').textContent = 'Contaste ' + repartidos + ' pero solo entraron ' + entraron;
   }
 
-  // Valor de las fiadas nuevas que se están por crear (mismo cálculo que se usa al guardar: cantidad × precio normal)
-  var valorFiadasNuevas = cierreFiadasFilas.reduce(function(s,f){ return s + ((parseInt(f.cantidad)||0) * precioNormal) }, 0);
-  var valorExcepcionesNuevas = cierreExcepcionesFilas.reduce(function(s,x){ return s + (parseFloat(x.valor)||0) }, 0);
+  // --- dinero ---
+  var bruto = v14*CI_P14 + v13*CI_P13 + v12*CI_P12;
+  var porCobrar = fiadas * CI_P14;
 
-  var totalFiadoUnid = fiadasNuevasUnid + fiadoGuardadoDia.unidades;
-  var totalFiadoVal = valorFiadasNuevas + fiadoGuardadoDia.valor;
-  var totalExcepUnid = excepcionesNuevasUnid + excepcionesGuardadoDia.unidades;
-  var totalExcepVal = valorExcepcionesNuevas + excepcionesGuardadoDia.valor;
-
-  $('resVendidoVal').textContent = vendido+' · '+fmt(esperado);
-  $('resFiadoVal').textContent = totalFiadoUnid+' · '+fmt(totalFiadoVal);
-  $('resExcepcionalVal').textContent = totalExcepUnid+' · '+fmt(totalExcepVal);
-  $('resGastosVal').textContent = fmt(gastosGuardadoDia);
-
-  var notaDif = $('cierreDiferenciaNota');
-  if (totalFiadoVal > 0 || totalExcepVal !== 0){
-    notaDif.textContent = 'Ojo: esta diferencia solo compara lo vendido pagado contra la caja. Hoy además hay '+fmt(totalFiadoVal)+' en fiado (queda en cartera, no es caja) y '+fmt(totalExcepVal)+' en excepciones (regalos/consumo/merma con valor, tampoco es caja).';
-  } else {
-    notaDif.textContent = '';
+  var gBBH = 0, nBBH = 0, gPer = 0, nPer = 0, gRev = 0, nRev = 0;
+  for (var i = 0; i < ciGastosDia.length; i++){
+    var g = ciGastosDia[i], v = parseFloat(g.valor) || 0;
+    if (g.clasificacion === 'BBH'){ gBBH += v; nBBH++; }
+    else if (g.clasificacion === 'PERSONAL'){ gPer += v; nPer++; }
+    else { gRev += v; nRev++; }
   }
+
+  var netoNegocio = bruto - gBBH;
+  var netoFinal = netoNegocio - gPer;
+
+  $('ciTotalBruto').textContent = fmt(bruto);
+  $('ciDetVendido').textContent = vendidas + (vendidas === 1 ? ' hamburguesa pagada' : ' hamburguesas pagadas');
+  $('ciTotalGastoBBH').textContent = '−' + fmt(gBBH);
+  $('ciDetGastoBBH').textContent = nBBH + (nBBH === 1 ? ' gasto' : ' gastos');
+  $('ciNetoNegocio').textContent = fmt(netoNegocio);
+  $('ciTotalGastoPersonal').textContent = '−' + fmt(gPer);
+  $('ciDetGastoPersonal').textContent = nPer + (nPer === 1 ? ' gasto' : ' gastos');
+  $('ciNetoFinal').textContent = fmt(netoFinal);
+  $('ciTotalFiado').textContent = fmt(porCobrar);
+  $('ciDetFiado').textContent = fiadas + (fiadas === 1 ? ' fiada' : ' fiadas') + ' × ' + fmt(CI_P14);
+
+  // --- caja contada (opcional) ---
+  var recibidoTxt = $('ciValorRecibido').value;
+  var fila = $('ciFilaDifCaja');
+  if (recibidoTxt !== '' && recibidoTxt != null){
+    var recibido = parseFloat(recibidoTxt) || 0;
+    var difCaja = recibido - bruto;
+    fila.style.display = 'flex';
+    $('ciDifCaja').textContent = (difCaja > 0 ? '+' : '') + fmt(difCaja);
+    $('ciDifCaja').style.color = difCaja === 0 ? '#43d17c' : '#ff5f56';
+    $('ciDetDifCaja').textContent = difCaja === 0 ? 'Cuadra con lo vendido'
+      : (difCaja > 0 ? 'Hay más plata de la esperada' : 'Falta plata frente a lo vendido');
+  } else {
+    fila.style.display = 'none';
+  }
+
+  // --- avisos: conexión con el resto del sistema ---
+  var av = $('ciAvisoRevisar');
+  if (nRev > 0){
+    av.textContent = '⚠️ Hay ' + nRev + (nRev === 1 ? ' gasto' : ' gastos') + ' sin clasificar por ' + fmt(gRev) +
+                     '. No están restados en ningún total hasta que decidas si son del negocio o personales.';
+    av.classList.remove('hidden');
+  } else { av.classList.add('hidden'); }
+
+  var ap = $('ciAvisoCruce'), avisos = [];
+  if (ciFiadosDia && ciFiadosDia.unidades !== fiadas){
+    avisos.push('En la pestaña Fiados hay ' + ciFiadosDia.unidades + ' unidad(es) registradas para este día y aquí contaste ' + fiadas + '.');
+  }
+  if (ciVentasPos && ciVentasPos.unidades > 0 && ciVentasPos.unidades !== vendidas){
+    avisos.push('Venta rápida registró ' + ciVentasPos.unidades + ' unidad(es) hoy (' + fmt(ciVentasPos.valor) + ') y aquí contaste ' + vendidas + '.');
+  }
+  if (avisos.length){ ap.innerHTML = '⚠️ ' + avisos.map(esc).join('<br>'); ap.classList.remove('hidden'); }
+  else { ap.classList.add('hidden'); }
 }
-['cierreEntregado','cierreVendidoNormal','cierreVendido12k','cierreVendido13k','cierreFiadasUnid','cierreDevuelto','cierrePerdido','cierrePrecioProm','cierreValorRecibido'].forEach(function(id){
-  $(id).addEventListener('input', calcularCierrePreview);
+
+// ---------- gastos del día ----------
+function ciPintarGastos(){
+  var cont = $('ciListaGastos');
+  if (!ciGastosDia.length){
+    cont.innerHTML = '<div class="ci-empty">Todavía no hay gastos registrados este día.</div>';
+    return;
+  }
+  var orden = {BBH:0, PERSONAL:1, REVISAR:2};
+  var lista = ciGastosDia.slice().sort(function(a,b){
+    return (orden[a.clasificacion] == null ? 2 : orden[a.clasificacion]) - (orden[b.clasificacion] == null ? 2 : orden[b.clasificacion]);
+  });
+  cont.innerHTML = lista.map(function(g){
+    var et = g.clasificacion === 'BBH' ? '<span class="ci-tag">FUNCIONAMIENTO</span>'
+           : g.clasificacion === 'PERSONAL' ? '<span class="ci-tag">PERSONAL</span>'
+           : '<span class="ci-tag loss">SIN CLASIFICAR</span>';
+    return '<div class="ci-gitem">' +
+             '<div class="ci-gi"><b>' + esc(g.concepto) + '</b>' + et + '</div>' +
+             '<div class="ci-gv">' + fmt(g.valor) + '</div>' +
+             '<button class="ci-gx" type="button" data-cidel="' + g.id + '" title="Eliminar">×</button>' +
+           '</div>';
+  }).join('');
+}
+
+$('ciAddGasto').addEventListener('click', async function(){
+  var concepto = $('ciGConcepto').value.trim();
+  var valor = parseFloat($('ciGValor').value) || 0;
+  var msg = $('ciMsgGasto'); msg.className = 'msg';
+  if (!concepto){ msg.textContent = 'Escribe de qué fue el gasto.'; msg.className = 'msg err show'; return; }
+  if (valor <= 0){ msg.textContent = 'El valor tiene que ser mayor a cero.'; msg.className = 'msg err show'; return; }
+  var btn = this; btn.disabled = true; btn.textContent = 'Guardando...';
+  try{
+    var res = await authFetch('/rest/v1/gastos', {
+      method: 'POST', headers: {'Prefer':'return=representation'},
+      body: JSON.stringify({ fecha: $('cierreFecha').value, concepto: concepto, valor: valor, clasificacion: ciClasSel })
+    });
+    if (!res.ok) throw new Error('fallo');
+    var creado = await res.json();
+    if (creado && creado.length) ciGastosDia.unshift(creado[0]);
+    $('ciGConcepto').value = ''; $('ciGValor').value = '';
+    ciPintarGastos(); calcularCierrePreview();
+    toast('Gasto agregado');
+  }catch(err){
+    msg.textContent = 'No se pudo guardar el gasto. Revisa tu conexión.';
+    msg.className = 'msg err show';
+  }finally{
+    btn.disabled = false; btn.textContent = 'Agregar gasto';
+  }
 });
 
-async function cargarCierre(){
-  $('cierreFecha').value = $('cierreFecha').value || hoyISO();
-  actualizarCierreFechaDia();
-  var el = $('listaCierres');
-  el.innerHTML = '<div class="emptylist">Cargando…</div>';
-  var res = await authFetch('/rest/v1/dias_operacion?select=fecha,pan_entregado,pan_vendido,pan_vendido_12k,pan_vendido_13k,pan_devuelto,pan_perdido,valor_esperado,valor_recibido,caja_real,cerrado,notas&order=fecha.desc&limit=20');
-  if (res.ok){
-    var rows = await res.json();
-    if (!rows.length){ el.innerHTML = '<div class="emptylist">Sin cierres registrados.</div>'; }
-    else {
-      el.innerHTML = rows.map(function(d){
-        var diff = (parseFloat(d.valor_esperado)||0) - (parseFloat(d.valor_recibido)||0);
-        var diffTxt = d.valor_recibido == null ? '' : ('<div class="dt">Diferencia: '+fmt(diff)+'</div>');
-        var notaTxt = String(d.notas||'');
-        var esAlerta = /CONTRADICCIÓN|ANÓMALO/i.test(notaTxt);
-        var alertaTxt = esAlerta ? '<div class="dt" style="color:#ff8a7a;font-weight:700">⚠️ Revisar — dato inconsistente ese día</div>' : '';
-        var descTxt = (d.pan_vendido_12k>0 || d.pan_vendido_13k>0) ? '<div class="dt">Con descuento: '+(d.pan_vendido_12k||0)+' a $12.000 + '+(d.pan_vendido_13k||0)+' a $13.000</div>' : '';
-        return '<div class="clirow" data-fecha="'+esc(d.fecha)+'"><div><div class="nm">'+esc(d.fecha)+(d.cerrado?'':' · sin cerrar')+'</div><div class="sub">'+d.pan_entregado+' entregados · '+d.pan_vendido+' vendidos'+(d.caja_real!=null?' · caja física '+fmt(d.caja_real):'')+'</div>'+descTxt+diffTxt+alertaTxt+'</div><div class="stat"><div class="hb">'+fmt(d.valor_recibido||0)+'</div></div></div>';
-      }).join('');
-      Array.prototype.forEach.call(el.querySelectorAll('.clirow'), function(row){
-        row.addEventListener('click', function(){
-          $('cierreFecha').value = row.getAttribute('data-fecha');
-          actualizarCierreFechaDia();
-          cargarDetalleDia(row.getAttribute('data-fecha'));
-          window.scrollTo({top:0, behavior:'smooth'});
-        });
-      });
-    }
-  } else {
-    el.innerHTML = '<div class="emptylist">No se pudo cargar el historial.</div>';
+$('ciListaGastos').addEventListener('click', async function(e){
+  var b = e.target.closest('[data-cidel]');
+  if (!b) return;
+  var id = b.getAttribute('data-cidel');
+  if (!confirm('¿Eliminar este gasto?')) return;
+  b.disabled = true;
+  try{
+    var res = await authFetch('/rest/v1/gastos?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
+    if (!res.ok) throw new Error('fallo');
+    ciGastosDia = ciGastosDia.filter(function(g){ return String(g.id) !== String(id) });
+    ciPintarGastos(); calcularCierrePreview();
+    toast('Gasto eliminado');
+  }catch(err){
+    b.disabled = false; toast('No se pudo eliminar');
   }
-  await cargarDetalleDia($('cierreFecha').value);
-}
+});
 
-// Precarga los campos principales del cierre (panes y dinero) desde dias_operacion. Solo se llama cuando
-// realmente cambiaste de día — NUNCA al volver a la pestaña sobre el mismo día, para no borrar lo que ya escribiste.
-async function precargarCamposDia(fecha){
-  var resDia = await authFetch('/rest/v1/dias_operacion?select=*&fecha=eq.'+fecha);
-  if (resDia.ok){
-    var rows = await resDia.json();
-    var d = rows[0];
-    if (d){
-      $('cierreEntregado').value = d.pan_entregado || '';
-      var v12 = d.pan_vendido_12k || 0, v13 = d.pan_vendido_13k || 0;
-      var vNormal = Math.max(0, (d.pan_vendido || 0) - v12 - v13);
-      $('cierreVendidoNormal').value = vNormal || '';
-      $('cierreVendido12k').value = v12 || '';
-      $('cierreVendido13k').value = v13 || '';
-      $('cierreDevuelto').value = d.pan_devuelto || '';
-      $('cierrePerdido').value = d.pan_perdido || '';
-      $('cierrePrecioProm').value = d.precio_normal != null ? d.precio_normal : (d.precio_promedio || '');
-      $('cierreValorRecibido').value = d.valor_recibido != null ? d.valor_recibido : '';
-      $('cierreNotas').value = d.notas || '';
-    } else {
-      ['cierreEntregado','cierreVendidoNormal','cierreVendido12k','cierreVendido13k','cierreDevuelto','cierrePerdido','cierrePrecioProm','cierreValorRecibido','cierreNotas'].forEach(function(id){ $(id).value=''; });
-    }
-    // las fiadas y excepciones "a crear" siempre arrancan vacías al cambiar de día — las que ya existen se ven abajo
-    $('cierreFiadasUnid').value = '';
-    $('cierreExcepcionesN').value = '';
-    renderCierreFiadasDetalle();
-    renderCierreExcepcionesDetalle();
+Array.prototype.forEach.call(document.querySelectorAll('.ci-chip'), function(c){
+  c.addEventListener('click', function(){
+    ciClasSel = c.getAttribute('data-ciclas');
+    Array.prototype.forEach.call(document.querySelectorAll('.ci-chip'), function(x){ x.classList.toggle('on', x === c) });
+  });
+});
+
+// ---------- contadores ----------
+Array.prototype.forEach.call(document.querySelectorAll('[data-cistep]'), function(b){
+  b.addEventListener('click', function(){
+    var el = $(b.getAttribute('data-cit'));
+    var paso = parseInt(b.getAttribute('data-cistep'), 10);
+    el.value = Math.max(0, (parseInt(el.value, 10) || 0) + paso);
     calcularCierrePreview();
-  }
-  cierreFechaCargada = fecha;
-}
+  });
+});
+Array.prototype.forEach.call(document.querySelectorAll('.ci-step input'), function(i){
+  i.addEventListener('input', calcularCierrePreview);
+  i.addEventListener('focus', function(){ i.select() });
+});
+$('ciValorRecibido').addEventListener('input', calcularCierrePreview);
 
-// Refresca SOLO las listas de gastos y fiados de un día — se puede llamar todas las veces que haga falta
-// (por ejemplo al volver a la pestaña Cierre) sin riesgo de borrar los campos que el usuario está escribiendo.
+// ---------- carga desde la base ----------
+// Trae SOLO las listas del día (gastos, fiados, ventas) sin tocar lo que se está tecleando.
 async function cargarListasDia(fecha){
-  var elG = $('listaCierreGastos');
-  elG.innerHTML = '<div class="emptylist">Cargando…</div>';
-  gastosGuardadoDia = 0;
-  var resG = await authFetch('/rest/v1/gastos?select=id,concepto,valor,clasificacion&fecha=eq.'+fecha+'&order=id.desc');
-  if (resG.ok){
-    var gastos = await resG.json();
-    if (!gastos.length){ elG.innerHTML = '<div class="emptylist">Sin gastos registrados este día.</div>'; }
-    else {
-      var totalG = gastos.reduce(function(s,g){ return s+parseFloat(g.valor) }, 0);
-      gastosGuardadoDia = totalG;
-      elG.innerHTML = gastos.map(function(g){
-        return '<div class="clirow gastorow" data-id="'+g.id+'"><div><div class="nm">'+esc(g.concepto)+'</div><span class="cl '+esc(g.clasificacion)+'">'+(g.clasificacion==='BBH'?'Negocio':(g.clasificacion==='PERSONAL'?'Personal':'Revisar'))+'</span></div><div class="stat"><div class="hb">'+fmt(g.valor)+'</div></div></div>';
-      }).join('') + '<div class="totalbar"><div class="lb">Total del día</div><div class="val">'+fmt(totalG)+'</div></div>';
-      Array.prototype.forEach.call(elG.querySelectorAll('.clirow'), function(row){
-        row.addEventListener('click', function(){ irAEditarGasto(row.getAttribute('data-id')) });
-      });
-    }
-  } else {
-    elG.innerHTML = '<div class="emptylist">No se pudo cargar.</div>';
+  var resGas, resFia, resVen;
+  try{
+    resGas = await authFetch('/rest/v1/gastos?select=id,concepto,valor,clasificacion&fecha=eq.' + fecha + '&order=created_at.desc');
+    resFia = await authFetch('/rest/v1/fiados?select=unidades,valor_total&fecha=eq.' + fecha);
+    resVen = await authFetch('/rest/v1/movimientos?select=unidades,valor_total&tipo=eq.VENTA&fecha=eq.' + fecha);
+  }catch(err){ return; }
+
+  ciGastosDia = (resGas && resGas.ok) ? await resGas.json() : [];
+  ciPintarGastos();
+
+  ciFiadosDia = null;
+  if (resFia && resFia.ok){
+    var fl = await resFia.json();
+    ciFiadosDia = fl.reduce(function(a, f){
+      a.unidades += (parseInt(f.unidades, 10) || 0);
+      a.valor += (parseFloat(f.valor_total) || 0);
+      return a;
+    }, {unidades:0, valor:0});
+    $('ciFiadasHint').textContent = ciFiadosDia.unidades > 0
+      ? 'En Fiados hay ' + ciFiadosDia.unidades + ' registrada(s) este día'
+      : 'Entregadas sin pagar hoy';
   }
 
-  var elF = $('listaCierreFiados');
-  elF.innerHTML = '<div class="emptylist">Cargando…</div>';
-  fiadoGuardadoDia = {unidades:0, valor:0};
-  var resF = await authFetch('/rest/v1/fiados?select=id,valor_total,unidades,estado,clientes(nombre,facultad)&fecha=eq.'+fecha+'&order=id.desc');
-  if (resF.ok){
-    var fiados = await resF.json();
-    if (!fiados.length){ elF.innerHTML = '<div class="emptylist">Sin fiados registrados este día.</div>'; }
-    else {
-      fiadoGuardadoDia.unidades = fiados.reduce(function(s,f){ return s + (f.unidades||0) }, 0);
-      fiadoGuardadoDia.valor = fiados.reduce(function(s,f){ return s + (parseFloat(f.valor_total)||0) }, 0);
-      elF.innerHTML = fiados.map(function(f){
-        var nombre = f.clientes ? f.clientes.nombre : '—';
-        var fac = f.clientes && f.clientes.facultad ? f.clientes.facultad : 'Sin facultad';
-        return '<div class="clirow" data-id="'+f.id+'"><div><div class="nm">'+esc(nombre)+(f.unidades!=null?' · '+f.unidades+' unid.':'')+'</div><div class="sub">'+esc(fac)+'</div></div><div class="stat"><div class="hb">'+fmt(f.valor_total)+'</div><div class="lv">'+esc(f.estado)+'</div></div></div>';
-      }).join('');
-      Array.prototype.forEach.call(elF.querySelectorAll('.clirow'), function(row){
-        row.addEventListener('click', function(){ irAFiadoDetalle(row.getAttribute('data-id')) });
-      });
-    }
-  } else {
-    elF.innerHTML = '<div class="emptylist">No se pudo cargar.</div>';
-  }
-
-  var elX = $('listaCierreExcepciones');
-  elX.innerHTML = '<div class="emptylist">Cargando…</div>';
-  excepcionesGuardadoDia = {unidades:0, valor:0};
-  var resX = await authFetch('/rest/v1/cierre_excepciones?select=id,concepto,unidades,valor&fecha=eq.'+fecha+'&order=id.desc');
-  if (resX.ok){
-    var excs = await resX.json();
-    if (!excs.length){ elX.innerHTML = '<div class="emptylist">Sin excepciones registradas este día.</div>'; }
-    else {
-      excepcionesGuardadoDia.unidades = excs.reduce(function(s,x){ return s + (x.unidades||0) }, 0);
-      excepcionesGuardadoDia.valor = excs.reduce(function(s,x){ return s + (parseFloat(x.valor)||0) }, 0);
-      elX.innerHTML = excs.map(function(x){
-        return '<div class="clirow"><div><div class="nm">'+esc(x.concepto)+'</div><div class="sub">'+(x.unidades||0)+' unid.</div></div><div class="stat"><div class="hb">'+fmt(x.valor)+'</div></div></div>';
-      }).join('') + '<div class="totalbar"><div class="lb">Total del día</div><div class="val">'+fmt(excepcionesGuardadoDia.valor)+'</div></div>';
-    }
-  } else {
-    elX.innerHTML = '<div class="emptylist">No se pudo cargar.</div>';
+  ciVentasPos = null;
+  if (resVen && resVen.ok){
+    var vl = await resVen.json();
+    ciVentasPos = vl.reduce(function(a, m){
+      a.unidades += (parseInt(m.unidades, 10) || 0);
+      a.valor += (parseFloat(m.valor_total) || 0);
+      return a;
+    }, {unidades:0, valor:0});
   }
 
   calcularCierrePreview();
 }
 
-// Trae y precarga TODO lo de un día: cierre (panes/dinero), gastos y fiados — para poder verlo y corregirlo en un solo lugar.
-// Se usa cuando SÍ cambiaste de día (historial, dashboard, selector de fecha). Para solo refrescar listas, usa cargarListasDia.
-async function cargarDetalleDia(fecha){
+// Rellena los contadores con lo que ya está guardado de ese día.
+async function precargarCamposDia(fecha){
+  var d = null;
+  try{
+    var res = await authFetch('/rest/v1/dias_operacion?select=*&fecha=eq.' + fecha);
+    if (res.ok){ var arr = await res.json(); d = arr.length ? arr[0] : null; }
+  }catch(err){ /* si falla, se dejan los campos como están */ }
+
+  if (d){
+    var v12 = d.pan_vendido_12k || 0, v13 = d.pan_vendido_13k || 0;
+    $('ciEntraron').value = d.pan_entregado || 0;
+    $('ciV12').value = v12;
+    $('ciV13').value = v13;
+    $('ciV14').value = Math.max(0, (d.pan_vendido || 0) - v12 - v13);
+    $('ciFiadas').value = d.pan_fiado || 0;
+    $('ciMerma').value = d.pan_perdido || 0;
+    $('ciQuedaron').value = d.pan_devuelto || 0;
+    $('ciValorRecibido').value = d.valor_recibido != null ? d.valor_recibido : '';
+    $('btnGuardarCierre').textContent = d.cerrado ? 'Actualizar cierre' : 'Guardar cierre';
+  } else {
+    $('ciEntraron').value = 0; $('ciV12').value = 0; $('ciV13').value = 0; $('ciV14').value = 0;
+    $('ciFiadas').value = 0; $('ciMerma').value = 0; $('ciQuedaron').value = 0;
+    $('ciValorRecibido').value = '';
+    $('btnGuardarCierre').textContent = 'Guardar cierre';
+  }
+  cierreFechaCargada = fecha;
+}
+
+// Carga completa del día (campos + listas). La usa cambiarTab cuando cambias de fecha.
+async function cargarCierre(){
+  if (!$('cierreFecha').value) $('cierreFecha').value = hoyISO();
+  var fecha = $('cierreFecha').value;
   await precargarCamposDia(fecha);
   await cargarListasDia(fecha);
+  // Si no hay nada guardado todavía, propone las fiadas ya registradas de ese día.
+  if (ciFiadosDia && ciFiadosDia.unidades > 0 && ciNum('ciFiadas') === 0){
+    $('ciFiadas').value = ciFiadosDia.unidades;
+  }
+  calcularCierrePreview();
 }
 
-async function irAEditarGasto(id){
-  cambiarTab('gastos');
-  await cargarGastos();
-  abrirEditarGasto(id);
+// ---------- navegación de fechas ----------
+function ciMoverDia(n){
+  var f = $('cierreFecha').value || hoyISO();
+  var p = f.split('-');
+  var d = new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10));
+  d.setDate(d.getDate() + n);
+  $('cierreFecha').value = d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  cargarCierre();
+  suscribirRealtime({tab:'cierre', fecha: $('cierreFecha').value});
 }
-
-async function irAFiadoDetalle(id){
-  cambiarTab('fiados');
-  await cargarFiados();
-  abrirFiadoDetalle(id);
-}
-
+$('ciDiaAnt').addEventListener('click', function(){ ciMoverDia(-1) });
+$('ciDiaSig').addEventListener('click', function(){ ciMoverDia(1) });
 $('cierreFecha').addEventListener('change', function(){
-  var fecha = this.value || hoyISO();
-  cargarDetalleDia(fecha);
-  suscribirRealtime({tab:'cierre', fecha: fecha}); // cambiaste de día: la sincronización en vivo debe seguir a ese día, no quedarse en el anterior
+  if (!this.value) return;
+  cargarCierre();
+  suscribirRealtime({tab:'cierre', fecha: this.value});
 });
 
-// ---- Agregar gasto de este día SIN salir del cierre ----
-$('btnCierreNuevoGasto').addEventListener('click', function(){
-  var abriendo = $('formCierreGasto').classList.contains('hidden');
-  $('formCierreGasto').classList.toggle('hidden');
-  if (abriendo){
-    $('cierreGastoConcepto').value = '';
-    $('cierreGastoValor').value = '';
-    $('cierreGastoClasificacion').value = '';
-    $('msgCierreGasto').className = 'msg';
-    $('cierreGastoConcepto').focus();
-  }
-});
-
-$('btnCierreGastoCancelar').addEventListener('click', function(){
-  $('formCierreGasto').classList.add('hidden');
-});
-
-$('btnCierreGastoGuardar').addEventListener('click', async function(){
-  var msg = $('msgCierreGasto'); msg.className = 'msg';
-  var fecha = $('cierreFecha').value || hoyISO();
-  var concepto = $('cierreGastoConcepto').value.trim();
-  var valor = parseFloat($('cierreGastoValor').value);
-  var clasificacion = $('cierreGastoClasificacion').value;
-  if (!concepto){ msg.textContent = 'Escribe el concepto del gasto.'; msg.className = 'msg err show'; return; }
-  if (!valor || valor <= 0){ msg.textContent = 'Escribe un valor válido.'; msg.className = 'msg err show'; return; }
-  if (!clasificacion){ msg.textContent = 'Debes decir si es del negocio o personal.'; msg.className = 'msg err show'; return; }
-  var btn = $('btnCierreGastoGuardar'); btn.disabled = true; btn.textContent = 'Guardando...';
-  try{
-    var res = await authFetch('/rest/v1/gastos', {
-      method: 'POST',
-      headers: {'Prefer':'return=minimal'},
-      body: JSON.stringify({fecha: fecha, concepto: concepto, valor: valor, clasificacion: clasificacion})
-    });
-    if (!res.ok){
-      msg.textContent = 'No se pudo guardar el gasto.'; msg.className = 'msg err show';
-      console.error(await res.text());
-      return;
-    }
-    toast('Gasto agregado');
-    $('formCierreGasto').classList.add('hidden');
-    await cargarListasDia(fecha);
-  }catch(err){
-    msg.textContent = 'Error de conexión al guardar el gasto.'; msg.className = 'msg err show';
-  }finally{
-    btn.disabled = false; btn.textContent = 'Guardar gasto';
-  }
-});
-
-// Busca un cliente existente por nombre exacto (sin distinguir mayúsculas). Si hay más de uno igual, no adivina: avisa.
-// Si no existe ninguno, crea un cliente mínimo (nombre + facultad), igual al flujo de "Nuevo cliente".
-async function buscarOCrearClientePorNombre(nombre, facultad){
-  var res = await authFetch('/rest/v1/clientes?select=id,nombre,facultad&nombre=ilike.'+encodeURIComponent(nombre));
-  if (!res.ok) throw new Error('No se pudo buscar el cliente '+nombre);
-  var rows = await res.json();
-  if (rows.length === 1) return rows[0].id;
-  if (rows.length > 1) throw new Error('AMBIGUO:'+nombre);
-  var resCrear = await authFetch('/rest/v1/clientes', {
-    method: 'POST',
-    headers: {'Prefer':'return=representation'},
-    body: JSON.stringify({nombre: nombre, facultad: facultad || null})
-  });
-  if (!resCrear.ok) throw new Error('No se pudo crear el cliente '+nombre);
-  var creado = await resCrear.json();
-  return creado[0].id;
-}
-
+// ---------- guardar ----------
 $('btnGuardarCierre').addEventListener('click', async function(){
+  var fecha = $('cierreFecha').value;
   var msg = $('msgCierre'); msg.className = 'msg';
-  var fecha = $('cierreFecha').value || hoyISO();
-  var entregado = parseInt($('cierreEntregado').value) || 0;
-  var vNormal = parseInt($('cierreVendidoNormal').value) || 0;
-  var v12 = parseInt($('cierreVendido12k').value) || 0;
-  var v13 = parseInt($('cierreVendido13k').value) || 0;
-  var vendido = vNormal + v12 + v13;
-  var precio = parseFloat($('cierrePrecioProm').value) || null; // precio "normal" del día — se usa también para valorar las fiadas
-  var recibido = parseFloat($('cierreValorRecibido').value) || null;
-  var devuelto = parseInt($('cierreDevuelto').value) || 0;
-  var perdido = parseInt($('cierrePerdido').value) || 0;
-  var excepcional = cierreExcepcionesFilas.reduce(function(s,x){ return s + (parseInt(x.unidades)||0) }, 0);
-  var fiadasUnid = parseInt($('cierreFiadasUnid').value) || 0;
-  var notasBase = $('cierreNotas').value.trim();
-  var esperadoTotal = (vNormal*(precio||0)) + (v12*PRECIO_DESC_12K) + (v13*PRECIO_DESC_13K);
-  var precioPonderado = vendido > 0 ? Math.round(esperadoTotal/vendido) : precio;
+  if (!fecha){ msg.textContent = 'Elige una fecha.'; msg.className = 'msg err show'; return; }
 
-  if (entregado <= 0 && vendido <= 0){
-    msg.textContent = 'Escribe al menos los panes entregados o vendidos.'; msg.className = 'msg err show'; return;
+  var v14 = ciNum('ciV14'), v13 = ciNum('ciV13'), v12 = ciNum('ciV12');
+  var vendidas = v14 + v13 + v12;
+  var entraron = ciNum('ciEntraron'), fiadas = ciNum('ciFiadas');
+  var merma = ciNum('ciMerma'), quedaron = ciNum('ciQuedaron');
+  var dif = entraron - (vendidas + fiadas + merma + quedaron);
+
+  if (dif !== 0){
+    var txt = dif > 0
+      ? 'Faltan ' + dif + ' pan(es) por explicar.'
+      : 'Sobran ' + Math.abs(dif) + ' pan(es) contados de más.';
+    if (!confirm(txt + '\n\n¿Guardar el cierre así de todos modos?')) return;
   }
 
-  // Validar que las fiadas con nombre tengan al menos nombre escrito (no se puede crear un fiado sin saber a quién)
-  var fiadasValidas = cierreFiadasFilas.filter(function(f){ return f.nombre.trim() !== '' });
-  var fiadasSinNombre = cierreFiadasFilas.length - fiadasValidas.length;
+  var bruto = v14*CI_P14 + v13*CI_P13 + v12*CI_P12;
+  // precio_promedio = lo realmente cobrado por unidad. La base calcula sola valor_esperado
+  // (pan_vendido × precio_promedio) — por eso ese campo NUNCA se envía aquí.
+  var precioProm = vendidas > 0 ? Math.round(bruto / vendidas) : null;
+  var recibidoTxt = $('ciValorRecibido').value;
+  var recibido = (recibidoTxt === '' || recibidoTxt == null) ? null : (parseFloat(recibidoTxt) || 0);
 
-  var btn = $('btnGuardarCierre'); btn.disabled = true; btn.textContent = 'Guardando...';
-
-  // 1) Crear las fiadas primero (si alguna falla por ambigüedad, avisamos y no perdemos el cierre)
-  var fiadasCreadas = 0, fiadasFallidas = [];
-  for (var i=0; i<fiadasValidas.length; i++){
-    var f = fiadasValidas[i];
-    try{
-      var clienteId = await buscarOCrearClientePorNombre(f.nombre.trim(), f.facultad.trim());
-      var cantidad = parseInt(f.cantidad) || 1;
-      var valorTotal = (precio || 0) * cantidad;
-      if (valorTotal <= 0){
-        fiadasFallidas.push(f.nombre+' (falta precio promedio para calcular el valor)');
-        continue;
-      }
-      var resFiado = await authFetch('/rest/v1/fiados', {
-        method: 'POST',
-        headers: {'Prefer':'return=minimal'},
-        body: JSON.stringify({
-          cliente_id: clienteId, fecha: fecha,
-          valor_total: valorTotal, unidades: cantidad,
-          pago_prometido: f.promesaPago || null,
-          nota: 'Desde cierre del día'
-        })
-      });
-      if (!resFiado.ok) throw new Error('fallo insert fiado');
-      fiadasCreadas++;
-    }catch(err){
-      if (String(err.message||'').indexOf('AMBIGUO:') === 0){
-        fiadasFallidas.push(f.nombre+' (hay más de un cliente con ese nombre, regístralo manualmente en Fiados)');
-      } else {
-        fiadasFallidas.push(f.nombre);
-      }
-    }
-  }
-
-  // 2) Crear las excepciones (regalos/consumo/merma con valor) del día
-  var excepcionesValidas = cierreExcepcionesFilas.filter(function(x){ return x.concepto.trim() !== '' });
-  var excepcionesSinConcepto = cierreExcepcionesFilas.length - excepcionesValidas.length;
-  var excepcionesCreadas = 0, excepcionesFallidas = [];
-  for (var j=0; j<excepcionesValidas.length; j++){
-    var x = excepcionesValidas[j];
-    try{
-      var resExc = await authFetch('/rest/v1/cierre_excepciones', {
-        method: 'POST',
-        headers: {'Prefer':'return=minimal'},
-        body: JSON.stringify({
-          fecha: fecha,
-          concepto: x.concepto.trim(),
-          unidades: parseInt(x.unidades) || 1,
-          valor: parseFloat(x.valor) || 0
-        })
-      });
-      if (!resExc.ok) throw new Error('fallo insert excepcion');
-      excepcionesCreadas++;
-    }catch(err){
-      excepcionesFallidas.push(x.concepto);
-    }
-  }
-
-  var notaFiadas = '';
-  if (fiadasSinNombre > 0) notaFiadas += ' '+fiadasSinNombre+' fiada(s) sin nombre — anótalas luego en Fiados.';
-  if (fiadasFallidas.length) notaFiadas += ' No se pudieron crear: '+fiadasFallidas.join(', ')+'.';
-  if (excepcionesSinConcepto > 0) notaFiadas += ' '+excepcionesSinConcepto+' excepción(es) sin concepto — no se guardaron.';
-  if (excepcionesFallidas.length) notaFiadas += ' No se pudieron crear estas excepciones: '+excepcionesFallidas.join(', ')+'.';
-  var notaFinal = (notasBase + notaFiadas).trim();
-
-  var payload = {
-    fecha: fecha, opero: true,
-    pan_entregado: entregado, pan_vendido: vendido,
-    pan_vendido_12k: v12, pan_vendido_13k: v13,
-    pan_devuelto: devuelto, pan_perdido: perdido, pan_excepcional: excepcional,
-    precio_normal: precio, precio_promedio: precioPonderado, valor_recibido: recibido,
-    cerrado: true, cerrado_en: new Date().toISOString(),
-    notas: notaFinal || null
-  };
+  var btn = this; btn.disabled = true; var textoPrevio = btn.textContent; btn.textContent = 'Guardando...';
   try{
-    var res = await authFetch('/rest/v1/dias_operacion?on_conflict=fecha', {
+    var payload = {
+      fecha: fecha,
+      opero: true,
+      pan_entregado: entraron,
+      pan_vendido: vendidas,
+      pan_vendido_12k: v12,
+      pan_vendido_13k: v13,
+      pan_fiado: fiadas,
+      pan_perdido: merma,
+      pan_devuelto: quedaron,
+      precio_normal: CI_P14,
+      precio_promedio: precioProm,
+      valor_recibido: recibido,
+      cerrado: true,
+      cerrado_en: new Date().toISOString()
+    };
+    var res = await authFetch('/rest/v1/dias_operacion', {
       method: 'POST',
       headers: {'Prefer':'resolution=merge-duplicates,return=minimal'},
       body: JSON.stringify(payload)
     });
     if (!res.ok){
-      msg.textContent = 'No se pudo guardar el cierre.'; msg.className = 'msg err show';
-      console.error(await res.text());
+      var err = await res.text();
+      console.error(err);
+      msg.textContent = 'No se pudo guardar el cierre.';
+      msg.className = 'msg err show';
       return;
     }
-    var resumenFiadas = fiadasCreadas>0 ? (' · '+fiadasCreadas+' fiada(s) registrada(s)') : '';
-    var resumenExcepciones = excepcionesCreadas>0 ? (' · '+excepcionesCreadas+' excepción(es) registrada(s)') : '';
-    toast('Cierre del día guardado'+resumenFiadas+resumenExcepciones);
-    if (fiadasFallidas.length || excepcionesFallidas.length){
-      msg.textContent = 'Cierre guardado, pero revisa: '+fiadasFallidas.concat(excepcionesFallidas).join(', ');
-      msg.className = 'msg err show';
-    } else {
-      msg.textContent = 'Guardado correctamente.'; msg.className = 'msg ok show';
-    }
-    await cargarCierre();
-  }catch(err){
-    msg.textContent = 'Error de conexión al guardar.'; msg.className = 'msg err show';
+    textoPrevio = 'Actualizar cierre';
+    msg.textContent = 'Cierre guardado.';
+    msg.className = 'msg ok show';
+    toast('Cierre guardado');
+  }catch(e){
+    msg.textContent = 'Error de conexión al guardar.';
+    msg.className = 'msg err show';
   }finally{
-    btn.disabled = false; btn.textContent = 'Guardar cierre del día';
+    btn.disabled = false; btn.textContent = textoPrevio;
   }
 });
 
